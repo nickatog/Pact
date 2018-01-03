@@ -9,18 +9,18 @@ namespace Pact
         : IEventStream
     {
         private readonly string _filePath;
-        private readonly IPowerLogParser _powerLogParser;
+        private readonly IPowerLogEventParser _powerLogEventParser;
 
         public PowerLogEventStream(
             string filePath,
-            IPowerLogParser powerLogParser)
+            IPowerLogEventParser powerLogEventParser)
         {
             _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            _powerLogParser = powerLogParser ?? throw new ArgumentNullException(nameof(powerLogParser));
+            _powerLogEventParser = powerLogEventParser ?? throw new ArgumentNullException(nameof(powerLogEventParser));
         }
 
         private readonly Queue<object> _parsedEvents = new Queue<object>();
-        private string _remainingText = string.Empty;
+        private string _remainingText = null;
         private long _streamPosition = 0;
 
         async Task<object> IEventStream.ReadNext()
@@ -36,20 +36,23 @@ namespace Pact
                     {
                         _streamPosition = 0;
 
-                        _remainingText = string.Empty;
+                        _remainingText = null;
                     }
 
                     stream.Seek(_streamPosition, SeekOrigin.Begin);
 
                     using (var streamReader = new StreamReader(stream))
                     {
+                        if (_remainingText != null)
+                            _remainingText += Environment.NewLine;
+
                         _remainingText += streamReader.ReadToEnd();
 
                         _streamPosition = stream.Position;
                     }
                 }
 
-                foreach (object parsedEvent in _powerLogParser.ParseEvents(ref _remainingText))
+                foreach (object parsedEvent in _powerLogEventParser.ParseEvents(ref _remainingText))
                     _parsedEvents.Enqueue(parsedEvent);
 
                 if (_parsedEvents.Count > 0)

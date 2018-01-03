@@ -2,7 +2,7 @@
 
 namespace Pact
 {
-    public interface IPowerLogParser
+    public interface IPowerLogEventParser
     {
         IEnumerable<object> ParseEvents(
             ref string text);

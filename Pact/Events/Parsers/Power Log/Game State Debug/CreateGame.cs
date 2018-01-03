@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Pact.Events.Parsers.PowerLog.BlockParsers
+namespace Pact.EventParsers.PowerLog.GameStateDebug
 {
     public sealed class CreateGame
-        : IPowerLogBlockParser
+        : IGameStateDebugEventParser
     {
         private static readonly Regex s_startPattern =
             new Regex(
                 @"^.*GameState.DebugPrintPower\(\) - CREATE_GAME.*$",
                 RegexOptions.Compiled);
 
-        bool IPowerLogBlockParser.TryParseEvents(
+        bool IGameStateDebugEventParser.TryParseEvents(
             IEnumerator<string> lines,
             out IEnumerable<object> parsedEvents,
             out string unusedText)
@@ -24,7 +24,8 @@ namespace Pact.Events.Parsers.PowerLog.BlockParsers
 
             lines.MoveNext();
 
-            parsedEvents = new List<object> { new object() };
+            parsedEvents = new List<object>();
+            unusedText = null;
 
             return true;
         }

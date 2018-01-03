@@ -17,26 +17,34 @@ namespace Pact
             InitializeComponent();
 
             var eventParsers =
-                new List<IPowerLogBlockParser>
+                new List<IGameStateDebugEventParser>
                 {
-                    new Events.Parsers.PowerLog.BlockParsers.CreateGame(),
-                    new Events.Parsers.PowerLog.BlockParsers.PlayBlockEventParser(),
-                    new Events.Parsers.PowerLog.BlockParsers.Trigger()
+                    new EventParsers.PowerLog.GameStateDebug.CreateGame(),
+                    new EventParsers.PowerLog.GameStateDebug.Play(),
+                    new EventParsers.PowerLog.GameStateDebug.Trigger()
                 };
             // @"C:\Program Files (x86)\Hearthstone\Logs\Power.log",
+            // @"C:\Users\Nicholas Anderson\Desktop\Power2.log",
             _eventStream =
                 new PowerLogEventStream(
-                    @"C:\Users\Nicholas Anderson\Desktop\Power2.log",
-                    new PowerLogParser(eventParsers));
+                    @"C:\Program Files (x86)\Hearthstone\Logs\Power.log",
+                    new GameStateDebugPowerLogEventParser(eventParsers));
 
             Task.Run(
                 async () =>
                 {
                     while (true)
                     {
-                        object @event = await _eventStream.ReadNext();
+                        try
+                        {
+                            object @event = await _eventStream.ReadNext();
 
-                        System.Diagnostics.Debug.WriteLine($"{DateTime.Now}");
+                            System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - {@event}");
+                        } catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.Message);
+                            System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+                        }
                     }
                 });
         }

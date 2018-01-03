@@ -2,7 +2,7 @@
 
 namespace Pact
 {
-    public interface IPowerLogBlockParser
+    public interface IGameStateDebugEventParser
     {
         bool TryParseEvents(
             IEnumerator<string> lines,

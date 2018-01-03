@@ -2,10 +2,10 @@
 using System.Text.RegularExpressions;
 using Pact.StringExtensions;
 
-namespace Pact.Events.Parsers.PowerLog.BlockParsers
+namespace Pact.EventParsers.PowerLog.GameStateDebug
 {
     public sealed class Trigger
-        : IPowerLogBlockParser
+        : IGameStateDebugEventParser
     {
         private static readonly Regex s_endPattern =
             new Regex(
@@ -22,12 +22,17 @@ namespace Pact.Events.Parsers.PowerLog.BlockParsers
                 @"^.*GameState.DebugPrintPower\(\) - BLOCK_START BlockType=TRIGGER.*$",
                 RegexOptions.Compiled);
 
+        private static readonly Regex s_tagPattern =
+            new Regex(
+                @"^.*GameState.DebugPrintPower\(\) -         tag=(?<tag>\S*) value=(?<value>.*)$",
+                RegexOptions.Compiled);
+
         private static readonly Regex s_tagChangePattern =
             new Regex(
                 @"^.*GameState.DebugPrintPower\(\) -     TAG_CHANGE.*$",
                 RegexOptions.Compiled);
 
-        bool IPowerLogBlockParser.TryParseEvents(
+        bool IGameStateDebugEventParser.TryParseEvents(
             IEnumerator<string> lines,
             out IEnumerable<object> parsedEvents,
             out string unusedText)
@@ -40,20 +45,32 @@ namespace Pact.Events.Parsers.PowerLog.BlockParsers
             if (!match.Success)
                 return false;
 
-            IDictionary<string, string> blockAttributes = currentLine.ParseKeyValuePairs();
-
-            unusedText += currentLine;
-
             var tempEvents = new List<object>();
 
-            while (lines.MoveNext() && (currentLine = lines.Current) != null)
+            IDictionary<string, string> blockAttributes = null;
+            try
+            {
+                blockAttributes = currentLine.ParseKeyValuePairs();
+            } catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("");
+            }
+            
+
+            unusedText = currentLine;
+
+            lines.MoveNext();
+
+            currentLine = lines.Current;
+
+            do
             {
                 if (s_endPattern.IsMatch(currentLine))
                 {
                     lines.MoveNext();
 
                     parsedEvents = tempEvents;
-                    unusedText = string.Empty;
+                    unusedText = null;
 
                     return true;
                 }
@@ -67,6 +84,8 @@ namespace Pact.Events.Parsers.PowerLog.BlockParsers
                 {
                     // player card draw?
                     IDictionary<string, string> showEntityUpdatingAttributes = currentLine.ParseKeyValuePairs();
+
+                    showEntityUpdatingAttributes.TryGetValue("CardID", out string cardID);
 
                     if (showEntityUpdatingAttributes.TryGetValue("Entity", out string entity))
                     {
@@ -82,13 +101,34 @@ namespace Pact.Events.Parsers.PowerLog.BlockParsers
                                 .Replace("]", string.Empty)
                                 .ParseKeyValuePairs();
 
-                            System.Diagnostics.Debug.WriteLine($"{showEntityUpdatingAttributes["CardID"]}");
+                            entityAttributes.TryGetValue("player", out string playerID);
+                            entityAttributes.TryGetValue("zone", out string oldZone);
+
+                            var tags = new Dictionary<string, string>();
+
+                            unusedText += System.Environment.NewLine + currentLine;
+
+                            Match tagMatch;
+                            while (lines.MoveNext() && (currentLine = lines.Current) != null && (tagMatch = s_tagPattern.Match(currentLine)).Success)
+                            {
+                                tags.Add(tagMatch.Groups["tag"].Value, tagMatch.Groups["value"].Value);
+
+                                unusedText += System.Environment.NewLine + currentLine;
+                            }
+
+                            tags.TryGetValue("ZONE", out string newZone);
+
+                            if (string.Equals(oldZone, "DECK", System.StringComparison.Ordinal) && string.Equals(newZone, "HAND", System.StringComparison.Ordinal))
+                                tempEvents.Add(
+                                    new Events.CardDrawnFromDeck(
+                                        playerID,
+                                        cardID));
                         }
                     }
                 }
 
-                unusedText += currentLine;
-            }
+                unusedText += System.Environment.NewLine + currentLine;
+            } while (lines.MoveNext() && (currentLine = lines.Current) != null);
 
             return true;
         }

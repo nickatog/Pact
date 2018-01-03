@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Events\CardDrawnFromDeck.cs" />
     <Compile Include="StringExtensions.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -66,14 +67,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Events\Event Streams\Parsers\Power Log\Block Parsers\CreateGame.cs" />
-    <Compile Include="Events\Event Streams\Parsers\Power Log\Block Parsers\Play.cs" />
-    <Compile Include="Events\Event Streams\Parsers\Power Log\Block Parsers\IPowerLogBlockParser.cs" />
-    <Compile Include="Events\Event Streams\Parsers\Power Log\Block Parsers\Trigger.cs" />
-    <Compile Include="Events\Event Streams\Parsers\Power Log\PowerLogParser.cs" />
-    <Compile Include="Events\Event Streams\Parsers\Power Log\IPowerLogParser.cs" />
-    <Compile Include="Events\Event Streams\IEventStream.cs" />
-    <Compile Include="Events\Event Streams\PowerLogEventStream.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\CreateGame.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\Play.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\IGameStateDebugEventParser.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\Trigger.cs" />
+    <Compile Include="Events\Parsers\Power Log\GameStateDebugPowerLogParser.cs" />
+    <Compile Include="Events\Parsers\Power Log\IPowerLogEventParser.cs" />
+    <Compile Include="Events\Streams\IEventStream.cs" />
+    <Compile Include="Events\Streams\PowerLogEventStream.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
