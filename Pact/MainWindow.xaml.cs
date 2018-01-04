@@ -19,9 +19,8 @@ namespace Pact
             var eventParsers =
                 new List<IGameStateDebugEventParser>
                 {
-                    new EventParsers.PowerLog.GameStateDebug.CreateGame(),
-                    new EventParsers.PowerLog.GameStateDebug.Play(),
-                    new EventParsers.PowerLog.GameStateDebug.Trigger()
+                    new EventParsers.PowerLog.GameStateDebug.Block(),
+                    new EventParsers.PowerLog.GameStateDebug.ShowEntity()
                 };
             // @"C:\Program Files (x86)\Hearthstone\Logs\Power.log",
             // @"C:\Users\Nicholas Anderson\Desktop\Power2.log",

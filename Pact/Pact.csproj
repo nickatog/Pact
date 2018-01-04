@@ -58,6 +58,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events\CardDrawnFromDeck.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\Block.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\ShowEntity.cs" />
     <Compile Include="StringExtensions.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

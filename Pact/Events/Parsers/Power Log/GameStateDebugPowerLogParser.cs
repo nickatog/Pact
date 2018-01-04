@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,14 +12,16 @@ namespace Pact
         private readonly IEnumerable<IGameStateDebugEventParser> _gameStateDebugEventParsers;
 
         public GameStateDebugPowerLogEventParser(
-            IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers = null)
+            IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers)
         {
-            _gameStateDebugEventParsers = gameStateDebugEventParsers ?? Enumerable.Empty<IGameStateDebugEventParser>();
+            _gameStateDebugEventParsers =
+                gameStateDebugEventParsers
+                ?? Enumerable.Empty<IGameStateDebugEventParser>();
         }
 
-        private static readonly Regex s_methodPattern =
+        private static readonly Regex s_gameStateMethodPattern =
             new Regex(
-                @"^.*GameState.DebugPrintPower\(\) - .*$",
+                @"^.*GameState.DebugPrintPower\(\) - (?<Output>.*)$",
                 RegexOptions.Compiled);
 
         IEnumerable<object> IPowerLogEventParser.ParseEvents(
@@ -31,25 +34,31 @@ namespace Pact
             lines.MoveNext();
             while (lines.Current != null)
             {
-                bool linesConsumed = false;
+                IEnumerable<string> linesConsumed = null;
 
                 foreach (IGameStateDebugEventParser gameStateDebugEventParser in _gameStateDebugEventParsers)
                 {
-                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, out IEnumerable<object> parsedEvents, out text);
-                    if (!linesConsumed)
+                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, _gameStateDebugEventParsers, out IEnumerable<object> parsedEvents);
+                    if (linesConsumed == null)
                         continue;
 
                     if (parsedEvents == null)
+                    {
+                        text = string.Join(Environment.NewLine, linesConsumed);
+
                         return allParsedEvents;
+                    }
 
                     allParsedEvents.AddRange(parsedEvents);
 
                     break;
                 }
 
-                if (!linesConsumed)
+                if (linesConsumed == null)
                     lines.MoveNext();
             }
+
+            text = null;
 
             return allParsedEvents;
 
@@ -58,9 +67,10 @@ namespace Pact
                 using (var stringReader = new StringReader(source))
                 {
                     string currentLine;
+                    Match match;
                     while ((currentLine = stringReader.ReadLine()) != null)
-                        if (s_methodPattern.IsMatch(currentLine))
-                            yield return currentLine;
+                        if ((match = s_gameStateMethodPattern.Match(currentLine)).Success)
+                            yield return match.Groups["Output"].Value;
                 }
 
                 yield return null;

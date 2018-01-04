@@ -4,9 +4,9 @@ namespace Pact
 {
     public interface IGameStateDebugEventParser
     {
-        bool TryParseEvents(
+        IEnumerable<string> TryParseEvents(
             IEnumerator<string> lines,
-            out IEnumerable<object> parsedEvents,
-            out string unusedText);
+            IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers,
+            out IEnumerable<object> parsedEvents);
     }
 }
