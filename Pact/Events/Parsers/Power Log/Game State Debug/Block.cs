@@ -6,15 +6,8 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
     public sealed class Block
         : IGameStateDebugEventParser
     {
-        private static readonly Regex s_endPattern =
-            new Regex(
-                @"^\s*BLOCK_END.*$",
-                RegexOptions.Compiled);
-
-        private static readonly Regex s_startPattern =
-            new Regex(
-                @"^\s*BLOCK_START.*$",
-                RegexOptions.Compiled);
+        private static readonly Regex s_endPattern = new Regex(@"^\s*BLOCK_END.*$", RegexOptions.Compiled);
+        private static readonly Regex s_startPattern = new Regex(@"^\s*BLOCK_START.*$", RegexOptions.Compiled);
 
         IEnumerable<string> IGameStateDebugEventParser.TryParseEvents(
             IEnumerator<string> lines,

@@ -8,9 +8,9 @@ namespace Pact.StringExtensions
     {
         private static readonly Regex s_tokenPattern =
             new Regex(
-                @"((?<Key>\w+)=(?<Value>\S*(?:\s+[^=]+\s|\[.*\])*))",
+                @"((?<Key>\w+)=(?<Value>(?:\[.*\]|\S*(?:\s+[^=]+\s)*)))",
                 RegexOptions.Compiled);
-
+        
         public static IDictionary<string, string> ParseKeyValuePairs(
             this string line)
         {

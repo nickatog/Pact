@@ -19,6 +19,8 @@ namespace Pact
                 ?? Enumerable.Empty<IGameStateDebugEventParser>();
         }
 
+        private const string LINE_PREFIX = "GameState.DebugPrintPower() - ";
+
         private static readonly Regex s_gameStateMethodPattern =
             new Regex(
                 @"^.*GameState.DebugPrintPower\(\) - (?<Output>.*)$",
@@ -44,7 +46,7 @@ namespace Pact
 
                     if (parsedEvents == null)
                     {
-                        text = string.Join(Environment.NewLine, linesConsumed);
+                        text = string.Join(Environment.NewLine, linesConsumed.Select(__line => LINE_PREFIX + __line));
 
                         return allParsedEvents;
                     }

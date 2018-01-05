@@ -70,11 +70,19 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     if (!tags.TryGetValue("ZONE", out string newZone))
                         return linesConsumed;
 
-                    if (string.Equals(oldZone, "DECK", StringComparison.Ordinal) && string.Equals(newZone, "HAND", StringComparison.Ordinal))
-                        events.Add(
-                            new Events.CardDrawnFromDeck(
-                                playerID,
-                                cardID));
+                    if (string.Equals(oldZone, "DECK", StringComparison.Ordinal))
+                    {
+                        if (string.Equals(newZone, "HAND", StringComparison.Ordinal))
+                            events.Add(
+                                new Events.CardDrawnFromDeck(
+                                    playerID,
+                                    cardID));
+                        else if (string.Equals(newZone, "PLAY", StringComparison.Ordinal))
+                            events.Add(
+                                new Events.CardEnteredPlayFromDeck(
+                                    playerID,
+                                    cardID));
+                    }
                 }
             }
 
