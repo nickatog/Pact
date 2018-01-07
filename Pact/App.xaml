@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:Pact"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <DataTemplate DataType="{x:Type local:TrackedCardViewModel}">
+            <local:TrackedCardView />
+        </DataTemplate>
     </Application.Resources>
 </Application>

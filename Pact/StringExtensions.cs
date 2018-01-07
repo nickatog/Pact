@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -11,9 +12,19 @@ namespace Pact.StringExtensions
                 @"((?<Key>\w+)=(?<Value>(?:\[.*\]|\S*(?:\s+[^=]+\s)*)))",
                 RegexOptions.Compiled);
         
+        public static bool Eq(
+            this string left,
+            string right)
+        {
+            return string.Equals(left, right, StringComparison.Ordinal);
+        }
+
         public static IDictionary<string, string> ParseKeyValuePairs(
             this string line)
         {
+            if (line == null)
+                return new Dictionary<string, string>();
+
             return
                 EnumerateGroups(s_tokenPattern.Matches(line))
                 .ToDictionary(

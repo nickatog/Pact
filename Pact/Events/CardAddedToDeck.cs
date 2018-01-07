@@ -1,11 +1,11 @@
 ﻿namespace Pact.Events
 {
-    public sealed class CardEnteredPlayFromDeck
+    public sealed class CardAddedToDeck
     {
         public string CardID { get; private set; }
         public int PlayerID { get; private set; }
 
-        public CardEnteredPlayFromDeck(
+        public CardAddedToDeck(
             int playerID,
             string cardID)
         {

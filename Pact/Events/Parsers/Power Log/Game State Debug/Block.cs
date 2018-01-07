@@ -1,24 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Pact.StringExtensions;
 
 namespace Pact.EventParsers.PowerLog.GameStateDebug
 {
     public sealed class Block
         : IGameStateDebugEventParser
     {
-        private static readonly Regex s_endPattern = new Regex(@"^\s*BLOCK_END.*$", RegexOptions.Compiled);
-        private static readonly Regex s_startPattern = new Regex(@"^\s*BLOCK_START.*$", RegexOptions.Compiled);
+        private static readonly Regex s_endPattern =
+            new Regex(@"^\s*BLOCK_END.*$", RegexOptions.Compiled);
+
+        private static readonly Regex s_startPattern =
+            new Regex(@"^\s*BLOCK_START (?<Attributes>.*)$", RegexOptions.Compiled);
 
         IEnumerable<string> IGameStateDebugEventParser.TryParseEvents(
             IEnumerator<string> lines,
+            BlockContext parentBlock,
             IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers,
             out IEnumerable<object> parsedEvents)
         {
             parsedEvents = null;
 
             string currentLine = lines.Current;
-            if (!s_startPattern.IsMatch(currentLine))
+            Match match = s_startPattern.Match(currentLine);
+            if (!match.Success)
                 return null;
+
+            IDictionary<string, string> attributes = match.Groups["Attributes"].Value.ParseKeyValuePairs();
 
             var linesConsumed = new List<string> { currentLine };
             lines.MoveNext();
@@ -41,7 +49,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                 foreach (IGameStateDebugEventParser gameStateDebugEventParser in gameStateDebugEventParsers)
                 {
-                    innerLinesConsumed = gameStateDebugEventParser.TryParseEvents(lines, gameStateDebugEventParsers, out IEnumerable<object> innerEvents);
+                    innerLinesConsumed = gameStateDebugEventParser.TryParseEvents(lines, new BlockContext(attributes, parentBlock), gameStateDebugEventParsers, out IEnumerable<object> innerEvents);
                     if (innerLinesConsumed == null)
                         continue;
 

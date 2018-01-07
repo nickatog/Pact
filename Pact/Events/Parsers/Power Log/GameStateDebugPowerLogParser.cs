@@ -40,7 +40,7 @@ namespace Pact
 
                 foreach (IGameStateDebugEventParser gameStateDebugEventParser in _gameStateDebugEventParsers)
                 {
-                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, _gameStateDebugEventParsers, out IEnumerable<object> parsedEvents);
+                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, null, _gameStateDebugEventParsers, out IEnumerable<object> parsedEvents);
                     if (linesConsumed == null)
                         continue;
 
