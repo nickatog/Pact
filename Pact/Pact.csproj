@@ -61,16 +61,24 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Cards\CardInfo.cs" />
+    <Compile Include="Converters\CardCountToOpacityConverter.cs" />
+    <Compile Include="Converters\ClassNameToBrushConverter.cs" />
+    <Compile Include="Converters\HiddenWhenZeroCountConverter.cs" />
+    <Compile Include="Converters\OpponentCoinStatusToBrushConverter.cs" />
+    <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Decklist.cs" />
     <Compile Include="Events\CardAddedToDeck.cs" />
     <Compile Include="Events\CardOverdrawnFromDeck.cs" />
-    <Compile Include="Events\GameLost.cs" />
+    <Compile Include="Events\CardReturnedToDeckFromHand.cs" />
+    <Compile Include="Events\GameEnded.cs" />
     <Compile Include="Events\GameStarted.cs" />
-    <Compile Include="Events\GameWon.cs" />
-    <Compile Include="Events\HeroEntityIdentified.cs" />
     <Compile Include="Events\MulliganOptionPresented.cs" />
+    <Compile Include="Events\OpponentCoinLost.cs" />
+    <Compile Include="Events\OpponentReceivedCoin.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\BlockContext.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\FullEntity.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\HideEntity.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\ParseContext.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\TagChange.cs" />
     <Compile Include="Cards\ICardInfoProvider.cs" />
     <Compile Include="Events\CardDrawnFromDeck.cs" />
@@ -79,15 +87,17 @@
     <Compile Include="Events\CardEnteredPlayFromDeck.cs" />
     <Compile Include="Cards\JSONCardInfoProvider.cs" />
     <Compile Include="Events\PlayerDetermined.cs" />
-    <Compile Include="PlayerDeckTrackerView.xaml.cs">
+    <Compile Include="Events\PlayerReceivedCoin.cs" />
+    <Compile Include="OutlinedText.cs" />
+    <Compile Include="Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
       <DependentUpon>PlayerDeckTrackerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayerDeckTrackerViewModel.cs" />
+    <Compile Include="Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="TrackedCardView.xaml.cs">
+    <Compile Include="Player Deck Tracker\TrackedCardView.xaml.cs">
       <DependentUpon>TrackedCardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TrackedCardViewModel.cs" />
+    <Compile Include="Player Deck Tracker\TrackedCardViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -97,9 +107,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Events\Parsers\Power Log\Game State Debug\CreateGame.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\Play.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\IGameStateDebugEventParser.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\Trigger.cs" />
     <Compile Include="Events\Parsers\Power Log\GameStateDebugPowerLogParser.cs" />
     <Compile Include="Events\Parsers\Power Log\IPowerLogEventParser.cs" />
     <Compile Include="Events\Streams\IEventStream.cs" />
@@ -108,11 +116,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PlayerDeckTrackerView.xaml">
+    <Page Include="Player Deck Tracker\PlayerDeckTrackerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TrackedCardView.xaml">
+    <Page Include="Player Deck Tracker\TrackedCardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -135,6 +143,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="fonts\fontawesome-webfont.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -154,5 +163,6 @@
       <Name>Valkyrie</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

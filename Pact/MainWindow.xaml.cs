@@ -23,6 +23,7 @@ namespace Pact
                     new EventParsers.PowerLog.GameStateDebug.Block(),
                     new EventParsers.PowerLog.GameStateDebug.CreateGame(),
                     new EventParsers.PowerLog.GameStateDebug.FullEntity(),
+                    new EventParsers.PowerLog.GameStateDebug.HideEntity(),
                     new EventParsers.PowerLog.GameStateDebug.ShowEntity(),
                     new EventParsers.PowerLog.GameStateDebug.TagChange()
                 };
@@ -48,19 +49,32 @@ namespace Pact
                     __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Card entered play from deck: {cardInfoProvider.GetCardInfo(__event.CardID).Value.Name}")));
 
             eventDispatcher.RegisterHandler(
-                new Valkyrie.DelegateEventHandler<Events.GameLost>(
-                    __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Game lost: {__event.EntityName}")));
+                new Valkyrie.DelegateEventHandler<Events.GameEnded>(
+                    __event =>
+                        System.Diagnostics.Debug.WriteLine(
+                            $"{DateTime.Now} - Game ended: {string.Join(", ", __event.Winners)} beat {string.Join(", ", __event.Losers)}!")));
 
             eventDispatcher.RegisterHandler(
-                new Valkyrie.DelegateEventHandler<Events.GameWon>(
-                    __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Game won: {__event.EntityName}")));
+                new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(
+                    __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Opponent no longer has the coin!")));
+
+            eventDispatcher.RegisterHandler(
+                new Valkyrie.DelegateEventHandler<Events.OpponentReceivedCoin>(
+                    __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Opponent received the coin!")));
+
+            eventDispatcher.RegisterHandler(
+                new Valkyrie.DelegateEventHandler<Events.PlayerReceivedCoin>(
+                    __event => System.Diagnostics.Debug.WriteLine($"{DateTime.Now} - Player received the coin!")));
 
             IDeckStringSerializer s = new DeckStringSerializer(cardInfoProvider);
+
+            // mill rogue: AAECAaIHCLICqAipzQKxzgKA0wLQ4wLf4wK77wILigG0AcQB7QLLA80D+AeGCamvAuXRAtvjAgA=
+            // zoo: AAECAcn1AgTECJG8ApfTApziAg0w9wSoBc4H5QfCCLy2AsrDApvLAvfNAqbOAvLQAvvTAgA=
 
             var tracker =
                 new PlayerDeckTrackerView(
                     new PlayerDeckTrackerViewModel(
-                        s.Deserialize("AAECAZICBK6rAr6uApS9ApnTAg1AX8QG5Ai0uwLLvALPvALdvgKgzQKHzgKY0gKe0gLb0wIA"),
+                        s.Deserialize("AAECAcn1AgTECJG8ApfTApziAg0w9wSoBc4H5QfCCLy2AsrDApvLAvfNAqbOAvLQAvvTAgA="),
                         eventDispatcher,
                         cardInfoProvider));
 

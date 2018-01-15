@@ -1,18 +1,15 @@
 ﻿namespace Pact.Events
 {
-    public sealed class HeroEntityIdentified
+    public sealed class CardReturnedToDeckFromHand
     {
         public string CardID { get; private set; }
-        public int EntityID { get; private set; }
         public int PlayerID { get; private set; }
 
-        public HeroEntityIdentified(
+        public CardReturnedToDeckFromHand(
             int playerID,
-            int entityID,
             string cardID)
         {
             CardID = cardID;
-            EntityID = entityID;
             PlayerID = playerID;
         }
     }

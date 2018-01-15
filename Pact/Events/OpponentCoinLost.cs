@@ -1,6 +1,6 @@
 ﻿namespace Pact.Events
 {
-    public sealed class GameStarted
+    public sealed class OpponentCoinLost
     {
     }
 }

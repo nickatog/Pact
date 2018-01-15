@@ -15,8 +15,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
         IEnumerable<string> IGameStateDebugEventParser.TryParseEvents(
             IEnumerator<string> lines,
-            BlockContext parentBlock,
-            IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers,
+            ParseContext parseContext,
             out IEnumerable<object> parsedEvents)
         {
             parsedEvents = null;
@@ -26,7 +25,8 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             if (!match.Success)
                 return null;
 
-            IDictionary<string, string> attributes = match.Groups["Attributes"].Value.ParseKeyValuePairs();
+            BlockContext parentBlock = parseContext.ParentBlock;
+            parseContext.ParentBlock = new BlockContext(match.Groups["Attributes"].Value.ParseKeyValuePairs(), parentBlock);
 
             var linesConsumed = new List<string> { currentLine };
             lines.MoveNext();
@@ -40,6 +40,8 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     linesConsumed.Add(currentLine);
                     lines.MoveNext();
 
+                    parseContext.ParentBlock = parentBlock;
+
                     parsedEvents = events;
 
                     return linesConsumed;
@@ -47,9 +49,9 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                 IEnumerable<string> innerLinesConsumed = null;
 
-                foreach (IGameStateDebugEventParser gameStateDebugEventParser in gameStateDebugEventParsers)
+                foreach (IGameStateDebugEventParser parser in parseContext.Parsers)
                 {
-                    innerLinesConsumed = gameStateDebugEventParser.TryParseEvents(lines, new BlockContext(attributes, parentBlock), gameStateDebugEventParsers, out IEnumerable<object> innerEvents);
+                    innerLinesConsumed = parser.TryParseEvents(lines, parseContext, out IEnumerable<object> innerEvents);
                     if (innerLinesConsumed == null)
                         continue;
 

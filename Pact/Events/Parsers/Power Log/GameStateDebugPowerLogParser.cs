@@ -10,6 +10,7 @@ namespace Pact
         : IPowerLogEventParser
     {
         private readonly IEnumerable<IGameStateDebugEventParser> _gameStateDebugEventParsers;
+        private readonly ParseContext _parseContext;
 
         public GameStateDebugPowerLogEventParser(
             IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers)
@@ -17,6 +18,8 @@ namespace Pact
             _gameStateDebugEventParsers =
                 gameStateDebugEventParsers
                 ?? Enumerable.Empty<IGameStateDebugEventParser>();
+
+            _parseContext = new ParseContext(_gameStateDebugEventParsers);
         }
 
         private const string LINE_PREFIX = "GameState.DebugPrintPower() - ";
@@ -40,7 +43,7 @@ namespace Pact
 
                 foreach (IGameStateDebugEventParser gameStateDebugEventParser in _gameStateDebugEventParsers)
                 {
-                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, null, _gameStateDebugEventParsers, out IEnumerable<object> parsedEvents);
+                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, _parseContext, out IEnumerable<object> parsedEvents);
                     if (linesConsumed == null)
                         continue;
 
