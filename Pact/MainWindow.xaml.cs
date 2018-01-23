@@ -6,11 +6,10 @@ using System.Windows;
 
 namespace Pact
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Window { get; private set; }
+
         private readonly IEventStream _eventStream;
 
         public MainWindow()
@@ -70,15 +69,17 @@ namespace Pact
 
             // mill rogue: AAECAaIHCLICqAipzQKxzgKA0wLQ4wLf4wK77wILigG0AcQB7QLLA80D+AeGCamvAuXRAtvjAgA=
             // zoo: AAECAcn1AgTECJG8ApfTApziAg0w9wSoBc4H5QfCCLy2AsrDApvLAvfNAqbOAvLQAvvTAgA=
+            // jade druid: AAECAZICBK6rAr6uApS9ApnTAg1AX8QG5Ai0uwLLvALPvALdvgKgzQKHzgKY0gKe0gLb0wIA
 
-            var tracker =
-                new PlayerDeckTrackerView(
-                    new PlayerDeckTrackerViewModel(
-                        s.Deserialize("AAECAcn1AgTECJG8ApfTApziAg0w9wSoBc4H5QfCCLy2AsrDApvLAvfNAqbOAvLQAvvTAgA="),
-                        eventDispatcher,
-                        cardInfoProvider));
+            // provide tracker with its own copy of the game event stream?
+            //var tracker =
+            //    new PlayerDeckTrackerView(
+            //        new PlayerDeckTrackerViewModel(
+            //            s.Deserialize("AAECAcn1AgTECJG8ApfTApziAg0w9wSoBc4H5QfCCLy2AsrDApvLAvfNAqbOAvLQAvvTAgA="),
+            //            eventDispatcher,
+            //            cardInfoProvider));
 
-            tracker.Show();
+            //tracker.Show();
 
             Task.Run(
                 async () =>
@@ -97,6 +98,12 @@ namespace Pact
                         }
                     }
                 });
+
+            var a = new Base64VarintDecklistSerializer(cardInfoProvider);
+
+            DataContext = new MainWindowViewModel(s, a, eventDispatcher, cardInfoProvider, new DeckInfoRepository(), new GameResultStorage());
+
+            Window = this;
         }
     }
 

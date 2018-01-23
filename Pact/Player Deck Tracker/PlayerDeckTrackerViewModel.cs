@@ -12,6 +12,7 @@ namespace Pact
         private IEnumerable<TrackedCardViewModel> _cards;
 
         public PlayerDeckTrackerViewModel(
+            string playerName,
             Decklist decklist,
             Valkyrie.IEventDispatcher eventDispatcher,
             ICardInfoProvider cardInfoProvider)

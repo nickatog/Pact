@@ -15,22 +15,14 @@ using System.Windows.Shapes;
 
 namespace Pact
 {
-    public partial class PlayerDeckTrackerView
-        : Window
+    /// <summary>
+    /// Interaction logic for DeckView.xaml
+    /// </summary>
+    public partial class DeckView : UserControl
     {
-        private static PlayerDeckTrackerView _window = new PlayerDeckTrackerView() { Owner = MainWindow.Window };
-
-        public PlayerDeckTrackerView()
+        public DeckView()
         {
             InitializeComponent();
-        }
-
-        public static PlayerDeckTrackerView GetWindowFor(
-            PlayerDeckTrackerViewModel viewModel)
-        {
-            _window.DataContext = viewModel;
-
-            return _window;
         }
     }
 }
