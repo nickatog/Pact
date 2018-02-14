@@ -12,7 +12,7 @@ namespace Pact
             string heroID,
             IEnumerable<(string, int)> cards)
         {
-            Cards = cards ?? Enumerable.Empty<(string, int)>();
+            Cards = cards?.ToList() ?? Enumerable.Empty<(string, int)>();
             HeroID = heroID;
         }
     }

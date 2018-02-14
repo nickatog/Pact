@@ -9,6 +9,7 @@ namespace Pact
             Stream stream);
 
         Task Serialize(
-            Stream stream, Decklist decklist);
+            Stream stream,
+            Decklist decklist);
     }
 }

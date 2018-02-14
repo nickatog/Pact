@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -9,26 +10,23 @@ namespace Pact
         : INotifyPropertyChanged
     {
         private readonly ICardInfoProvider _cardInfoProvider;
+
         private IEnumerable<TrackedCardViewModel> _cards;
+        private bool? _opponentCoinStatus = null;
 
         public PlayerDeckTrackerViewModel(
-            string playerName,
-            Decklist decklist,
-            Valkyrie.IEventDispatcher eventDispatcher,
-            ICardInfoProvider cardInfoProvider)
+            ICardInfoProvider cardInfoProvider,
+            Valkyrie.IEventDispatcher gameEventDispatcher,
+            Decklist decklist)
         {
-            _cardInfoProvider =
-                cardInfoProvider
-                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
+            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
 
             Reset();
 
-            // register for events that would alter the deck contents (or whatever else we're tracking)
-
-            eventDispatcher.RegisterHandler(
+            gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.GameStarted>(__ => Reset()));
 
-            eventDispatcher.RegisterHandler(
+            gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(
                     __ =>
                     {
@@ -37,7 +35,7 @@ namespace Pact
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
                     }));
 
-            eventDispatcher.RegisterHandler(
+            gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.OpponentReceivedCoin>(
                     __ =>
                     {
@@ -56,7 +54,7 @@ namespace Pact
 
                 _cards =
                     decklist.Cards
-                    .Select(__card => new TrackedCardViewModel(__card.CardID, __card.Count, eventDispatcher, cardInfoProvider))
+                    .Select(__card => new TrackedCardViewModel(__card.CardID, __card.Count, gameEventDispatcher, cardInfoProvider))
                     .OrderBy(__trackedCard => __trackedCard.Cost)
                     .ThenBy(__trackedCard => __trackedCard.Name)
                     .ToList();
@@ -77,7 +75,6 @@ namespace Pact
 
         public int Count => _cards.Sum(__card => __card.Count);
 
-        private bool? _opponentCoinStatus = null;
         public bool? OpponentCoinStatus => _opponentCoinStatus;
 
         public event PropertyChangedEventHandler PropertyChanged;

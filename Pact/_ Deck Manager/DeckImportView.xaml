@@ -4,19 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
-        xmlns:behaviors="clr-namespace:Pact.Behaviors"
         mc:Ignorable="d"
         Title="DeckImportView" Height="120" Width="300" WindowStyle="None" WindowStartupLocation="CenterOwner">
-    <Window.Style>
-        <Style>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasDeck}" Value="True">
-                    <Setter Property="behaviors:WindowBehavior.Close" Value="True" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Style>
-
     <StackPanel>
         <TextBox Text="{Binding DeckString}" MinLines="3" MaxLines="3" TextWrapping="Wrap" AcceptsReturn="True" FontSize="20" />
 

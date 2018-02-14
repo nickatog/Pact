@@ -17,7 +17,7 @@ namespace Pact
         public DeckImportView(
             IDecklistSerializer decklistSerializer)
         {
-            _decklistSerializer = decklistSerializer.OrThrow(nameof(decklistSerializer));
+            _decklistSerializer = decklistSerializer.ThrowIfNull(nameof(decklistSerializer));
 
             InitializeComponent();
 
@@ -27,9 +27,6 @@ namespace Pact
         public Decklist Deck { get; private set; }
 
         public string DeckString { get; set; }
-
-        private bool _hasDeck = false;
-        public bool HasDeck => _hasDeck;
 
         public ICommand ImportDeck =>
             new DelegateCommand(
@@ -45,9 +42,9 @@ namespace Pact
                         return;
                     }
 
-                    _hasDeck = true;
+                    DialogResult = true;
 
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasDeck"));
+                    Close();
                 });
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -52,11 +52,18 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -75,24 +82,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Base64VarintDecklistSerializer.cs" />
+    <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
     <Compile Include="Cards\CardInfo.cs" />
-    <Compile Include="ContractExtensions.cs" />
+    <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />
     <Compile Include="Converters\HiddenWhenZeroCountConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToBrushConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
-    <Compile Include="DeckImportView.xaml.cs">
+    <Compile Include="_ Deck Manager\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Decklist.cs" />
-    <Compile Include="DeckView.xaml.cs">
+    <Compile Include="Decks\Decklist.cs" />
+    <Compile Include="_ Deck Manager\DeckView.xaml.cs">
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DeckViewModel.cs" />
-    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="_ Deck Manager\DeckViewModel.cs" />
+    <Compile Include="_ Deck Manager\DeckViewModelFactory.cs" />
+    <Compile Include="Utility\DelegateCommand.cs" />
+    <Compile Include="Game Results\GameResult.cs" />
+    <Compile Include="Loggers\ILogger.cs" />
+    <Compile Include="Events\Streams\PowerLogEventStreamFactory.cs" />
     <Compile Include="Events\CardAddedToDeck.cs" />
     <Compile Include="Events\CardOverdrawnFromDeck.cs" />
     <Compile Include="Events\CardReturnedToDeckFromHand.cs" />
@@ -114,30 +125,35 @@
     <Compile Include="Cards\JSONCardInfoProvider.cs" />
     <Compile Include="Events\PlayerDetermined.cs" />
     <Compile Include="Events\PlayerReceivedCoin.cs" />
-    <Compile Include="IConfigurationSettings.cs" />
-    <Compile Include="IDeckInfoRepository.cs" />
-    <Compile Include="IDecklistSerializer.cs" />
-    <Compile Include="IGameResultStorage.cs" />
-    <Compile Include="MainWindowViewModel.cs" />
-    <Compile Include="OutlinedText.cs" />
-    <Compile Include="Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
+    <Compile Include="Configuration\IConfigurationSettings.cs" />
+    <Compile Include="Decks\IDeckInfoRepository.cs" />
+    <Compile Include="Decks\IDecklistSerializer.cs" />
+    <Compile Include="_ Deck Manager\IDeckViewModelFactory.cs" />
+    <Compile Include="Events\Streams\IEventStreamFactory.cs" />
+    <Compile Include="Game Results\IGameResultStorage.cs" />
+    <Compile Include="_ Deck Manager\MainWindowViewModel.cs" />
+    <Compile Include="Utility\OutlinedText.cs" />
+    <Compile Include="PactModule.cs" />
+    <Compile Include="_ Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
       <DependentUpon>PlayerDeckTrackerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
-    <Compile Include="StringExtensions.cs" />
-    <Compile Include="Player Deck Tracker\TrackedCardView.xaml.cs">
+    <Compile Include="_ Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="_ Player Deck Tracker\TrackedCardView.xaml.cs">
       <DependentUpon>TrackedCardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Player Deck Tracker\TrackedCardViewModel.cs" />
-    <Page Include="DeckImportView.xaml">
+    <Compile Include="_ Player Deck Tracker\TrackedCardViewModel.cs" />
+    <Compile Include="Decks\TextDecklistSerializer.cs" />
+    <Compile Include="Decks\Varint.cs" />
+    <Page Include="_ Deck Manager\DeckImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DeckView.xaml">
+    <Page Include="_ Deck Manager\DeckView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="_ Deck Manager\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -151,15 +167,15 @@
     <Compile Include="Events\Parsers\Power Log\IPowerLogEventParser.cs" />
     <Compile Include="Events\Streams\IEventStream.cs" />
     <Compile Include="Events\Streams\PowerLogEventStream.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="_ Deck Manager\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Player Deck Tracker\PlayerDeckTrackerView.xaml">
+    <Page Include="_ Player Deck Tracker\PlayerDeckTrackerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Player Deck Tracker\TrackedCardView.xaml">
+    <Page Include="_ Player Deck Tracker\TrackedCardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -214,5 +230,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

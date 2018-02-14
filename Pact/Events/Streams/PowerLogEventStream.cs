@@ -45,8 +45,8 @@ namespace Pact
                     {
                         if (_remainingText != null)
                             _remainingText += Environment.NewLine;
-
-                        _remainingText += streamReader.ReadToEnd();
+                        
+                        _remainingText += await streamReader.ReadToEndAsync();
 
                         _streamPosition = stream.Position;
                     }
