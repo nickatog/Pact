@@ -8,6 +8,9 @@ namespace Pact
         DeckViewModel Create(
             Valkyrie.IEventDispatcher gameEventDispatcher,
             Valkyrie.IEventDispatcher viewEventDispatcher,
+            Action<DeckViewModel> moveUp,
+            Action<DeckViewModel> moveDown,
+            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             IEnumerable<GameResult> gameResults = null);

@@ -63,12 +63,47 @@ namespace Pact
 
             _decks =
                 new ObservableCollection<DeckViewModel>(
-                    _deckInfoRepository.GetAll()
+                    _deckInfoRepository.GetAll().Result
+                    .OrderBy(__deckInfo => __deckInfo.Position)
                     .Select(
                         __deckInfo =>
                             _deckViewModelFactory.Create(
                                 _gameEventDispatcher,
                                 _viewEventDispatcher,
+                                __deck =>
+                                {
+                                    int position = _decks.IndexOf(__deck);
+                                    if (position <= 0)
+                                        return;
+
+                                    _decks.RemoveAt(position);
+
+                                    _decks.Insert(position - 1, __deck);
+
+                                    SaveDecks();
+                                },
+                                __deck =>
+                                {
+                                    int position = _decks.IndexOf(__deck);
+                                    if (position >= _decks.Count - 1)
+                                        return;
+
+                                    _decks.RemoveAt(position);
+
+                                    _decks.Insert(position + 1, __deck);
+
+                                    SaveDecks();
+                                },
+                                __deck =>
+                                {
+                                    // Will this cause any problems if a deck that is currently being tracked is deleted?
+
+                                    int position = _decks.IndexOf(__deck);
+
+                                    _decks.RemoveAt(position);
+
+                                    SaveDecks();
+                                },
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
                                 __deckInfo.GameResults)));
@@ -100,27 +135,66 @@ namespace Pact
                             _deckViewModelFactory.Create(
                                 _gameEventDispatcher,
                                 _viewEventDispatcher,
+                                __deck =>
+                                {
+                                    int position = _decks.IndexOf(__deck);
+                                    if (position <= 0)
+                                        return;
+
+                                    _decks.RemoveAt(position);
+
+                                    _decks.Insert(position - 1, __deck);
+
+                                    SaveDecks();
+                                },
+                                __deck =>
+                                {
+                                    int position = _decks.IndexOf(__deck);
+                                    if (position >= _decks.Count - 1)
+                                        return;
+
+                                    _decks.RemoveAt(position);
+
+                                    _decks.Insert(position + 1, __deck);
+
+                                    SaveDecks();
+                                },
+                                __deck =>
+                                {
+                                    // Will this cause any problems if a deck that is currently being tracked is deleted?
+
+                                    int position = _decks.IndexOf(__deck);
+
+                                    _decks.RemoveAt(position);
+
+                                    SaveDecks();
+                                },
                                 deckID,
                                 view.Deck));
 
-                        var deckInfos =
-                            _decks.Select(
-                                __deck =>
-                                {
-                                    using (var stream = new MemoryStream())
-                                    {
-                                        _decklistSerializer.Serialize(stream, __deck.Decklist);
-
-                                        stream.Position = 0;
-
-                                        using (var reader = new StreamReader(stream))
-                                            return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), __deck.GameResults);
-                                    }
-                                });
-
-                        _deckInfoRepository.Save(deckInfos);
+                        SaveDecks();
                     }
                 });
+
+        private void SaveDecks()
+        {
+            var deckInfos =
+                _decks.Select(
+                    __deck =>
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            _decklistSerializer.Serialize(stream, __deck.Decklist);
+
+                            stream.Position = 0;
+
+                            using (var reader = new StreamReader(stream))
+                                return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), (UInt16)_decks.IndexOf(__deck), __deck.GameResults);
+                        }
+                    });
+
+            _deckInfoRepository.Save(deckInfos).Wait();
+        }
 
         [Conditional("DEBUG")]
         private void RegisterDebugHandlers()

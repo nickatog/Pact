@@ -14,7 +14,7 @@ namespace Pact
             int bytesRead = 0;
 
             var byteValue = new byte[1];
-            while (await stream.ReadAsync(byteValue, 0, 1) != 0)
+            while (await stream.ReadAsync(byteValue, 0, 1).ConfigureAwait(false) != 0)
             {
                 int shiftedValue = (byteValue[0] & 0x7F) << bytesRead * 7;
 

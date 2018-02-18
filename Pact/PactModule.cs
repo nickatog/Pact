@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,6 +16,7 @@ namespace Pact
             .Register(
                 __context =>
                 {
+                    // Update this to AppData, if we're going to check for file updates on load?
                     string pathToFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 #if DEBUG
                     pathToFile = Path.Combine(pathToFile, @"..\..\..");
@@ -24,6 +25,12 @@ namespace Pact
                     return new JSONCardInfoProvider(Path.Combine(pathToFile, "cards.json"));
                 })
             .As<ICardInfoProvider>()
+            .SingleInstance();
+
+            // ICollectionSerializers
+            builder
+            .RegisterGeneric(typeof(VarintCollectionSerializer<>))
+            .As(typeof(ICollectionSerializer<>))
             .SingleInstance();
 
             // IConfigurationSettings
@@ -38,7 +45,18 @@ namespace Pact
 
             // IDeckInfoRepository
             builder
-            .RegisterType<DeckInfoRepository>()
+            .Register(
+                __context =>
+                {
+                    string filePath =
+                        Path.Combine(
+                            Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                "Pact"),
+                            ".decks");
+
+                    return new FileBasedDeckInfoRepository(__context.Resolve<ICollectionSerializer<DeckInfo>>(), filePath);
+                })
             .As<IDeckInfoRepository>()
             .SingleInstance();
 
@@ -73,7 +91,18 @@ namespace Pact
 
             // IGameResultStorage
             builder
-            .RegisterType<GameResultStorage>()
+            .Register(
+                __context =>
+                {
+                    string filePath =
+                        Path.Combine(
+                            Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                "Pact"),
+                            ".decks");
+
+                    return new FileBasedGameResultStorage(__context.Resolve<ICollectionSerializer<DeckInfo>>(), filePath);
+                })
             .As<IGameResultStorage>()
             .SingleInstance();
 
@@ -113,6 +142,14 @@ namespace Pact
             builder
             .RegisterType<DebugLogger>()
             .As<ILogger>()
+            .SingleInstance();
+
+            // ISerializers
+            builder
+            .Register(
+                __context =>
+                    new Serializer<DeckInfo>(DeckInfo.Deserialize))
+            .As<ISerializer<DeckInfo>>()
             .SingleInstance();
 
             // MainWindowViewModel

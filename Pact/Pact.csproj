@@ -85,12 +85,20 @@
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
     <Compile Include="Cards\CardInfo.cs" />
+    <Compile Include="Decks\DeckInfo.cs" />
+    <Compile Include="Decks\FileBasedDeckInfoRepository.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />
     <Compile Include="Converters\HiddenWhenZeroCountConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToBrushConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
+    <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
+    <Compile Include="Utility\Serialization\ICollectionSerializer.cs" />
+    <Compile Include="Utility\Serialization\ISerializable.cs" />
+    <Compile Include="Utility\Serialization\ISerializer.cs" />
+    <Compile Include="Utility\Serialization\Serializer.cs" />
+    <Compile Include="Utility\Serialization\VarintCollectionSerializer.cs" />
     <Compile Include="_ Deck Manager\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>

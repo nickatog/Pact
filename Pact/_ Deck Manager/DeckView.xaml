@@ -15,14 +15,16 @@
                 </Grid.RowDefinitions>
                 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
                 <Label Content="{Binding Class}" Grid.Row="0" Grid.Column="0" />
 
                 <StackPanel Grid.Row="0" Grid.Column="1">
                     <Button Content="Track" Command="{Binding TrackDeck}" />
+                    <Button Content="Delete" Command="{Binding Delete}" />
                 </StackPanel>
 
                 <WrapPanel Grid.Row="1">
@@ -32,6 +34,18 @@
                     <Label Content="Losses: " />
                     <Label Content="{Binding Losses}" />
                 </WrapPanel>
+
+                <Button
+                    Grid.Row="0" Grid.Column="2"
+                    Content="&#xf106;" FontFamily="{StaticResource FontAwesome}"
+                    Command="{Binding MoveUp}"
+                    VerticalAlignment="Stretch" />
+
+                <Button
+                    Grid.Row="1" Grid.Column="2"
+                    Content="&#xf107;" FontFamily="{StaticResource FontAwesome}"
+                    Command="{Binding MoveDown}"
+                    VerticalAlignment="Stretch" />
             </Grid>
         </Border>
     </Grid>

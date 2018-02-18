@@ -33,6 +33,9 @@ namespace Pact
         DeckViewModel IDeckViewModelFactory.Create(
             Valkyrie.IEventDispatcher gameEventDispatcher,
             Valkyrie.IEventDispatcher viewEventDispatcher,
+            Action<DeckViewModel> moveUp,
+            Action<DeckViewModel> moveDown,
+            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             IEnumerable<GameResult> gameResults)
@@ -47,6 +50,9 @@ namespace Pact
                     _gameResultStorage,
                     _logger,
                     viewEventDispatcher,
+                    moveUp,
+                    moveDown,
+                    delete,
                     deckID,
                     decklist,
                     gameResults);

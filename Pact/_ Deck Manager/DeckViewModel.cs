@@ -14,13 +14,16 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly Action<DeckViewModel> _delete;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
+        private readonly Action<DeckViewModel> _moveDown;
+        private readonly Action<DeckViewModel> _moveUp;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
-        
+
         private readonly Guid _deckID;
         private readonly Decklist _decklist;
         private IList<GameResult> _gameResults;
@@ -34,6 +37,9 @@ namespace Pact
             IGameResultStorage gameResultStorage,
             ILogger logger,
             Valkyrie.IEventDispatcher viewEventDispatcher,
+            Action<DeckViewModel> moveUp,
+            Action<DeckViewModel> moveDown,
+            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             IEnumerable<GameResult> gameResults = null)
@@ -47,11 +53,26 @@ namespace Pact
             _logger = logger.ThrowIfNull(nameof(logger));
             _viewEventDispatcher = viewEventDispatcher.ThrowIfNull(nameof(viewEventDispatcher));
 
+            _moveDown = moveDown;
+            _moveUp = moveUp;
+            _delete = delete;
+            
             _deckID = deckID;
             _decklist = decklist;
 
             _gameResults = new List<GameResult>(gameResults ?? Enumerable.Empty<GameResult>());
+
+            _viewEventDispatcher.RegisterHandler(
+                new Valkyrie.DelegateEventHandler<DeckTrackingEvent>(
+                    __event =>
+                    {
+                        _canDelete = __event.DeckViewModel != this;
+
+                        _deleteCanExecuteChanged?.Invoke();
+                    }));
         }
+
+        private bool _canDelete = true;
 
         public string Class => _cardInfoProvider.GetCardInfo(_decklist.HeroID)?.Class;
 
@@ -59,15 +80,28 @@ namespace Pact
 
         public Decklist Decklist => _decklist;
 
+        private Action _deleteCanExecuteChanged;
+        public ICommand Delete =>
+            new DelegateCommand(
+                () => _delete(this),
+                canExecute:
+                    () => _canDelete,
+                canExecuteChangedClient:
+                    __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
+
         public IEnumerable<GameResult> GameResults => _gameResults;
 
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
+
+        public ICommand MoveDown => new DelegateCommand(() => _moveDown(this));
+
+        public ICommand MoveUp => new DelegateCommand(() => _moveUp(this));
 
         public ICommand TrackDeck =>
             new DelegateCommand(
                 () =>
                 {
-                    _viewEventDispatcher.DispatchEvent(new DeckTrackingEvent());
+                    _viewEventDispatcher.DispatchEvent(new DeckTrackingEvent(this));
 
                     Valkyrie.IEventDispatcher trackerEventDispatcher = _eventDispatcherFactory.Create();
 
@@ -140,6 +174,17 @@ namespace Pact
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private sealed class DeckTrackingEvent { }
+        private sealed class DeckTrackingEvent
+        {
+            private readonly DeckViewModel _deckViewModel;
+
+            public DeckTrackingEvent(
+                DeckViewModel deckViewModel)
+            {
+                _deckViewModel = deckViewModel.ThrowIfNull(nameof(deckViewModel));
+            }
+
+            public DeckViewModel DeckViewModel => _deckViewModel;
+        }
     }
 }

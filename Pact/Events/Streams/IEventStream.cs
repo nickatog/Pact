@@ -5,5 +5,7 @@ namespace Pact
     public interface IEventStream
     {
         Task<object> ReadNext();
+
+        // SkipToEnd()?
     }
 }
