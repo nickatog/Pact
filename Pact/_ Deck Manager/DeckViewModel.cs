@@ -27,6 +27,7 @@ namespace Pact
         private readonly Guid _deckID;
         private readonly Decklist _decklist;
         private IList<GameResult> _gameResults;
+        private string _title;
 
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
@@ -42,6 +43,7 @@ namespace Pact
             Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
+            string title,
             IEnumerable<GameResult> gameResults = null)
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
@@ -59,6 +61,7 @@ namespace Pact
             
             _deckID = deckID;
             _decklist = decklist;
+            _title = title;
 
             _gameResults = new List<GameResult>(gameResults ?? Enumerable.Empty<GameResult>());
 
@@ -96,6 +99,8 @@ namespace Pact
         public ICommand MoveDown => new DelegateCommand(() => _moveDown(this));
 
         public ICommand MoveUp => new DelegateCommand(() => _moveUp(this));
+
+        public string Title => _title ?? string.Empty;
 
         public ICommand TrackDeck =>
             new DelegateCommand(

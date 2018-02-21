@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class TrackedCardViewModel
         : INotifyPropertyChanged
     {
-        private readonly string _cardID;
         private readonly ICardInfoProvider _cardInfoProvider;
+        private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
+
+        private readonly string _cardID;
         private int _count;
+
+        private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
         private int _playerID;
 
         public TrackedCardViewModel(
+            ICardInfoProvider cardInfoProvider,
+            Valkyrie.IEventDispatcher gameEventDispatcher,
             string cardID,
-            int count,
-            Valkyrie.IEventDispatcher eventDispatcher,
-            ICardInfoProvider cardInfoProvider)
+            int count)
         {
-            _cardInfoProvider =
-                cardInfoProvider
-                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
-
-            // wrap provider with caching mechanism? either here or in DI registration via interceptor?
+            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
 
             _cardID = cardID;
             _count = count;
 
-            // register for events that change the count of this card in the deck
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
                     {
@@ -39,7 +37,7 @@ namespace Pact
                             IncrementCount();
                     }));
 
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardDrawnFromDeck>(
                     __event =>
                     {
@@ -47,7 +45,7 @@ namespace Pact
                             DecrementCount();
                     }));
 
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardEnteredPlayFromDeck>(
                     __event =>
                     {
@@ -55,7 +53,7 @@ namespace Pact
                             DecrementCount();
                     }));
 
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
                     __event =>
                     {
@@ -63,7 +61,7 @@ namespace Pact
                             IncrementCount();
                     }));
 
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.MulliganOptionPresented>(
                     __event =>
                     {
@@ -71,9 +69,12 @@ namespace Pact
                             DecrementCount();
                     }));
 
-            eventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.PlayerDetermined>(
                     __event => _playerID = __event.PlayerID));
+
+            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
+                _gameEventDispatcher.RegisterHandler(handler);
 
             void DecrementCount()
             {
@@ -88,6 +89,19 @@ namespace Pact
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
             }
+        }
+
+        public void Cleanup()
+        {
+            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
+                _gameEventDispatcher.UnregisterHandler(handler);
+
+            _gameEventHandlers.Clear();
+        }
+
+        ~TrackedCardViewModel()
+        {
+            System.Diagnostics.Debug.WriteLine("DESTRUCTOR!");
         }
 
         public string Class => _cardInfoProvider.GetCardInfo(_cardID)?.Class ?? "<UNKNOWN>";

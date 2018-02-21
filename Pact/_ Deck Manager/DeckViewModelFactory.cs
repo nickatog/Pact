@@ -38,6 +38,7 @@ namespace Pact
             Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
+            string title,
             IEnumerable<GameResult> gameResults)
         {
             return
@@ -55,6 +56,7 @@ namespace Pact
                     delete,
                     deckID,
                     decklist,
+                    title,
                     gameResults);
         }
     }

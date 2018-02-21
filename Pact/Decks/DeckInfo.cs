@@ -14,10 +14,12 @@ namespace Pact
         private readonly string _deckString;
         private readonly IList<GameResult> _gameResults;
         private readonly UInt16 _position;
+        private readonly string _title;
 
         public DeckInfo(
             Guid deckID,
             string deckString,
+            string title,
             UInt16 position,
             IEnumerable<GameResult> gameResults)
         {
@@ -25,6 +27,7 @@ namespace Pact
             _deckString = deckString;
             _gameResults = new List<GameResult>(gameResults);
             _position = position;
+            _title = title;
         }
 
         public Guid DeckID => _deckID;
@@ -35,10 +38,12 @@ namespace Pact
 
         public UInt16 Position => _position;
 
+        public string Title => _title;
+
         public static Task<DeckInfo> Deserialize(Stream stream)
         {
             var serializer = new BinaryFormatter();
-
+            
             return Task.FromResult((DeckInfo)serializer.Deserialize(stream));
         }
 

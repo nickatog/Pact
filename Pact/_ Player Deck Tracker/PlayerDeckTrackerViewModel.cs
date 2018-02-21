@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Pact.Extensions.Contract;
+using Pact.Extensions.Enumerable;
 
 namespace Pact
 {
@@ -10,9 +11,13 @@ namespace Pact
         : INotifyPropertyChanged
     {
         private readonly ICardInfoProvider _cardInfoProvider;
+        private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
 
         private IEnumerable<TrackedCardViewModel> _cards;
-        private bool? _opponentCoinStatus = null;
+        private readonly Decklist _decklist;
+        private bool? _opponentCoinStatus;
+
+        private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
 
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
@@ -20,13 +25,16 @@ namespace Pact
             Decklist decklist)
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
+
+            _decklist = decklist;
 
             Reset();
 
-            gameEventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.GameStarted>(__ => Reset()));
 
-            gameEventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(
                     __ =>
                     {
@@ -35,7 +43,7 @@ namespace Pact
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
                     }));
 
-            gameEventDispatcher.RegisterHandler(
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.OpponentReceivedCoin>(
                     __ =>
                     {
@@ -44,31 +52,50 @@ namespace Pact
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
                     }));
 
+            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
+                _gameEventDispatcher.RegisterHandler(handler);
+
             // card added to deck: if not a card that originally started in the deck, add new view model for it
+        }
 
-            void Reset()
-            {
-                _opponentCoinStatus = null;
+        public void Cleanup()
+        {
+            _gameEventHandlers.ForEach(__ => _gameEventDispatcher.UnregisterHandler(__));
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
+            _gameEventHandlers.Clear();
 
-                _cards =
-                    decklist.Cards
-                    .Select(__card => new TrackedCardViewModel(__card.CardID, __card.Count, gameEventDispatcher, cardInfoProvider))
-                    .OrderBy(__trackedCard => __trackedCard.Cost)
-                    .ThenBy(__trackedCard => __trackedCard.Name)
-                    .ToList();
+            _cards.ForEach(__ => __.Cleanup());
+        }
 
-                foreach (TrackedCardViewModel card in _cards)
-                    card.PropertyChanged +=
-                        (__sender, __args) =>
-                        {
-                            if (__args.PropertyName == "Count")
-                                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
-                        };
+        private void Reset()
+        {
+            _opponentCoinStatus = null;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
+
+            _cards.ForEach(__ => __.Cleanup());
+
+            _cards =
+                _decklist.Cards
+                .Select(__card => new TrackedCardViewModel(_cardInfoProvider, _gameEventDispatcher, __card.CardID, __card.Count))
+                .OrderBy(__trackedCard => __trackedCard.Cost)
+                .ThenBy(__trackedCard => __trackedCard.Name)
+                .ToList();
+
+            foreach (TrackedCardViewModel card in _cards)
+                card.PropertyChanged +=
+                    (__sender, __args) =>
+                    {
+                        if (__args.PropertyName == "Count")
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                    };
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
+        }
+
+        ~PlayerDeckTrackerViewModel()
+        {
+            System.Diagnostics.Debug.WriteLine("PlayerDeckTrackerViewModel::Destructor()");
         }
 
         public IEnumerable<TrackedCardViewModel> Cards => _cards;

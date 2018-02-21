@@ -47,6 +47,8 @@ namespace Pact
                     Close();
                 });
 
+        public new string Title { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

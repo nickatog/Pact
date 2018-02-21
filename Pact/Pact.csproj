@@ -93,6 +93,7 @@
     <Compile Include="Converters\HiddenWhenZeroCountConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToBrushConverter.cs" />
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
     <Compile Include="Utility\Serialization\ICollectionSerializer.cs" />
     <Compile Include="Utility\Serialization\ISerializable.cs" />

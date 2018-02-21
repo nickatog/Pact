@@ -30,6 +30,13 @@ namespace Pact
 
             while (true)
             {
+                if (!File.Exists(_filePath))
+                {
+                    await Task.Delay(1000);
+
+                    continue;
+                }
+
                 using (var stream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     if (stream.Length < _streamPosition)
@@ -46,7 +53,7 @@ namespace Pact
                         if (_remainingText != null)
                             _remainingText += Environment.NewLine;
                         
-                        _remainingText += await streamReader.ReadToEndAsync();
+                        _remainingText += streamReader.ReadToEnd();
 
                         _streamPosition = stream.Position;
                     }

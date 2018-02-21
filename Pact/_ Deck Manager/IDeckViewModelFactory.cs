@@ -13,6 +13,7 @@ namespace Pact
             Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
+            string title,
             IEnumerable<GameResult> gameResults = null);
     }
 }

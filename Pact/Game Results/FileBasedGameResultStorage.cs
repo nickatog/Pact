@@ -38,8 +38,8 @@ namespace Pact
 
             int deckIndex = deckInfos.IndexOf(deckInfo);
             deckInfos.RemoveAt(deckIndex);
-            deckInfos.Insert(deckIndex, new DeckInfo(deckInfo.DeckID, deckInfo.DeckString, deckInfo.Position, gameResults));
-
+            deckInfos.Insert(deckIndex, new DeckInfo(deckInfo.DeckID, deckInfo.DeckString, deckInfo.Title, deckInfo.Position, gameResults));
+            
             using (var stream = new FileStream(_filePath, FileMode.Create))
                 await _deckInfoCollectionSerializer.Serialize(stream, deckInfos);
         }

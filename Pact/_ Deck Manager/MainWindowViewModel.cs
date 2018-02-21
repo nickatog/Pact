@@ -106,6 +106,7 @@ namespace Pact
                                 },
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
+                                __deckInfo.Title,
                                 __deckInfo.GameResults)));
 
             Decklist DeserializeDecklist(string text)
@@ -130,6 +131,9 @@ namespace Pact
                     if (view.ShowDialog() ?? false)
                     {
                         var deckID = Guid.NewGuid();
+
+                        // get deck title from view
+                        string title = "Some Deck";
 
                         _decks.Add(
                             _deckViewModelFactory.Create(
@@ -161,8 +165,6 @@ namespace Pact
                                 },
                                 __deck =>
                                 {
-                                    // Will this cause any problems if a deck that is currently being tracked is deleted?
-
                                     int position = _decks.IndexOf(__deck);
 
                                     _decks.RemoveAt(position);
@@ -170,7 +172,8 @@ namespace Pact
                                     SaveDecks();
                                 },
                                 deckID,
-                                view.Deck));
+                                view.Deck,
+                                title));
 
                         SaveDecks();
                     }
@@ -189,7 +192,7 @@ namespace Pact
                             stream.Position = 0;
 
                             using (var reader = new StreamReader(stream))
-                                return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), (UInt16)_decks.IndexOf(__deck), __deck.GameResults);
+                                return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), __deck.Title, (UInt16)_decks.IndexOf(__deck), __deck.GameResults);
                         }
                     });
 

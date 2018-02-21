@@ -15,6 +15,9 @@ namespace Pact
         public static PlayerDeckTrackerView GetWindowFor(
             PlayerDeckTrackerViewModel viewModel)
         {
+            if (_window.DataContext is PlayerDeckTrackerViewModel existingViewModel)
+                existingViewModel.Cleanup();
+
             _window.DataContext = viewModel;
 
             return _window;
