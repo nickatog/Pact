@@ -87,6 +87,7 @@
     <Compile Include="Cards\CardInfo.cs" />
     <Compile Include="Decks\DeckInfo.cs" />
     <Compile Include="Decks\FileBasedDeckInfoRepository.cs" />
+    <Compile Include="Events\CardRemovedFromDeck.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />

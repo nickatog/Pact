@@ -54,7 +54,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     if (int.TryParse(entity, out int entityID))
                     {
                         parseContext.EntityMappings[entityID.ToString()] = cardID;
-
+                        
                         if (zoneTag.Eq("HAND"))
                         {
                             events.Add(new Events.MulliganOptionPresented(cardID));
@@ -73,6 +73,23 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                                 events.Add(new Events.CardDrawnFromDeck(playerID, cardID));
                             else if (zoneTag.Eq("PLAY"))
                                 events.Add(new Events.CardEnteredPlayFromDeck(playerID, cardID));
+                        }
+                    }
+
+                    if (parseContext.ParentBlock != null)
+                    {
+                        IDictionary<string, string> parentBlockAttributes = parseContext.ParentBlock.Attributes;
+                        parentBlockAttributes.TryGetValue("BlockType", out string parentBlockType);
+                        parentBlockAttributes.TryGetValue("Entity", out string parentBlockEntity);
+
+                        IDictionary<string, string> parentBlockEntityAttributes = parentBlockEntity.ParseKeyValuePairs();
+                        parentBlockEntityAttributes.TryGetValue("id", out string parentBlockEntityID);
+
+                        if (parentBlockType.Eq("POWER") && parentBlockEntityID != null && parseContext.EntityMappings.TryGetValue(parentBlockEntityID, out string parentBlockEntityCardID) && int.TryParse(player, out int playerID))
+                        {
+                            // Skulking Geist
+                            if (parentBlockEntityCardID.Eq("ICC_701"))
+                                events.Add(new Events.CardRemovedFromDeck(playerID, cardID));
                         }
                     }
 

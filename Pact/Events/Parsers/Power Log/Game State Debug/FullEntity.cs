@@ -58,11 +58,13 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                         if (parentBlockType.Eq("POWER") && zoneTag.Eq("DECK"))
                         {
+                            // Jade Idol
                             if (parentBlockEntityCardID.Eq("CFM_602"))
                                 events.Add(new Events.CardAddedToDeck(playerID, "CFM_602"));
                         }
                         else if (parentBlockType.Eq("TRIGGER") && zoneTag.Eq("DECK"))
                         {
+                            // Kingsbane
                             if (parentBlockEntityCardID.Eq("LOOT_542"))
                                 events.Add(new Events.CardAddedToDeck(playerID, "LOOT_542"));
                         }

@@ -54,6 +54,14 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.CardRemovedFromDeck>(
+                    __event =>
+                    {
+                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
+                            DecrementCount();
+                    }));
+
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
                     __event =>
                     {
