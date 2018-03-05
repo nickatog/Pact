@@ -119,64 +119,106 @@ namespace Pact
         private readonly IList<DeckViewModel> _decks;
         public IEnumerable<DeckViewModel> Decks => _decks;
 
+        public struct DeckImportDetails
+        {
+            public Decklist Decklist { get; private set; }
+            public string Title { get; private set; }
+
+            public DeckImportDetails(
+                string title,
+                Decklist decklist)
+            {
+                Decklist = decklist;
+                Title = title;
+            }
+        }
+
+        public interface IDeckImportInterface
+        {
+            Task<DeckImportDetails?> GetDecklist();
+        }
+
+        public sealed class DeckImportInterface
+            : IDeckImportInterface
+        {
+            private readonly IDecklistSerializer _decklistSerializer;
+
+            public DeckImportInterface(
+                IDecklistSerializer decklistSerializer)
+            {
+                _decklistSerializer = decklistSerializer.ThrowIfNull(nameof(decklistSerializer));
+            }
+
+            Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
+            {
+                var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
+                if (!(view.ShowDialog() ?? false))
+                    return Task.FromResult<DeckImportDetails?>(default);
+
+                return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.Title, view.Deck));
+            }
+        }
+
         public ICommand ImportDeck =>
             new DelegateCommand(
-                () =>
+                async () =>
                 {
+                    IDeckImportInterface deckImportInterface = new DeckImportInterface(_decklistSerializer);
+
                     // go back to using a view model here? or is it just jumping through hoops at that point to get to an "appropriate" way of doing things
                     // it seems that this would need to know about the view either way
                     // unless this didn't create the view itself, and set a view model property on some top-level object?
                     // then the actual handling of the deck import would happen elsewhere inside the view model itself
-                    var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
-                    if (view.ShowDialog() ?? false)
-                    {
-                        var deckID = Guid.NewGuid();
+                    //var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
+                    //if (view.ShowDialog() ?? false)
 
-                        // get deck title from view
-                        string title = "Some Deck";
+                    DeckImportDetails? deck = await deckImportInterface.GetDecklist();
+                    if (deck == null)
+                        return;
 
-                        _decks.Add(
-                            _deckViewModelFactory.Create(
-                                _gameEventDispatcher,
-                                _viewEventDispatcher,
-                                __deck =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
-                                    if (position <= 0)
-                                        return;
+                    var deckID = Guid.NewGuid();
 
-                                    _decks.RemoveAt(position);
+                    _decks.Add(
+                        _deckViewModelFactory.Create(
+                            _gameEventDispatcher,
+                            _viewEventDispatcher,
+                            __deck =>
+                            {
+                                int position = _decks.IndexOf(__deck);
+                                if (position <= 0)
+                                    return;
 
-                                    _decks.Insert(position - 1, __deck);
+                                _decks.RemoveAt(position);
 
-                                    SaveDecks();
-                                },
-                                __deck =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
-                                    if (position >= _decks.Count - 1)
-                                        return;
+                                _decks.Insert(position - 1, __deck);
 
-                                    _decks.RemoveAt(position);
+                                SaveDecks();
+                            },
+                            __deck =>
+                            {
+                                int position = _decks.IndexOf(__deck);
+                                if (position >= _decks.Count - 1)
+                                    return;
 
-                                    _decks.Insert(position + 1, __deck);
+                                _decks.RemoveAt(position);
 
-                                    SaveDecks();
-                                },
-                                __deck =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
+                                _decks.Insert(position + 1, __deck);
 
-                                    _decks.RemoveAt(position);
+                                SaveDecks();
+                            },
+                            __deck =>
+                            {
+                                int position = _decks.IndexOf(__deck);
 
-                                    SaveDecks();
-                                },
-                                deckID,
-                                view.Deck,
-                                title));
+                                _decks.RemoveAt(position);
 
-                        SaveDecks();
-                    }
+                                SaveDecks();
+                            },
+                            deckID,
+                            deck.Value.Decklist,
+                            deck.Value.Title));
+
+                    SaveDecks();
                 });
 
         private void SaveDecks()
