@@ -15,7 +15,7 @@
 
         <DockPanel Grid.Row="0" Margin="0,2,2,0">
             <Label Content="Title:" />
-            <TextBox Text="{Binding Title}" />
+            <TextBox Text="{Binding DeckTitle}" />
         </DockPanel>
 
         <TextBox Grid.Row="1" Text="{Binding DeckString}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="2,2,2,0" />

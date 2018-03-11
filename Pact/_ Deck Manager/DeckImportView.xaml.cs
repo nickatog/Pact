@@ -47,7 +47,7 @@ namespace Pact
                     Close();
                 });
 
-        public new string Title { get; set; }
+        public string DeckTitle { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

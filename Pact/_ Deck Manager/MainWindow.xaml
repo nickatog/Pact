@@ -5,20 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
         mc:Ignorable="d"
-        Title="Pact" Height="400" Width="300" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen">
+    <Grid Background="Gray">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Decks}">
+            <ItemsControl ItemsSource="{Binding Decks}" Margin="4">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="FrameworkElement.Margin" Value="0,4,0,0" />
+                        <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </ScrollViewer>
         

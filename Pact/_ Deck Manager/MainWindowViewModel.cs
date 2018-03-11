@@ -155,7 +155,7 @@ namespace Pact
                 if (!(view.ShowDialog() ?? false))
                     return Task.FromResult<DeckImportDetails?>(default);
 
-                return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.Title, view.Deck));
+                return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.DeckTitle, view.Deck));
             }
         }
 
