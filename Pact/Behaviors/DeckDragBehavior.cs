@@ -8,7 +8,8 @@ namespace Pact.Behaviors
     public sealed class DeckDragBehavior
         : Behavior<DeckView>
     {
-        private UIElement DropHighlight => ((UIElement)AssociatedObject.FindName("DropHighlight"));
+        private UIElement DropHighlightBottom => ((UIElement)AssociatedObject.FindName("DropHighlightBottom"));
+        private UIElement DropHighlightTop => ((UIElement)AssociatedObject.FindName("DropHighlightTop"));
         private int DeckPosition => ((DeckViewModel)AssociatedObject.DataContext).Position;
 
         protected override void OnAttached()
@@ -29,12 +30,19 @@ namespace Pact.Behaviors
 
         private void AssociatedObject_DragEnter(object sender, DragEventArgs e)
         {
-            DropHighlight.Visibility = Visibility.Visible;
+            int targetPosition = DeckPosition;
+            int.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out int sourcePosition);
+
+            if (sourcePosition > targetPosition)
+                DropHighlightTop.Visibility = Visibility.Visible;
+            else
+                DropHighlightBottom.Visibility = Visibility.Visible;
         }
 
         private void AssociatedObject_DragLeave(object sender, DragEventArgs e)
         {
-            DropHighlight.Visibility = Visibility.Hidden;
+            DropHighlightTop.Visibility = Visibility.Hidden;
+            DropHighlightBottom.Visibility = Visibility.Hidden;
         }
 
         private void AssociatedObject_Drop(object sender, DragEventArgs e)
@@ -42,7 +50,8 @@ namespace Pact.Behaviors
             int targetPosition = DeckPosition;
             if (int.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out int sourcePosition) && sourcePosition != targetPosition)
             {
-                DropHighlight.Visibility = Visibility.Hidden;
+                DropHighlightTop.Visibility = Visibility.Hidden;
+                DropHighlightBottom.Visibility = Visibility.Hidden;
 
                 System.Diagnostics.Debug.WriteLine($"{sourcePosition} moving to {targetPosition}");
 
@@ -50,11 +59,11 @@ namespace Pact.Behaviors
             }
         }
 
-        private Point _dragStartPosition;
+        //private Point _dragStartPosition;
 
         private void AssociatedObject_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
-            AssociatedObject.RenderTransform = new TranslateTransform(0, MouseUtilities.GetMousePosition(Application.Current.MainWindow).Y - _dragStartPosition.Y);
+            //AssociatedObject.RenderTransform = new TranslateTransform(0, MouseUtilities.GetMousePosition(Application.Current.MainWindow).Y - _dragStartPosition.Y);
 
             e.Handled = true;
         }
@@ -63,7 +72,7 @@ namespace Pact.Behaviors
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                _dragStartPosition = Mouse.GetPosition(Application.Current.MainWindow);
+                //_dragStartPosition = Mouse.GetPosition(Application.Current.MainWindow);
                 var originalZIndex = (int)AssociatedObject.GetValue(System.Windows.Controls.Panel.ZIndexProperty);
                 DependencyObject contentPresenter = VisualTreeHelper.GetParent(AssociatedObject);
                 contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, int.MaxValue);
@@ -78,7 +87,7 @@ namespace Pact.Behaviors
                 AssociatedObject.SetValue(UIElement.IsHitTestVisibleProperty, true);
                 AssociatedObject.SetValue(UIElement.OpacityProperty, 1d);
                 contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, originalZIndex);
-                AssociatedObject.RenderTransform = null;
+                //AssociatedObject.RenderTransform = null;
             }
         }
     }

@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Decks}" Margin="4">
+            <ItemsControl ItemsSource="{Binding Decks}" Margin="4,10,4,4">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel />
@@ -22,7 +22,7 @@
 
                 <ItemsControl.ItemContainerStyle>
                     <Style>
-                        <Setter Property="FrameworkElement.Margin" Value="0,4,0,0" />
+                        <Setter Property="FrameworkElement.Margin" Value="0,-6,0,0" />
                         <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>

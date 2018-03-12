@@ -22,8 +22,8 @@
         <behaviors:DeckDragBehavior />
     </i:Interaction.Behaviors>
 
-    <Grid>
-        <Border x:Name="DropHighlight" Visibility="Hidden" Panel.ZIndex="1" Opacity="0.25" Background="Green" CornerRadius="4" />
+    <StackPanel>
+        <Rectangle x:Name="DropHighlightTop" Fill="AliceBlue" HorizontalAlignment="Stretch" Height="6" Margin="10,0,10,4" Visibility="Hidden" />
 
         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4">
             <Grid>
@@ -126,5 +126,7 @@
                 </Border>
             </Grid>
         </Border>
-    </Grid>
+
+        <Rectangle x:Name="DropHighlightBottom" Fill="AliceBlue" HorizontalAlignment="Stretch" Height="6" Margin="10,4,10,0" Visibility="Hidden" />
+    </StackPanel>
 </UserControl>
