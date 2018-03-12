@@ -35,11 +35,7 @@ namespace Pact
 
             // IConfigurationSettings
             builder
-#if DEBUG
             .RegisterType<HardCodedConfigurationSettings>()
-#else
-            .RegisterType<ConfigurationSettings>()
-#endif
             .As<IConfigurationSettings>()
             .SingleInstance();
 

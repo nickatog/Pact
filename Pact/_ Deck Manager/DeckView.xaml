@@ -23,6 +23,8 @@
     </i:Interaction.Behaviors>
 
     <Grid>
+        <Border x:Name="DropHighlight" Visibility="Hidden" Panel.ZIndex="1" Opacity="0.25" Background="Green" CornerRadius="4" />
+
         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4">
             <Grid>
                 <Grid.ColumnDefinitions>

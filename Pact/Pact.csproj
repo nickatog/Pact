@@ -106,6 +106,7 @@
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
+    <Compile Include="Utility\MouseUtilities.cs" />
     <Compile Include="Utility\Serialization\ICollectionSerializer.cs" />
     <Compile Include="Utility\Serialization\ISerializable.cs" />
     <Compile Include="Utility\Serialization\ISerializer.cs" />

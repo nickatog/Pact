@@ -15,13 +15,13 @@ namespace Pact
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
         private readonly Action<DeckViewModel> _delete;
+        private readonly Action<DeckViewModel, int> _emplaceDeck;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
+        private readonly Func<DeckViewModel, int> _findPosition;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
-        private readonly Action<DeckViewModel> _moveDown;
-        private readonly Action<DeckViewModel> _moveUp;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         private readonly Guid _deckID;
@@ -38,8 +38,8 @@ namespace Pact
             IGameResultStorage gameResultStorage,
             ILogger logger,
             Valkyrie.IEventDispatcher viewEventDispatcher,
-            Action<DeckViewModel> moveUp,
-            Action<DeckViewModel> moveDown,
+            Action<DeckViewModel, int> emplaceDeck,
+            Func<DeckViewModel, int> findPosition,
             Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
@@ -48,15 +48,15 @@ namespace Pact
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
+            _emplaceDeck = emplaceDeck.ThrowIfNull(nameof(emplaceDeck));
             _eventDispatcherFactory = eventDispatcherFactory.ThrowIfNull(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.ThrowIfNull(nameof(eventStreamFactory));
+            _findPosition = findPosition.ThrowIfNull(nameof(findPosition));
             _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
             _gameResultStorage = gameResultStorage.ThrowIfNull(nameof(gameResultStorage));
             _logger = logger.ThrowIfNull(nameof(logger));
             _viewEventDispatcher = viewEventDispatcher.ThrowIfNull(nameof(viewEventDispatcher));
 
-            _moveDown = moveDown;
-            _moveUp = moveUp;
             _delete = delete;
             
             _deckID = deckID;
@@ -92,13 +92,17 @@ namespace Pact
                 canExecuteChangedClient:
                     __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
 
+        public void EmplaceDeck(
+            int sourcePosition)
+        {
+            _emplaceDeck(this, sourcePosition);
+        }
+
         public IEnumerable<GameResult> GameResults => _gameResults;
 
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
-        public ICommand MoveDown => new DelegateCommand(() => _moveDown(this));
-
-        public ICommand MoveUp => new DelegateCommand(() => _moveUp(this));
+        public int Position => _findPosition(this);
 
         public string Title => _title ?? string.Empty;
 

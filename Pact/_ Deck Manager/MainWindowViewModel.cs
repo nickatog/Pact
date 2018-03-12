@@ -70,30 +70,21 @@ namespace Pact
                             _deckViewModelFactory.Create(
                                 _gameEventDispatcher,
                                 _viewEventDispatcher,
-                                __deck =>
+                                (__deck, __sourcePosition) =>
                                 {
                                     int position = _decks.IndexOf(__deck);
-                                    if (position <= 0)
+
+                                    if (__sourcePosition > _decks.Count)
                                         return;
 
-                                    _decks.RemoveAt(position);
+                                    DeckViewModel sourceDeck = _decks[__sourcePosition];
+                                    _decks.RemoveAt(__sourcePosition);
 
-                                    _decks.Insert(position - 1, __deck);
+                                    _decks.Insert(position, sourceDeck);
 
                                     SaveDecks();
                                 },
-                                __deck =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
-                                    if (position >= _decks.Count - 1)
-                                        return;
-
-                                    _decks.RemoveAt(position);
-
-                                    _decks.Insert(position + 1, __deck);
-
-                                    SaveDecks();
-                                },
+                                __deck => _decks.IndexOf(__deck),
                                 __deck =>
                                 {
                                     // Will this cause any problems if a deck that is currently being tracked is deleted?
@@ -182,30 +173,21 @@ namespace Pact
                         _deckViewModelFactory.Create(
                             _gameEventDispatcher,
                             _viewEventDispatcher,
-                            __deck =>
+                            (__deck, __sourcePosition) =>
                             {
                                 int position = _decks.IndexOf(__deck);
-                                if (position <= 0)
+
+                                if (__sourcePosition > _decks.Count)
                                     return;
 
-                                _decks.RemoveAt(position);
+                                DeckViewModel sourceDeck = _decks[__sourcePosition];
+                                _decks.RemoveAt(__sourcePosition);
 
-                                _decks.Insert(position - 1, __deck);
+                                _decks.Insert(position, sourceDeck);
 
                                 SaveDecks();
                             },
-                            __deck =>
-                            {
-                                int position = _decks.IndexOf(__deck);
-                                if (position >= _decks.Count - 1)
-                                    return;
-
-                                _decks.RemoveAt(position);
-
-                                _decks.Insert(position + 1, __deck);
-
-                                SaveDecks();
-                            },
+                            __deck => _decks.IndexOf(__deck),
                             __deck =>
                             {
                                 int position = _decks.IndexOf(__deck);
