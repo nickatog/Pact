@@ -23,7 +23,7 @@
     </i:Interaction.Behaviors>
 
     <StackPanel>
-        <Rectangle x:Name="DropHighlightTop" Fill="AliceBlue" HorizontalAlignment="Stretch" Height="6" Margin="10,0,10,4" Visibility="Hidden" />
+        <Border x:Name="DropHighlightTop" Background="Yellow" HorizontalAlignment="Stretch" Height="4" Margin="10,0,10,2" Visibility="Hidden" CornerRadius="2" />
 
         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4">
             <Grid>
@@ -127,6 +127,6 @@
             </Grid>
         </Border>
 
-        <Rectangle x:Name="DropHighlightBottom" Fill="AliceBlue" HorizontalAlignment="Stretch" Height="6" Margin="10,4,10,0" Visibility="Hidden" />
+        <Border x:Name="DropHighlightBottom" Background="Yellow" HorizontalAlignment="Stretch" Height="4" Margin="10,2,10,0" Visibility="Hidden" CornerRadius="2" />
     </StackPanel>
 </UserControl>

@@ -59,12 +59,8 @@ namespace Pact.Behaviors
             }
         }
 
-        //private Point _dragStartPosition;
-
         private void AssociatedObject_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
-            //AssociatedObject.RenderTransform = new TranslateTransform(0, MouseUtilities.GetMousePosition(Application.Current.MainWindow).Y - _dragStartPosition.Y);
-
             e.Handled = true;
         }
 
@@ -72,7 +68,6 @@ namespace Pact.Behaviors
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                //_dragStartPosition = Mouse.GetPosition(Application.Current.MainWindow);
                 var originalZIndex = (int)AssociatedObject.GetValue(System.Windows.Controls.Panel.ZIndexProperty);
                 DependencyObject contentPresenter = VisualTreeHelper.GetParent(AssociatedObject);
                 contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, int.MaxValue);
@@ -87,7 +82,6 @@ namespace Pact.Behaviors
                 AssociatedObject.SetValue(UIElement.IsHitTestVisibleProperty, true);
                 AssociatedObject.SetValue(UIElement.OpacityProperty, 1d);
                 contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, originalZIndex);
-                //AssociatedObject.RenderTransform = null;
             }
         }
     }
