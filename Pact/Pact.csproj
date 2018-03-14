@@ -116,6 +116,10 @@
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Decks\Decklist.cs" />
+    <Compile Include="_ Deck Manager\DeckManagerView.xaml.cs">
+      <DependentUpon>DeckManagerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="_ Deck Manager\DeckManagerViewModel.cs" />
     <Compile Include="_ Deck Manager\DeckView.xaml.cs">
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
@@ -167,6 +171,10 @@
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
     <Page Include="_ Deck Manager\DeckImportView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="_ Deck Manager\DeckManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

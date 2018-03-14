@@ -5,43 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
         mc:Ignorable="d"
-        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True">
+    <Window.Resources>
+        <ControlTemplate x:Key="SideButton" TargetType="Button">
+            <Grid>
+                <Label
+                    Content="{TemplateBinding Content}"
+                    FontFamily="{TemplateBinding FontFamily}"
+                    FontSize="{TemplateBinding FontSize}"
+                    Foreground="{TemplateBinding Foreground}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Padding="{TemplateBinding Padding}" />
+            </Grid>
+        </ControlTemplate>
+    </Window.Resources>
+    
+    <Grid Background="Gray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Background="#606060">
-            <Button Content="&#xf015;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10" />
+            <Button Content="&#xf03a;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
 
-            <Button Content="&#xf013;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10" />
+            <Button Content="&#xf085;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+
+            <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+
+            <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
         </StackPanel>
-        
-        <Grid Grid.Column="1" Background="Gray">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
 
-            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Decks}" Margin="4,10,4,4">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemContainerStyle>
-                        <Style>
-                            <Setter Property="FrameworkElement.Margin" Value="0,-4,0,0" />
-                            <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                </ItemsControl>
-            </ScrollViewer>
-        
-            <Button Grid.Row="1" Content="ImportDeck" Command="{Binding ImportDeck}" />
-        </Grid>
+        <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
     </Grid>
 </Window>

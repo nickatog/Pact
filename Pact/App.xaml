@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:Pact"
              StartupUri="_ Deck Manager/MainWindow.xaml">
     <Application.Resources>
+        <DataTemplate DataType="{x:Type local:DeckManagerViewModel}">
+            <local:DeckManagerView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DeckViewModel}">
             <local:DeckView />
         </DataTemplate>

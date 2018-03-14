@@ -11,6 +11,10 @@ namespace Pact
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder
+            .RegisterType<DeckManagerViewModel>()
+            .AsSelf();
+
             // ICardInfoProvider
             builder
             .Register(

@@ -7,7 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Pact.Behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" SnapsToDevicePixels="True">
+             d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ControlTemplate x:Key="bottomButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">
@@ -23,7 +23,7 @@
     </i:Interaction.Behaviors>
 
     <StackPanel>
-        <Border x:Name="DropHighlightTop" Background="Yellow" HorizontalAlignment="Stretch" Height="4" Margin="10,0,10,2" Visibility="Hidden" CornerRadius="2" />
+        <Border x:Name="DropHighlightTop" Background="#DDDDDD" HorizontalAlignment="Stretch" Height="4" Margin="10,0,10,2" Visibility="Hidden" CornerRadius="2" />
 
         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4">
             <Grid>
@@ -127,6 +127,6 @@
             </Grid>
         </Border>
 
-        <Border x:Name="DropHighlightBottom" Background="Yellow" HorizontalAlignment="Stretch" Height="4" Margin="10,2,10,0" Visibility="Hidden" CornerRadius="2" />
+        <Border x:Name="DropHighlightBottom" Background="#DDDDDD" HorizontalAlignment="Stretch" Height="4" Margin="10,2,10,0" Visibility="Hidden" CornerRadius="2" />
     </StackPanel>
 </UserControl>
