@@ -12,6 +12,10 @@ namespace Pact
         protected override void Load(ContainerBuilder builder)
         {
             builder
+            .RegisterType<ConfigurationSettingsViewModel>()
+            .AsSelf();
+
+            builder
             .RegisterType<DeckManagerViewModel>()
             .AsSelf();
 

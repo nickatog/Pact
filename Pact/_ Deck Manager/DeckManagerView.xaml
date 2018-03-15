@@ -6,29 +6,40 @@
              xmlns:local="clr-namespace:Pact"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Grid.Column="1">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Button
+                    Content="Import New Deck"
+                    Command="{Binding ImportDeck}"
+                    HorizontalAlignment="Center"
+                    Margin="0,4,0,0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="3">
+                                <Label
+                                    Content="{TemplateBinding Content}"
+                                    FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Decks}" Margin="4,8,4,4">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                <ItemsControl ItemsSource="{Binding Decks}" Margin="4,8,4,4">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="FrameworkElement.Margin" Value="0,-4,0,0" />
-                        <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style>
+                            <Setter Property="FrameworkElement.Margin" Value="0,-4,0,0" />
+                            <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
-
-        <Button Grid.Row="1" Content="ImportDeck" Command="{Binding ImportDeck}" />
     </Grid>
 </UserControl>

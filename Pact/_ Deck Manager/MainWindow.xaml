@@ -27,15 +27,22 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Background="#606060">
-            <Button Content="&#xf03a;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+        <DockPanel Grid.Column="0" Background="#606060">
+            <StackPanel DockPanel.Dock="Top">
+                <Button
+                    Template="{StaticResource SideButton}"
+                    Content="&#xf03a;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
+                    Padding="10,8,10,8" Command="{Binding ShowDeckManager}" />
 
-            <Button Content="&#xf085;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+                <Button
+                    Content="&#xf085;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
+                    Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowConfigurationSettings}" />
 
-            <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+                <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
+            </StackPanel>
 
-            <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" />
-        </StackPanel>
+            <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" />
+        </DockPanel>
 
         <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
     </Grid>

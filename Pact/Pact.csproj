@@ -112,6 +112,7 @@
     <Compile Include="Utility\Serialization\ISerializer.cs" />
     <Compile Include="Utility\Serialization\Serializer.cs" />
     <Compile Include="Utility\Serialization\VarintCollectionSerializer.cs" />
+    <Compile Include="_ Configuration Settings\ConfigurationSettingsViewModel.cs" />
     <Compile Include="_ Deck Manager\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>

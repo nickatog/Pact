@@ -15,17 +15,38 @@ namespace Pact
     public sealed class MainWindowViewModel
         : INotifyPropertyChanged
     {
+        private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
 
         private object _viewModel;
 
         public MainWindowViewModel(
-            DeckManagerViewModel deckManagerViewModel)
+            DeckManagerViewModel deckManagerViewModel,
+            ConfigurationSettingsViewModel configurationSettingsViewModel)
         {
+            _configurationSettingsViewModel = configurationSettingsViewModel ?? throw new ArgumentNullException(nameof(configurationSettingsViewModel));
             _deckManagerViewModel = deckManagerViewModel ?? throw new ArgumentNullException(nameof(deckManagerViewModel));
 
             _viewModel = _deckManagerViewModel;
         }
+
+        public ICommand ShowConfigurationSettings =>
+            new DelegateCommand(
+                () =>
+                {
+                    _viewModel = _configurationSettingsViewModel;
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ViewModel"));
+                });
+
+        public ICommand ShowDeckManager =>
+            new DelegateCommand(
+                () =>
+                {
+                    _viewModel = _deckManagerViewModel;
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ViewModel"));
+                });
 
         public object ViewModel => _viewModel;
 
