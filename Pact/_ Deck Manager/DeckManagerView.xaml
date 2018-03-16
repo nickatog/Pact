@@ -16,11 +16,20 @@
                     Margin="0,4,0,0">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="3">
-                                <Label
+                            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="3">
+                                <Label x:Name="Text"
                                     Content="{TemplateBinding Content}"
                                     FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" />
                             </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Outline" Property="Background" Value="#DDDDDD" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Outline" Property="Background" Value="#AAAAAA" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
