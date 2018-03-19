@@ -24,6 +24,11 @@ namespace Pact
         private readonly IDictionary<string, string> _playerHeroCards = new Dictionary<string, string>();
         public IDictionary<string, string> PlayerHeroCards => _playerHeroCards;
 
+        public string PlayerID { get; set; }
+
+        private readonly IDictionary<string, string> _playerNames = new Dictionary<string, string>();
+        public IDictionary<string, string> PlayerNames => _playerNames;
+
         public ParseContext(
             IEnumerable<IGameStateDebugEventParser> parsers)
         {
@@ -37,6 +42,8 @@ namespace Pact
             _entityMappings.Clear();
             _gameLosers.Clear();
             _gameWinners.Clear();
+            PlayerID = null;
+            _playerNames.Clear();
         }
     }
 }

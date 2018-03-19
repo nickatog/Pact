@@ -92,12 +92,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
+    <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
     <Compile Include="Cards\CardInfo.cs" />
     <Compile Include="Decks\DeckInfo.cs" />
     <Compile Include="Decks\FileBasedDeckInfoRepository.cs" />
     <Compile Include="Events\CardRemovedFromDeck.cs" />
+    <Compile Include="Events\GameEnded.cs" />
+    <Compile Include="Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />
@@ -112,6 +115,9 @@
     <Compile Include="Utility\Serialization\ISerializer.cs" />
     <Compile Include="Utility\Serialization\Serializer.cs" />
     <Compile Include="Utility\Serialization\VarintCollectionSerializer.cs" />
+    <Compile Include="_ Configuration Settings\ConfigurationSettingsView.xaml.cs">
+      <DependentUpon>ConfigurationSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="_ Configuration Settings\ConfigurationSettingsViewModel.cs" />
     <Compile Include="_ Deck Manager\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
@@ -133,7 +139,6 @@
     <Compile Include="Events\CardAddedToDeck.cs" />
     <Compile Include="Events\CardOverdrawnFromDeck.cs" />
     <Compile Include="Events\CardReturnedToDeckFromHand.cs" />
-    <Compile Include="Events\GameEnded.cs" />
     <Compile Include="Events\GameStarted.cs" />
     <Compile Include="Events\MulliganOptionPresented.cs" />
     <Compile Include="Events\OpponentCoinLost.cs" />
@@ -171,6 +176,10 @@
     <Compile Include="_ Player Deck Tracker\TrackedCardViewModel.cs" />
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
+    <Page Include="_ Configuration Settings\ConfigurationSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="_ Deck Manager\DeckImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

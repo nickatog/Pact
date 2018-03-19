@@ -145,20 +145,16 @@ namespace Pact
                             {
                                 var timestamp = DateTime.UtcNow;
 
-                                bool gameWon = __event.Winners.Contains(_configurationSettings.AccountName);
+                                string opponentClass = _cardInfoProvider.GetCardInfo(__event.OpponentHeroCardID)?.Class;
 
-                                string opponentHeroID = __event.HeroCardIDs.FirstOrDefault(__heroID => __heroID != _decklist.HeroID);
-                                opponentHeroID = opponentHeroID ?? _decklist.HeroID;
-                                string opponentClass = _cardInfoProvider.GetCardInfo(opponentHeroID)?.Class;
-
-                                var gameResult = new GameResult(timestamp, gameWon, opponentClass);
+                                var gameResult = new GameResult(timestamp, __event.GameWon, opponentClass);
 
                                 _gameResults.Add(gameResult);
 
+                                _gameResultStorage.SaveGameResult(_deckID, gameResult);
+
                                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Wins"));
                                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Losses"));
-
-                                _gameResultStorage.SaveGameResult(_deckID, gameResult);
                             });
 
                     _gameEventDispatcher.RegisterHandler(recordGameResult);

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-using System.Windows.Media;
 
 namespace Pact.Behaviors
 {
@@ -53,8 +52,6 @@ namespace Pact.Behaviors
                 DropHighlightTop.Visibility = Visibility.Hidden;
                 DropHighlightBottom.Visibility = Visibility.Hidden;
 
-                System.Diagnostics.Debug.WriteLine($"{sourcePosition} moving to {targetPosition}");
-
                 ((DeckViewModel)AssociatedObject.DataContext).EmplaceDeck(sourcePosition);
             }
         }
@@ -68,9 +65,6 @@ namespace Pact.Behaviors
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                var originalZIndex = (int)AssociatedObject.GetValue(System.Windows.Controls.Panel.ZIndexProperty);
-                DependencyObject contentPresenter = VisualTreeHelper.GetParent(AssociatedObject);
-                contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, int.MaxValue);
                 AssociatedObject.SetValue(UIElement.OpacityProperty, 0.5);
                 AssociatedObject.SetValue(UIElement.IsHitTestVisibleProperty, false);
                 Mouse.SetCursor(Cursors.SizeNS);
@@ -81,7 +75,6 @@ namespace Pact.Behaviors
                 Mouse.SetCursor(Cursors.Arrow);
                 AssociatedObject.SetValue(UIElement.IsHitTestVisibleProperty, true);
                 AssociatedObject.SetValue(UIElement.OpacityProperty, 1d);
-                contentPresenter.SetValue(System.Windows.Controls.Panel.ZIndexProperty, originalZIndex);
             }
         }
     }

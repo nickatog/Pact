@@ -12,13 +12,13 @@
                 <Button
                     Content="Import New Deck"
                     Command="{Binding ImportDeck}"
-                    HorizontalAlignment="Center"
-                    Margin="0,4,0,0">
+                    Margin="4">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="3">
+                            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4">
                                 <Label x:Name="Text"
                                     Content="{TemplateBinding Content}"
+                                    HorizontalAlignment="Center"
                                     FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" />
                             </Border>
 
@@ -34,7 +34,7 @@
                     </Button.Template>
                 </Button>
 
-                <ItemsControl ItemsSource="{Binding Decks}" Margin="4,8,4,4">
+                <ItemsControl ItemsSource="{Binding Decks}" Margin="4">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel />
@@ -44,7 +44,6 @@
                     <ItemsControl.ItemContainerStyle>
                         <Style>
                             <Setter Property="FrameworkElement.Margin" Value="0,-4,0,0" />
-                            <Setter Property="Panel.ZIndex" Value="{Binding Panel.ZIndex}" />
                         </Style>
                     </ItemsControl.ItemContainerStyle>
                 </ItemsControl>

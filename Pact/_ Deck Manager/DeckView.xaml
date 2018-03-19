@@ -11,10 +11,27 @@
     <UserControl.Resources>
         <ControlTemplate x:Key="bottomButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">
-                <Border BorderBrush="Black" BorderThickness="{TemplateBinding BorderThickness}" />
+                <Grid x:Name="Overlay" Background="#20000000" Panel.ZIndex="1" />
 
-                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="-4" />
+                <Border x:Name="Outline" BorderBrush="Black" BorderThickness="{TemplateBinding BorderThickness}" />
+
+                <Label Content="{TemplateBinding Content}"
+                       FontFamily="Segoe UI"
+                       FontSize="10"
+                       Foreground="{TemplateBinding Foreground}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Padding="2" />
             </Grid>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Overlay" Property="Background" Value="#10000000" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Outline" Property="Background" Value="#30000000" />
+                </Trigger>
+            </ControlTemplate.Triggers>
         </ControlTemplate>
     </UserControl.Resources>
 
@@ -68,7 +85,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="Delete" Command="{Binding Delete}" BorderThickness="0,1,0,0" Template="{StaticResource bottomButton}" />
+                        <Button Grid.Column="0" Content="Delete" Command="{Binding Delete}" BorderThickness="0,1,0,0" Template="{StaticResource bottomButton}" Background="#F0A0A0" />
                         <Button Grid.Column="1" Content="Details" IsEnabled="False" BorderThickness="1,1,0,0" Template="{StaticResource bottomButton}" />
                         <Button Grid.Column="2" Content="Track" Command="{Binding TrackDeck}" BorderThickness="1,1,0,0" Template="{StaticResource bottomButton}" />
                     </Grid>

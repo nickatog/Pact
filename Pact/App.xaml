@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:Pact"
              StartupUri="_ Deck Manager/MainWindow.xaml">
     <Application.Resources>
+        <DataTemplate DataType="{x:Type local:ConfigurationSettingsViewModel}">
+            <local:ConfigurationSettingsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DeckManagerViewModel}">
             <local:DeckManagerView />
         </DataTemplate>
@@ -19,6 +22,7 @@
         <local:HiddenWhenZeroCountConverter x:Key="HiddenWhenZeroCount" />
         <local:OpponentCoinStatusToBrushConverter x:Key="OpponentCoinStatusToBrush" />
         <local:OpponentCoinStatusToVisibilityConverter x:Key="OpponentCoinStatusToVisibility" />
+        <local:SelectedViewMatchesNameConverter x:Key="SelectedViewMatchesName" />
 
         <FontFamily x:Key="BelweMedium">/fonts/Belwe-Medium.ttf#Belwe-Medium</FontFamily>
         <FontFamily x:Key="FontAwesome">/fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>

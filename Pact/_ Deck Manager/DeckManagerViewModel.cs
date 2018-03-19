@@ -171,7 +171,8 @@ namespace Pact
 
                     var deckID = Guid.NewGuid();
 
-                    _decks.Add(
+                    _decks.Insert(
+                        0,
                         _deckViewModelFactory.Create(
                             _gameEventDispatcher,
                             _viewEventDispatcher,
@@ -238,7 +239,7 @@ namespace Pact
 
             _gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.GameEnded>(
-                    __event => _logger.Write($"{DateTime.Now} - Game ended: {string.Join(", ", __event.Winners)} beat {string.Join(", ", __event.Losers)}!")));
+                    __event => _logger.Write($"{DateTime.Now} - " + (__event.GameWon ? "Won" : "Lost") + $" vs {__event.OpponentHeroCardID}")));
 
             _gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(

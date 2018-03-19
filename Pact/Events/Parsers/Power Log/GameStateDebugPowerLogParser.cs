@@ -26,7 +26,7 @@ namespace Pact
 
         private static readonly Regex s_gameStateMethodPattern =
             new Regex(
-                @"^.*GameState.DebugPrintPower\(\) - (?<Output>.*)$",
+                @"^.*GameState.DebugPrint(Power|Game)\(\) - (?<Output>.*)$",
                 RegexOptions.Compiled);
 
         IEnumerable<object> IPowerLogEventParser.ParseEvents(

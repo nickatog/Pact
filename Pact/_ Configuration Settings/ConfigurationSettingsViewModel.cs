@@ -8,5 +8,11 @@ namespace Pact
 {
     public sealed class ConfigurationSettingsViewModel
     {
+        public ConfigurationSettingsViewModel()
+        {
+            AccountName = "Test";
+        }
+
+        public string AccountName { get; set; }
     }
 }

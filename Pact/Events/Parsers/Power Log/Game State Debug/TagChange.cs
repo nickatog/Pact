@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Pact.StringExtensions;
 
@@ -56,7 +57,18 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                 events.Add(new Events.OpponentCoinLost());
             else if (tag.Eq("STATE") && value.Eq("COMPLETE"))
             {
-                events.Add(new Events.GameEnded(parseContext.GameWinners, parseContext.GameLosers, parseContext.PlayerHeroCards.Values));
+                if (parseContext.PlayerID != null && parseContext.PlayerNames.TryGetValue(parseContext.PlayerID, out string playerName))
+                {
+                    bool gameWon = parseContext.GameWinners.Contains(playerName);
+
+                    string opponentHeroCardID =
+                        parseContext.PlayerHeroCards
+                        .Where(heroCardIDByPlayerName => heroCardIDByPlayerName.Key != playerName)
+                        .Select(heroCardIDByPlayerName => heroCardIDByPlayerName.Value)
+                        .FirstOrDefault();
+
+                    events.Add(new Events.GameEnded(gameWon, opponentHeroCardID));
+                }
             }
 
             parsedEvents = events;

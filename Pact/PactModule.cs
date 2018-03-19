@@ -132,6 +132,11 @@ namespace Pact
             .SingleInstance();
 
             builder
+            .RegisterType<EventParsers.PowerLog.GameStateDebug.PlayerID>()
+            .As<IGameStateDebugEventParser>()
+            .SingleInstance();
+
+            builder
             .RegisterType<EventParsers.PowerLog.GameStateDebug.ShowEntity>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
@@ -178,11 +183,9 @@ namespace Pact
         {
             public HardCodedConfigurationSettings()
             {
-                AccountName = "Nickatog";
                 PowerLogFilePath = @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
             }
 
-            public string AccountName { get; set; }
             public string PowerLogFilePath { get; set; }
         }
     }
