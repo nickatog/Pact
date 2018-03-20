@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />

@@ -183,9 +183,11 @@ namespace Pact
         {
             public HardCodedConfigurationSettings()
             {
+                FontSize = 12;
                 PowerLogFilePath = @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
             }
 
+            public int FontSize { get; set; }
             public string PowerLogFilePath { get; set; }
         }
     }

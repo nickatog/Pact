@@ -8,11 +8,24 @@ namespace Pact
 {
     public sealed class ConfigurationSettingsViewModel
     {
-        public ConfigurationSettingsViewModel()
+        private readonly IConfigurationSettings _configurationSettings;
+
+        public ConfigurationSettingsViewModel(
+            IConfigurationSettings configurationSettings)
         {
-            AccountName = "Test";
+            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
         }
 
-        public string AccountName { get; set; }
+        public int FontSize
+        {
+            get
+            {
+                return _configurationSettings.FontSize;
+            }
+            set
+            {
+                _configurationSettings.FontSize = value;
+            }
+        }
     }
 }
