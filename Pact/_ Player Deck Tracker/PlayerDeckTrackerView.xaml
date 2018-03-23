@@ -8,7 +8,7 @@
              WindowStartupLocation="CenterOwner"
              Width="200" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True">
     <WindowChrome.WindowChrome>
-        <WindowChrome ResizeBorderThickness="0" />
+        <WindowChrome ResizeBorderThickness="10" />
     </WindowChrome.WindowChrome>
     <StackPanel>
         <Grid Margin="1,0,1,0">
@@ -29,14 +29,14 @@
 
         <Grid Margin="0,-2,0,-2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
             <local:OutlineTextControl Text="Coin:" Grid.Column="0" Font="Trebuchet MS" FontSize="16" Bold="True" Fill="White" Stroke="Black" StrokeThickness="3" Margin="4,2,0,0" />
             
-            <DockPanel Grid.Column="1" Margin="-20,4,0,0">
+            <DockPanel Grid.Column="1" Margin="0,4,0,0">
                 <local:OutlineTextControl Text="&#xf00c;" Font="{StaticResource FontAwesome}" FontSize="16" Fill="{Binding OpponentCoinStatus, Converter={StaticResource OpponentCoinStatusToBrush}}" Stroke="Black" StrokeThickness="3"
                            ToolTip="You started the game with The Coin"
                            Visibility="{Binding OpponentCoinStatus, Converter={StaticResource OpponentCoinStatusToVisibility}, ConverterParameter=1}" />

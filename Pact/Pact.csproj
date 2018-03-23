@@ -93,6 +93,7 @@
     </ApplicationDefinition>
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
+    <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Events\CardRemovedFromDeck.cs" />
     <Compile Include="Events\GameEnded.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
+    <Compile Include="Events\View Events\DeckTrackerFontSizeChanged.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />

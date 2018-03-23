@@ -9,22 +9,29 @@ namespace Pact
         : INotifyPropertyChanged
     {
         private readonly ICardInfoProvider _cardInfoProvider;
+        private readonly IConfigurationSettings _configurationSettings;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
+        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         private readonly string _cardID;
         private int _count;
 
         private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
+        private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
         private int _playerID;
 
         public TrackedCardViewModel(
             ICardInfoProvider cardInfoProvider,
+            IConfigurationSettings configurationSettings,
             Valkyrie.IEventDispatcher gameEventDispatcher,
+            Valkyrie.IEventDispatcher viewEventDispatcher,
             string cardID,
             int count)
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
             _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
+            _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
             _cardID = cardID;
             _count = count;
@@ -84,6 +91,17 @@ namespace Pact
             foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
                 _gameEventDispatcher.RegisterHandler(handler);
 
+            _viewEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
+                    __event =>
+                    {
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Height"));
+                    }));
+
+            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
+                _viewEventDispatcher.RegisterHandler(handler);
+
             void DecrementCount()
             {
                 _count--;
@@ -105,6 +123,11 @@ namespace Pact
                 _gameEventDispatcher.UnregisterHandler(handler);
 
             _gameEventHandlers.Clear();
+
+            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
+                _viewEventDispatcher.UnregisterHandler(handler);
+
+            _viewEventHandlers.Clear();
         }
 
         ~TrackedCardViewModel()
@@ -117,6 +140,10 @@ namespace Pact
         public int Cost => _cardInfoProvider.GetCardInfo(_cardID)?.Cost ?? 0;
 
         public int Count => _count;
+
+        public int FontSize => _configurationSettings.FontSize;
+
+        public int Height => FontSize + 8;
 
         public string Name => _cardInfoProvider.GetCardInfo(_cardID)?.Name ?? "<UNKNOWN>";
 

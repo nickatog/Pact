@@ -16,8 +16,19 @@ namespace Pact
             .AsSelf();
 
             builder
-            .RegisterType<DeckManagerViewModel>()
-            .AsSelf();
+            .Register(
+                __context =>
+                    new DeckManagerViewModel(
+                        __context.Resolve<ICardInfoProvider>(),
+                        __context.Resolve<IConfigurationSettings>(),
+                        __context.Resolve<IDeckInfoRepository>(),
+                        __context.Resolve<IDecklistSerializer>(),
+                        __context.Resolve<IDeckViewModelFactory>(),
+                        __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
+                        __context.Resolve<IEventStreamFactory>(),
+                        __context.Resolve<ILogger>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+            .As<DeckManagerViewModel>();
 
             // ICardInfoProvider
             builder
@@ -44,7 +55,12 @@ namespace Pact
             // IConfigurationSettings
             builder
             .RegisterType<HardCodedConfigurationSettings>()
-            .As<IConfigurationSettings>()
+            .Named<IConfigurationSettings>("base");
+
+            builder
+            .RegisterDecorator<IConfigurationSettings>(
+                (__context, __inner) =>
+                    new EventDispatchingConfigurationSettings(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
             .SingleInstance();
 
             // IDeckInfoRepository
@@ -79,6 +95,16 @@ namespace Pact
             builder
             .RegisterType<DeckViewModelFactory>()
             .As<IDeckViewModelFactory>()
+            .SingleInstance();
+
+            // IEventDispatchers
+            builder
+            .Register(
+                __context =>
+                {
+                    return __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create();
+                })
+            .Named<Valkyrie.IEventDispatcher>("view")
             .SingleInstance();
 
             // IEventDispatcherFactory

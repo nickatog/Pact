@@ -33,7 +33,8 @@ namespace Pact
             IDeckViewModelFactory deckViewModelFactory,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
-            ILogger logger)
+            ILogger logger,
+            Valkyrie.IEventDispatcher viewEventDispatcher)
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
@@ -42,10 +43,9 @@ namespace Pact
             _deckViewModelFactory = deckViewModelFactory.ThrowIfNull(nameof(deckViewModelFactory));
             _eventDispatcherFactory = eventDispatcherFactory.ThrowIfNull(nameof(eventDispatcherFactory));
             _logger = logger.ThrowIfNull(nameof(logger));
+            _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
             eventStreamFactory.ThrowIfNull(nameof(eventStreamFactory));
-
-            _viewEventDispatcher = _eventDispatcherFactory.Create();
 
             _gameEventDispatcher = _eventDispatcherFactory.Create();
             RegisterDebugHandlers();

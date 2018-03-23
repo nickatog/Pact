@@ -11,7 +11,9 @@ namespace Pact
         : INotifyPropertyChanged
     {
         private readonly ICardInfoProvider _cardInfoProvider;
+        private readonly IConfigurationSettings _configurationSettings;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
+        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         private IEnumerable<TrackedCardViewModel> _cards;
         private readonly Decklist _decklist;
@@ -21,11 +23,15 @@ namespace Pact
 
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
+            IConfigurationSettings configurationSettings,
             Valkyrie.IEventDispatcher gameEventDispatcher,
+            Valkyrie.IEventDispatcher viewEventDispatcher,
             Decklist decklist)
         {
             _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
             _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
+            _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
             _decklist = decklist;
 
@@ -77,7 +83,7 @@ namespace Pact
 
             _cards =
                 _decklist.Cards
-                .Select(__card => new TrackedCardViewModel(_cardInfoProvider, _gameEventDispatcher, __card.CardID, __card.Count))
+                .Select(__card => new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __card.CardID, __card.Count))
                 .OrderBy(__trackedCard => __trackedCard.Cost)
                 .ThenBy(__trackedCard => __trackedCard.Name)
                 .ToList();

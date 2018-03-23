@@ -123,7 +123,9 @@ namespace Pact
                         PlayerDeckTrackerView.GetWindowFor(
                             new PlayerDeckTrackerViewModel(
                                 _cardInfoProvider,
+                                _configurationSettings,
                                 trackerEventDispatcher,
+                                _viewEventDispatcher,
                                 _decklist));
 
                     IEventStream eventStream = _eventStreamFactory.Create();
