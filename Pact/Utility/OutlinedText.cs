@@ -14,15 +14,15 @@ namespace Pact
         protected override Size MeasureOverride(Size availableSize)
         {
             var minWidthArgs = (MinWidthText, Font, FontSize, Bold, Italic, Stroke, StrokeThickness);
-            var minWidth = GetTextGeometrySize(minWidthArgs).Width;
+            double minWidth = GetTextGeometrySize(minWidthArgs).Width;
 
             var maxHeightArgs = (LETTERS, Font, FontSize, Bold, Italic, Stroke, StrokeThickness);
-            var maxHeight = GetTextGeometrySize(maxHeightArgs).Height + FontSize / 8;
+            double maxHeight = GetTextGeometrySize(maxHeightArgs).Height + FontSize / 8;
 
             var actualSizeArgs = (Text, Font, FontSize, Bold, Italic, Stroke, StrokeThickness);
-            var actualSize = GetTextGeometrySize(actualSizeArgs);
+            double calculatedWidth = GetTextGeometrySize(actualSizeArgs).Width;
 
-            return new Size(Math.Max(actualSize.Width, Math.Max(minWidth, 0)), Math.Max(maxHeight, 0));
+            return new Size(Math.Max(calculatedWidth, Math.Max(minWidth, 0)), Math.Max(maxHeight, 0));
         }
 
         private static readonly IDictionary<(string, FontFamily, double, bool, bool, Brush, ushort), Geometry> _getTextGeometry_Cache =

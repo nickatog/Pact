@@ -94,6 +94,7 @@
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
     <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
+    <Compile Include="Configuration\FileBasedConfigurationSettings.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
