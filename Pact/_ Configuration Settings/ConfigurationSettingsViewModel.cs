@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Pact
 {
@@ -14,18 +15,18 @@ namespace Pact
             IConfigurationSettings configurationSettings)
         {
             _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
+
+            FontSize = _configurationSettings.FontSize;
         }
 
-        public int FontSize
-        {
-            get
-            {
-                return _configurationSettings.FontSize;
-            }
-            set
-            {
-                _configurationSettings.FontSize = value;
-            }
-        }
+        public int FontSize { get; set; }
+
+        public ICommand SaveSettings =>
+            new DelegateCommand(
+                () =>
+                {
+                    if (FontSize != _configurationSettings.FontSize)
+                        _configurationSettings.FontSize = FontSize;
+                });
     }
 }

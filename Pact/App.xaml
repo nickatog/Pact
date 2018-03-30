@@ -26,5 +26,23 @@
 
         <FontFamily x:Key="BelweMedium">/fonts/Belwe-Medium.ttf#Belwe-Medium</FontFamily>
         <FontFamily x:Key="FontAwesome">/fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+
+        <ControlTemplate x:Key="ButtonMajor" TargetType="Button">
+            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4">
+                <Label
+                    Content="{TemplateBinding Content}"
+                    FontFamily="Segoe UI" FontSize="18" FontWeight="Bold"
+                    HorizontalAlignment="Center" />
+            </Border>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Outline" Property="Background" Value="#DDDDDD" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Outline" Property="Background" Value="#AAAAAA" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Application.Resources>
 </Application>

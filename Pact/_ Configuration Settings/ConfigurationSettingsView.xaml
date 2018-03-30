@@ -23,30 +23,31 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-
-        <ControlTemplate x:Key="Slider" TargetType="Slider">
-            <Track Name="PART_Track">
-                <Track.Thumb>
-                    <Thumb />
-                </Track.Thumb>
-            </Track>
-        </ControlTemplate>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
+    <StackPanel>
+        <Button
+            Grid.Row="3"
+            Template="{StaticResource ButtonMajor}"
+            Content="Save Settings"
+            Command="{Binding SaveSettings}"
+            Margin="4" />
 
-        <Label Grid.Row="0" Content="Font size:" FontSize="14" HorizontalAlignment="Left" />
-        <TextBox Grid.Row="1" Text="{Binding ElementName=FontSizeSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Template="{StaticResource TextBox}" FontSize="14" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <i:Interaction.Behaviors>
-                <behaviors:AllowOnlyPositiveIntegers />
-            </i:Interaction.Behaviors>
-        </TextBox>
-        <Slider Grid.Row="2" Name="FontSizeSlider" Value="{Binding FontSize}" Minimum="6" Maximum="48" Margin="10,0,10,0" TickFrequency="1" IsSnapToTickEnabled="True" />
-    </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Font size:" FontSize="14" HorizontalAlignment="Left" />
+            <TextBox Grid.Row="1" Text="{Binding ElementName=FontSizeSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" Template="{StaticResource TextBox}" FontSize="14" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <i:Interaction.Behaviors>
+                    <behaviors:AllowOnlyPositiveIntegers />
+                </i:Interaction.Behaviors>
+            </TextBox>
+            <Slider Grid.Row="2" Name="FontSizeSlider" Value="{Binding FontSize}" Minimum="6" Maximum="48" Margin="10,0,10,0" TickFrequency="1" IsSnapToTickEnabled="True" />
+        </Grid>
+    </StackPanel>
 </UserControl>

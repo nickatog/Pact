@@ -10,29 +10,10 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Button
+                    Template="{StaticResource ButtonMajor}"
                     Content="Import New Deck"
                     Command="{Binding ImportDeck}"
-                    Margin="4">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4">
-                                <Label x:Name="Text"
-                                    Content="{TemplateBinding Content}"
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" />
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Outline" Property="Background" Value="#DDDDDD" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Outline" Property="Background" Value="#AAAAAA" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                    Margin="4" />
 
                 <ItemsControl ItemsSource="{Binding Decks}" Margin="4">
                     <ItemsControl.ItemsPanel>
