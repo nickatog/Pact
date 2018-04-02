@@ -106,6 +106,8 @@ namespace Pact
 
         public IEnumerable<TrackedCardViewModel> Cards => _cards;
 
+        public IConfigurationSettings ConfigurationSettings => _configurationSettings;
+
         public int Count => _cards.Sum(__card => __card.Count);
 
         public bool? OpponentCoinStatus => _opponentCoinStatus;

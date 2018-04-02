@@ -59,7 +59,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         {
                             events.Add(new Events.MulliganOptionPresented(cardID));
 
-                            if (int.TryParse(controller, out int playerID))
+                            if (int.TryParse(controller, out int playerID) && parseContext.PlayerID == null)
                             {
                                 parseContext.PlayerID = controller;
 

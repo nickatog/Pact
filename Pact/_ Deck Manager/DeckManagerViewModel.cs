@@ -253,5 +253,10 @@ namespace Pact
                 new Valkyrie.DelegateEventHandler<Events.PlayerReceivedCoin>(
                     __event => _logger.Write($"{DateTime.Now} - Player received the coin!")));
         }
+
+        public string GetInterfaces(params string[] names)
+        {
+            return string.Join(", ", names.Select(__name => "IHas" + __name));
+        }
     }
 }
