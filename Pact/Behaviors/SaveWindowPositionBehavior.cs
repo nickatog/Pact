@@ -16,37 +16,40 @@ namespace Pact.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-            
+
             AssociatedObject.LocationChanged += OnLocationChanged;
         }
 
         private void OnLocationChanged(object sender, EventArgs args)
         {
             if (_timer == null)
-                _timer = new Timer(SaveWindowPosition, null, 1000, Timeout.Infinite);
-            else
-                _timer?.Change(1000, Timeout.Infinite);
+                _timer = new Timer(SaveWindowPosition, null, Timeout.Infinite, Timeout.Infinite);
+
+            _timer?.Change(1000, Timeout.Infinite);
         }
 
         private void SaveWindowPosition(object state)
         {
-            // Save window position and size here
-            
-            double height = 0f;
-            double width = 0f;
-            double left = 0f;
-            double top = 0f;
+            double left = default;
+            double top = default;
+
+            Size size = default;
+
+            IConfigurationSettings configurationSettings = null;
 
             Dispatcher.Invoke(
                 () =>
                 {
-                    height = AssociatedObject.ActualHeight;
-                    width = AssociatedObject.ActualWidth;
                     left = AssociatedObject.Left;
                     top = AssociatedObject.Top;
+
+                    size = AssociatedObject.RenderSize;
+
+                    configurationSettings = ConfigurationSettings;
                 });
 
-            System.Diagnostics.Debug.WriteLine($"Saving: {width}x{height}, at ({left},{top})");
+            configurationSettings.TrackerWindowLocation = new Point(left, top);
+            configurationSettings.TrackerWindowSize = size;
 
             _timer = null;
         }

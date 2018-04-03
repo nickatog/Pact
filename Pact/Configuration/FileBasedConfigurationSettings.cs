@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Pact
 {
@@ -22,16 +20,60 @@ namespace Pact
             _configurationSerializer = configurationSerializer ?? throw new ArgumentNullException(nameof(configurationSerializer));
             _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
 
+            if (!File.Exists(_filePath))
+                return;
+
             using (var stream = new FileStream(_filePath, FileMode.Open))
                 _configurationStorage = _configurationSerializer.Deserialize(stream).Result;
         }
 
-        int IConfigurationSettings.FontSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        string IConfigurationSettings.PowerLogFilePath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IConfigurationSettings.FontSize
+        {
+            get => _configurationStorage.FontSize ?? 12;
+            set
+            {
+                _configurationStorage.FontSize = value;
+
+                SaveToFile();
+            }
+        }
+
+        string IConfigurationSettings.PowerLogFilePath
+        {
+            get => _configurationStorage.PowerLogFilePath ?? @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
+            set
+            {
+                _configurationStorage.PowerLogFilePath = value;
+
+                SaveToFile();
+            }
+        }
+
+        Point? IConfigurationSettings.TrackerWindowLocation
+        {
+            get => _configurationStorage.TrackerWindowLocation;
+            set
+            {
+                _configurationStorage.TrackerWindowLocation = value;
+
+                SaveToFile();
+            }
+        }
+
+        Size? IConfigurationSettings.TrackerWindowSize
+        {
+            get => _configurationStorage.TrackerWindowSize;
+            set
+            {
+                _configurationStorage.TrackerWindowSize = value;
+
+                SaveToFile();
+            }
+        }
 
         private void SaveToFile()
         {
-            using (var stream = new FileStream(_filePath, FileMode.Open))
+            using (var stream = new FileStream(_filePath, FileMode.Create))
                 _configurationSerializer.Serialize(stream, _configurationStorage).Wait();
         }
     }
@@ -40,13 +82,32 @@ namespace Pact
     public struct ConfigurationStorage
         : ISerializable<ConfigurationStorage>
     {
-        private int _fontSize;
-        public int FontSize => _fontSize;
-
-        public ConfigurationStorage(
-            int fontSize)
+        private int? _fontSize;
+        public int? FontSize
         {
-            _fontSize = fontSize;
+            get => _fontSize;
+            set { _fontSize = value; }
+        }
+
+        private string _powerLogFilePath;
+        public string PowerLogFilePath
+        {
+            get => _powerLogFilePath;
+            set { _powerLogFilePath = value; }
+        }
+
+        private Point? _trackerWindowLocation;
+        public Point? TrackerWindowLocation
+        {
+            get => _trackerWindowLocation;
+            set { _trackerWindowLocation = value; }
+        }
+
+        private Size? _trackerWindowSize;
+        public Size? TrackerWindowSize
+        {
+            get => _trackerWindowSize;
+            set { _trackerWindowSize = value; }
         }
 
         public static Task<ConfigurationStorage> Deserialize(Stream stream)

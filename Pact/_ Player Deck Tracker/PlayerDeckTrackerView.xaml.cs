@@ -18,6 +18,20 @@ namespace Pact
             if (_window.DataContext is PlayerDeckTrackerViewModel existingViewModel)
                 existingViewModel.Cleanup();
 
+            Point? windowLocation = viewModel.ConfigurationSettings.TrackerWindowLocation;
+            if (windowLocation.HasValue)
+            {
+                _window.Left = windowLocation.Value.X;
+                _window.Top = windowLocation.Value.Y;
+            }
+
+            Size? windowSize = viewModel.ConfigurationSettings.TrackerWindowSize;
+            if (windowSize.HasValue)
+            {
+                _window.Width = windowSize.Value.Width;
+                _window.Height = windowSize.Value.Height;
+            }
+
             _window.DataContext = viewModel;
 
             return _window;

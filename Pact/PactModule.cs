@@ -54,7 +54,18 @@ namespace Pact
 
             // IConfigurationSettings
             builder
-            .RegisterType<HardCodedConfigurationSettings>()
+            .Register(
+                __context =>
+                {
+                    string filePath =
+                        Path.Combine(
+                            Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                "Pact"),
+                            ".config");
+
+                    return new FileBasedConfigurationSettings(__context.Resolve<ISerializer<ConfigurationStorage>>(), filePath);
+                })
             .Named<IConfigurationSettings>("base");
 
             builder
@@ -183,6 +194,13 @@ namespace Pact
             builder
             .Register(
                 __context =>
+                    new Serializer<ConfigurationStorage>(ConfigurationStorage.Deserialize))
+            .As<ISerializer<ConfigurationStorage>>()
+            .SingleInstance();
+
+            builder
+            .Register(
+                __context =>
                     new Serializer<DeckInfo>(DeckInfo.Deserialize))
             .As<ISerializer<DeckInfo>>()
             .SingleInstance();
@@ -202,19 +220,6 @@ namespace Pact
 
                 return Task.CompletedTask;
             }
-        }
-
-        private sealed class HardCodedConfigurationSettings
-            : IConfigurationSettings
-        {
-            public HardCodedConfigurationSettings()
-            {
-                FontSize = 12;
-                PowerLogFilePath = @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
-            }
-
-            public int FontSize { get; set; }
-            public string PowerLogFilePath { get; set; }
         }
     }
 }

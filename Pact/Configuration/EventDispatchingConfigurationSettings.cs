@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 namespace Pact
 {
@@ -33,6 +34,24 @@ namespace Pact
             set
             {
                 _configurationSettings.PowerLogFilePath = value;
+            }
+        }
+
+        Point? IConfigurationSettings.TrackerWindowLocation
+        {
+            get => _configurationSettings.TrackerWindowLocation;
+            set
+            {
+                _configurationSettings.TrackerWindowLocation = value;
+            }
+        }
+
+        Size? IConfigurationSettings.TrackerWindowSize
+        {
+            get => _configurationSettings.TrackerWindowSize;
+            set
+            {
+                _configurationSettings.TrackerWindowSize = value;
             }
         }
     }
