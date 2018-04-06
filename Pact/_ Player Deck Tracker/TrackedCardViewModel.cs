@@ -61,6 +61,14 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.CardOverdrawnFromDeck>(
+                    __event =>
+                    {
+                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
+                            DecrementCount();
+                    }));
+
+            _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardRemovedFromDeck>(
                     __event =>
                     {
@@ -96,7 +104,6 @@ namespace Pact
                     __event =>
                     {
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Height"));
                     }));
 
             foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
@@ -142,8 +149,6 @@ namespace Pact
         public int Count => _count;
 
         public int FontSize => _configurationSettings.FontSize;
-
-        public int Height => FontSize + 8;
 
         public string Name => _cardInfoProvider.GetCardInfo(_cardID)?.Name ?? "<UNKNOWN>";
 
