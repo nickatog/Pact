@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Autofac;
 
 namespace Pact
 {
@@ -12,14 +11,13 @@ namespace Pact
         {
             InitializeComponent();
 
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new PactModule());
-
-            IContainer container = builder.Build();
-
-            DataContext = container.Resolve<MainWindowViewModel>();
-
             Window = this;
+        }
+
+        public void Initialize(
+            MainWindowViewModel viewModel)
+        {
+            DataContext = viewModel;
         }
     }
 }

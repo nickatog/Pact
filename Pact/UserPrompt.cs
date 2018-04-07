@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Windows.Threading;
 
 namespace Pact
 {
     public sealed class UserPrompt
         : IUserPrompt
     {
-        void IUserPrompt.Display(
+        private readonly Dispatcher _dispatcher;
+
+        public UserPrompt(
+            Dispatcher dispatcher)
+        {
+            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+        }
+
+        bool IUserPrompt.Display(
             string message,
             string confirmText,
-            Action continuation,
             string cancelText)
         {
-            if (new UserPromptView(message, confirmText, cancelText).ShowDialog() ?? false)
-                continuation?.Invoke();
+            return new UserPromptView(message, confirmText, cancelText).ShowDialog() ?? false;
         }
     }
 }

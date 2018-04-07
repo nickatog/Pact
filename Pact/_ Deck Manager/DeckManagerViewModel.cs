@@ -131,6 +131,34 @@ namespace Pact
             Task<DeckImportDetails?> GetDecklist();
         }
 
+        public interface IModalViewModel<TResult>
+        {
+            event Action<TResult> OnClosed;
+        }
+
+        public interface IModalDisplay
+        {
+            void Show<TResult>(
+                IModalViewModel<TResult> viewModel,
+                Action<TResult> onClosed);
+        }
+
+        public sealed class ModalDisplay
+            : IModalDisplay
+        {
+            private readonly MainWindowViewModel _mainWindowViewModel;
+
+            void IModalDisplay.Show<TViewModel>(
+                IModalViewModel<TViewModel> viewModel,
+                Action<TViewModel> onClosed)
+            {
+                throw new NotImplementedException();
+
+                // add handler for on close event
+                // set view model on main window
+            }
+        }
+
         public sealed class DeckImportInterface
             : IDeckImportInterface
         {
@@ -144,6 +172,10 @@ namespace Pact
 
             Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
             {
+                // create view model (via factory?)
+                // pass to modal display, along with result handler
+                // handler inspects result and creates deck import details object for task completion source
+
                 var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
                 if (!(view.ShowDialog() ?? false))
                     return Task.FromResult<DeckImportDetails?>(default);

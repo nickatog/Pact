@@ -1,13 +1,10 @@
-﻿using System;
-
-namespace Pact
+﻿namespace Pact
 {
     public interface IUserPrompt
     {
-        void Display(
+        bool Display(
             string message,
             string confirmText,
-            Action continuation,
             string cancelText);
     }
 }

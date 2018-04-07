@@ -87,10 +87,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml">
+    <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </ApplicationDefinition>
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
     <Compile Include="Behaviors\SaveWindowPositionBehavior.cs" />

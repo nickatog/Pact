@@ -1,23 +1,35 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+using Autofac;
 
 namespace Pact
 {
-    public partial class App : Application
+    public partial class App
+        : Application
     {
+        private readonly IContainer _container;
+
         private App()
         {
             InitializeComponent();
+
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new PactModule());
+
+            builder.RegisterInstance(Dispatcher);
+
+            _container = builder.Build();
         }
 
-        [STAThread]
-        public static void Main()
+        protected override void OnStartup(StartupEventArgs e)
         {
-            IUserPrompt userPrompt = new UserPrompt();
+            var window = new MainWindow();
 
-            userPrompt.Display("This is a test!", "OK", () => System.Diagnostics.Debug.WriteLine("Testing!"), "Cancel");
+            //if (_container.Resolve<IUserPrompt>().Display("This is a test!", "OK", "Cancel"))
+            //    ;
 
-            new App().Run(new MainWindow());
+            window.Initialize(_container.Resolve<MainWindowViewModel>());
+
+            window.Show();
         }
     }
 }

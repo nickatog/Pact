@@ -68,6 +68,7 @@
                         <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
+                    <!-- FontAwesome pencil icon: f303 -->
                     <Label Content="{Binding Title}" Grid.Row="0" FontFamily="Arial" FontSize="18" FontWeight="Bold" VerticalAlignment="Top" Margin="-2,-2,0,0" />
 
                     <WrapPanel Grid.Row="1" VerticalAlignment="Top">

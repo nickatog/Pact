@@ -205,6 +205,12 @@ namespace Pact
             .As<ISerializer<DeckInfo>>()
             .SingleInstance();
 
+            // IUserPromptService
+            builder
+            .RegisterType<UserPrompt>()
+            .As<IUserPrompt>()
+            .SingleInstance();
+
             // MainWindowViewModel
             builder
             .RegisterType<MainWindowViewModel>()
