@@ -114,7 +114,11 @@
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
+    <Compile Include="__ Modal View Models\DeckImportModalViewModel.cs" />
+    <Compile Include="__ Modal View Models\IModalDisplay.cs" />
+    <Compile Include="__ Modal View Models\IModalViewModel.cs" />
     <Compile Include="IUserPrompt.cs" />
+    <Compile Include="__ Modal View Models\MainWindowModalDisplay.cs" />
     <Compile Include="UserPrompt.cs" />
     <Compile Include="UserPromptView.xaml.cs">
       <DependentUpon>UserPromptView.xaml</DependentUpon>
@@ -289,5 +293,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

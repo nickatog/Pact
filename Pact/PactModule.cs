@@ -190,6 +190,11 @@ namespace Pact
             .As<ILogger>()
             .SingleInstance();
 
+            // IModalDisplay
+            builder
+            .RegisterType<ModalDisplay>()
+            .As<IModalDisplay>();
+
             // ISerializers
             builder
             .Register(

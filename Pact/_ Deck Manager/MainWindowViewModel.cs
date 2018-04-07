@@ -30,6 +30,13 @@ namespace Pact
             _viewModel = _deckManagerViewModel;
         }
 
+        public void SetModalViewModel(
+            IModalViewModel viewModel)
+        {
+            // set private property
+            // raise property changed event
+        }
+
         public ICommand ShowConfigurationSettings =>
             new DelegateCommand(
                 () =>

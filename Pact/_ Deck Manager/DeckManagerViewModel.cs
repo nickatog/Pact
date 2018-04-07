@@ -131,32 +131,10 @@ namespace Pact
             Task<DeckImportDetails?> GetDecklist();
         }
 
-        public interface IModalViewModel<TResult>
+        public interface IDeckImportModalViewModelFactory
         {
-            event Action<TResult> OnClosed;
-        }
-
-        public interface IModalDisplay
-        {
-            void Show<TResult>(
-                IModalViewModel<TResult> viewModel,
-                Action<TResult> onClosed);
-        }
-
-        public sealed class ModalDisplay
-            : IModalDisplay
-        {
-            private readonly MainWindowViewModel _mainWindowViewModel;
-
-            void IModalDisplay.Show<TViewModel>(
-                IModalViewModel<TViewModel> viewModel,
-                Action<TViewModel> onClosed)
-            {
-                throw new NotImplementedException();
-
-                // add handler for on close event
-                // set view model on main window
-            }
+            // what's the generic return type for the modal?
+            // probably not the DeckImportDetails that the deck import interface returns
         }
 
         public sealed class DeckImportInterface
