@@ -30,57 +30,59 @@
         </ControlTemplate>
     </Window.Resources>
 
-    <Grid Background="Gray">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
+    <Grid>
         <Grid Background="#40000000" Panel.ZIndex="1" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
-
+            <ContentControl Content="{Binding ModalViewModel}" Height="Auto" Width="Auto" />
         </Grid>
 
-        <DockPanel Grid.Column="0" Background="#606060">
-            <StackPanel DockPanel.Dock="Top">
-                <Button
+        <Grid Background="Gray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" Background="#606060">
+                <StackPanel DockPanel.Dock="Top">
+                    <Button
                     Template="{StaticResource SideButton}"
                     Content="&#xf03a;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
                     Padding="10,8,10,8" Command="{Binding ShowDeckManager}">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="Transparent" />
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
 
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DeckManager}" Value="True">
-                                    <Setter Property="Background" Value="CornflowerBlue" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DeckManager}" Value="True">
+                                        <Setter Property="Background" Value="CornflowerBlue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
-                <Button
+                    <Button
                     Content="&#xf085;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
                     Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowConfigurationSettings}">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="Transparent" />
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
 
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=ConfigurationSettings}" Value="True">
-                                    <Setter Property="Background" Value="CornflowerBlue" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=ConfigurationSettings}" Value="True">
+                                        <Setter Property="Background" Value="CornflowerBlue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
-                <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Background="Transparent" />
-            </StackPanel>
+                    <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Background="Transparent" />
+                </StackPanel>
 
-            <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="Transparent" />
-        </DockPanel>
+                <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="Transparent" />
+            </DockPanel>
 
-        <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
+            <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
+        </Grid>
     </Grid>
 </Window>

@@ -20,6 +20,9 @@ namespace Pact
 
         private object _viewModel;
 
+        private static MainWindowViewModel _instance;
+        public static MainWindowViewModel Instance => _instance;
+
         public MainWindowViewModel(
             DeckManagerViewModel deckManagerViewModel,
             ConfigurationSettingsViewModel configurationSettingsViewModel)
@@ -28,6 +31,8 @@ namespace Pact
             _deckManagerViewModel = deckManagerViewModel ?? throw new ArgumentNullException(nameof(deckManagerViewModel));
 
             _viewModel = _deckManagerViewModel;
+
+            _instance = this;
         }
 
         public IModalViewModel ModalViewModel { get; private set; }
