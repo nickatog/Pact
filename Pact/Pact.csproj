@@ -115,13 +115,14 @@
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
-    <Compile Include="__ Modal View Models\DeckImportModalViewModel.cs" />
-    <Compile Include="__ Modal View Models\DeckImportModalViewModelFactory.cs" />
-    <Compile Include="__ Modal View Models\IDeckImportModalViewModelFactory.cs" />
-    <Compile Include="__ Modal View Models\IModalDisplay.cs" />
-    <Compile Include="__ Modal View Models\IModalViewModel.cs" />
+    <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModel.cs" />
+    <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModelFactory.cs" />
+    <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />
+    <Compile Include="Views\Deck Manager\Deck Import\IDeckImportViewModelFactory.cs" />
+    <Compile Include="Views\Modals\IModalDisplay.cs" />
+    <Compile Include="Views\Modals\IModalViewModel.cs" />
     <Compile Include="IUserPrompt.cs" />
-    <Compile Include="__ Modal View Models\MainWindowModalDisplay.cs" />
+    <Compile Include="Views\Modals\MainWindowModalDisplay.cs" />
     <Compile Include="UserPrompt.cs" />
     <Compile Include="UserPromptView.xaml.cs">
       <DependentUpon>UserPromptView.xaml</DependentUpon>
@@ -132,23 +133,23 @@
     <Compile Include="Utility\Serialization\ISerializer.cs" />
     <Compile Include="Utility\Serialization\Serializer.cs" />
     <Compile Include="Utility\Serialization\VarintCollectionSerializer.cs" />
-    <Compile Include="_ Configuration Settings\ConfigurationSettingsView.xaml.cs">
+    <Compile Include="Views\Configuration Settings\ConfigurationSettingsView.xaml.cs">
       <DependentUpon>ConfigurationSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Configuration Settings\ConfigurationSettingsViewModel.cs" />
-    <Compile Include="_ Deck Manager\DeckImportView.xaml.cs">
+    <Compile Include="Views\Configuration Settings\ConfigurationSettingsViewModel.cs" />
+    <Compile Include="Views\Deck Manager\Deck Import\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Decks\Decklist.cs" />
-    <Compile Include="_ Deck Manager\DeckManagerView.xaml.cs">
+    <Compile Include="Views\Deck Manager\DeckManagerView.xaml.cs">
       <DependentUpon>DeckManagerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Deck Manager\DeckManagerViewModel.cs" />
-    <Compile Include="_ Deck Manager\DeckView.xaml.cs">
+    <Compile Include="Views\Deck Manager\DeckManagerViewModel.cs" />
+    <Compile Include="Views\Deck Manager\DeckView.xaml.cs">
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Deck Manager\DeckViewModel.cs" />
-    <Compile Include="_ Deck Manager\DeckViewModelFactory.cs" />
+    <Compile Include="Views\Deck Manager\DeckViewModel.cs" />
+    <Compile Include="Views\Deck Manager\DeckViewModelFactory.cs" />
     <Compile Include="Utility\DelegateCommand.cs" />
     <Compile Include="Game Results\GameResult.cs" />
     <Compile Include="Loggers\ILogger.cs" />
@@ -176,44 +177,44 @@
     <Compile Include="Configuration\IConfigurationSettings.cs" />
     <Compile Include="Decks\IDeckInfoRepository.cs" />
     <Compile Include="Decks\IDecklistSerializer.cs" />
-    <Compile Include="_ Deck Manager\IDeckViewModelFactory.cs" />
+    <Compile Include="Views\Deck Manager\IDeckViewModelFactory.cs" />
     <Compile Include="Events\Streams\IEventStreamFactory.cs" />
     <Compile Include="Game Results\IGameResultStorage.cs" />
-    <Compile Include="_ Deck Manager\MainWindowViewModel.cs" />
+    <Compile Include="Views\Deck Manager\MainWindowViewModel.cs" />
     <Compile Include="Utility\OutlinedText.cs" />
     <Compile Include="PactModule.cs" />
-    <Compile Include="_ Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
+    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
       <DependentUpon>PlayerDeckTrackerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
+    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="_ Player Deck Tracker\TrackedCardView.xaml.cs">
+    <Compile Include="Views\Player Deck Tracker\TrackedCardView.xaml.cs">
       <DependentUpon>TrackedCardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Player Deck Tracker\TrackedCardViewModel.cs" />
+    <Compile Include="Views\Player Deck Tracker\TrackedCardViewModel.cs" />
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Configuration Settings\ConfigurationSettingsView.xaml">
+    <Page Include="Views\Configuration Settings\ConfigurationSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Deck Manager\DeckImportView.xaml">
+    <Page Include="Views\Deck Manager\Deck Import\DeckImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Deck Manager\DeckManagerView.xaml">
+    <Page Include="Views\Deck Manager\DeckManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Deck Manager\DeckView.xaml">
+    <Page Include="Views\Deck Manager\DeckView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Deck Manager\MainWindow.xaml">
+    <Page Include="Views\Deck Manager\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -227,15 +228,15 @@
     <Compile Include="Events\Parsers\Power Log\IPowerLogEventParser.cs" />
     <Compile Include="Events\Streams\IEventStream.cs" />
     <Compile Include="Events\Streams\PowerLogEventStream.cs" />
-    <Compile Include="_ Deck Manager\MainWindow.xaml.cs">
+    <Compile Include="Views\Deck Manager\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="_ Player Deck Tracker\PlayerDeckTrackerView.xaml">
+    <Page Include="Views\Player Deck Tracker\PlayerDeckTrackerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="_ Player Deck Tracker\TrackedCardView.xaml">
+    <Page Include="Views\Player Deck Tracker\TrackedCardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

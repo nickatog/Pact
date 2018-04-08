@@ -244,11 +244,11 @@ namespace Pact
         : IDeckImportInterface
     {
         private readonly IModalDisplay _modalDisplay;
-        private readonly IDeckImportModalViewModelFactory _viewModelFactory;
+        private readonly IDeckImportViewModelFactory _viewModelFactory;
 
         public DeckImportInterface(
             IModalDisplay modalDisplay,
-            IDeckImportModalViewModelFactory viewModelFactory)
+            IDeckImportViewModelFactory viewModelFactory)
         {
             _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
             _viewModelFactory = viewModelFactory.Require(nameof(viewModelFactory));

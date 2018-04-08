@@ -20,6 +20,7 @@ namespace Pact
         private bool? _opponentCoinStatus;
 
         private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
+        private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
 
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
@@ -62,15 +63,25 @@ namespace Pact
                 _gameEventDispatcher.RegisterHandler(handler);
 
             // card added to deck: if not a card that originally started in the deck, add new view model for it
+
+            _viewEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
+                    __ =>
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"))));
+
+            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
+                _viewEventDispatcher.RegisterHandler(handler);
         }
 
         public void Cleanup()
         {
-            _gameEventHandlers.ForEach(__ => _gameEventDispatcher.UnregisterHandler(__));
-
+            _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.UnregisterHandler(__handler));
             _gameEventHandlers.Clear();
 
-            _cards.ForEach(__ => __.Cleanup());
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
+            _viewEventHandlers.Clear();
+
+            _cards.ForEach(__card => __card.Cleanup());
         }
 
         private void Reset()
@@ -109,6 +120,8 @@ namespace Pact
         public IConfigurationSettings ConfigurationSettings => _configurationSettings;
 
         public int Count => _cards.Sum(__card => __card.Count);
+
+        public int FontSize => _configurationSettings.FontSize;
 
         public bool? OpponentCoinStatus => _opponentCoinStatus;
 

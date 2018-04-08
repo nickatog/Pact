@@ -2,37 +2,26 @@
 using System.IO;
 using System.Text;
 using System.Windows.Input;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public struct DeckImportModalResult
-    {
-        public Decklist Decklist { get; private set; }
-        public string Title { get; private set; }
-
-        public DeckImportModalResult(
-            string title,
-            Decklist decklist)
-        {
-            Decklist = decklist;
-            Title = title;
-        }
-    }
-
-    public sealed class DeckImportModalViewModel
-        : IModalViewModel<DeckImportModalResult?>
+    public sealed class DeckImportViewModel
+        : IModalViewModel<DeckImportResult?>
     {
         private readonly IDecklistSerializer _decklistSerializer;
 
-        public DeckImportModalViewModel(
+        public DeckImportViewModel(
             IDecklistSerializer decklistSerializer)
         {
-            _decklistSerializer = decklistSerializer ?? throw new ArgumentNullException(nameof(decklistSerializer));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
         }
+
+        public ICommand Cancel => new DelegateCommand(() => OnClosed?.Invoke(null));
 
         public string DeckString { get; set; }
 
-        public ICommand Cancel => new DelegateCommand(() => OnClosed?.Invoke(null));
+        public string DeckTitle { get; set; }
 
         public ICommand ImportDeck =>
             new DelegateCommand(
@@ -45,7 +34,7 @@ namespace Pact
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
 
-                        OnClosed?.Invoke(new DeckImportModalResult(DeckTitle, decklist));
+                        OnClosed?.Invoke(new DeckImportResult(DeckTitle, decklist));
                     }
                     catch (Exception)
                     {
@@ -53,8 +42,6 @@ namespace Pact
                     }
                 });
 
-        public string DeckTitle { get; set; }
-
-        public event Action<DeckImportModalResult?> OnClosed;
+        public event Action<DeckImportResult?> OnClosed;
     }
 }

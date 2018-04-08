@@ -2,20 +2,20 @@
 
 namespace Pact
 {
-    public sealed class DeckImportModalViewModelFactory
-        : IDeckImportModalViewModelFactory
+    public sealed class DeckImportViewModelFactory
+        : IDeckImportViewModelFactory
     {
         private readonly IDecklistSerializer _decklistSerializer;
 
-        public DeckImportModalViewModelFactory(
+        public DeckImportViewModelFactory(
             IDecklistSerializer decklistSerializer)
         {
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
         }
 
-        IModalViewModel<DeckImportModalResult?> IDeckImportModalViewModelFactory.Create()
+        IModalViewModel<DeckImportResult?> IDeckImportViewModelFactory.Create()
         {
-            return new DeckImportModalViewModel(_decklistSerializer);
+            return new DeckImportViewModel(_decklistSerializer);
         }
     }
 }

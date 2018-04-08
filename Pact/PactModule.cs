@@ -83,8 +83,8 @@ namespace Pact
 
             // IDeckImportModalViewModelFactory
             builder
-            .RegisterType<DeckImportModalViewModelFactory>()
-            .As<IDeckImportModalViewModelFactory>()
+            .RegisterType<DeckImportViewModelFactory>()
+            .As<IDeckImportViewModelFactory>()
             .SingleInstance();
 
             // IDeckInfoRepository
@@ -205,7 +205,7 @@ namespace Pact
 
             // IModalDisplay
             builder
-            .RegisterType<ModalDisplay>()
+            .RegisterType<MainWindowModalDisplay>()
             .As<IModalDisplay>();
 
             // ISerializers

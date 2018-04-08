@@ -35,13 +35,13 @@ namespace Pact
             _instance = this;
         }
 
-        public IModalViewModel ModalViewModel { get; private set; }
+        public object ModalViewModel { get; private set; }
 
         public void SetModalViewModel<TResult>(
             IModalViewModel<TResult> viewModel)
         {
             viewModel.OnClosed +=
-                __result =>
+                __ =>
                 {
                     ModalViewModel = null;
 

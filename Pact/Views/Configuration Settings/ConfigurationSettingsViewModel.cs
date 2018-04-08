@@ -1,5 +1,5 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -10,7 +10,7 @@ namespace Pact
         public ConfigurationSettingsViewModel(
             IConfigurationSettings configurationSettings)
         {
-            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
+            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
 
             FontSize = _configurationSettings.FontSize;
         }

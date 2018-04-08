@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
         mc:Ignorable="d"
-        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True">
+        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="Segoe UI">
     <Window.Resources>
         <ControlTemplate x:Key="SideButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">
@@ -32,7 +32,19 @@
 
     <Grid>
         <Grid Background="#40000000" Panel.ZIndex="1" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
-            <ContentControl Content="{Binding ModalViewModel}" Height="Auto" Width="Auto" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="12.5*" />
+                <ColumnDefinition Width="75*" />
+                <ColumnDefinition Width="12.5*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModalViewModel}" />
         </Grid>
 
         <Grid Background="Gray">

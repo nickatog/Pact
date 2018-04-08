@@ -2,7 +2,7 @@
 
 namespace Pact
 {
-    public sealed class ModalDisplay
+    public sealed class MainWindowModalDisplay
         : IModalDisplay
     {
         void IModalDisplay.Show<TResult>(
@@ -12,9 +12,9 @@ namespace Pact
             if (viewModel == null)
                 throw new ArgumentNullException(nameof(viewModel));
 
-            viewModel.OnClosed += onClosed;
-
             MainWindowViewModel.Instance.SetModalViewModel(viewModel);
+
+            viewModel.OnClosed += onClosed;
         }
     }
 }
