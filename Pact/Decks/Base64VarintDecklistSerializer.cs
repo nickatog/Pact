@@ -15,12 +15,12 @@ namespace Pact
         public VarintDecklistSerializer(
             ICardInfoProvider cardInfoProvider)
         {
-            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
         }
 
         async Task<Decklist> IDecklistSerializer.Deserialize(Stream stream)
         {
-            stream.ThrowIfNull(nameof(stream));
+            stream.Require(nameof(stream));
 
             stream.Seek(3, SeekOrigin.Begin);
 
@@ -63,10 +63,10 @@ namespace Pact
 
         async Task IDecklistSerializer.Serialize(Stream stream, Decklist decklist)
         {
-            stream.ThrowIfNull(nameof(stream));
+            stream.Require(nameof(stream));
 
             IEnumerable<(string CardID, int Count)> decklistCards = decklist.Cards;
-            decklistCards.ThrowIfNull($"{nameof(decklist)}.{nameof(decklist.Cards)}");
+            decklistCards.Require($"{nameof(decklist)}.{nameof(decklist.Cards)}");
 
             await stream.WriteAsync(new byte[] { 0, 1, 2 }, 0, 3);
 

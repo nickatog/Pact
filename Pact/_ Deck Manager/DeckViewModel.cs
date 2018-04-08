@@ -46,16 +46,16 @@ namespace Pact
             string title,
             IEnumerable<GameResult> gameResults = null)
         {
-            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
-            _emplaceDeck = emplaceDeck.ThrowIfNull(nameof(emplaceDeck));
-            _eventDispatcherFactory = eventDispatcherFactory.ThrowIfNull(nameof(eventDispatcherFactory));
-            _eventStreamFactory = eventStreamFactory.ThrowIfNull(nameof(eventStreamFactory));
-            _findPosition = findPosition.ThrowIfNull(nameof(findPosition));
-            _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
-            _gameResultStorage = gameResultStorage.ThrowIfNull(nameof(gameResultStorage));
-            _logger = logger.ThrowIfNull(nameof(logger));
-            _viewEventDispatcher = viewEventDispatcher.ThrowIfNull(nameof(viewEventDispatcher));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _emplaceDeck = emplaceDeck.Require(nameof(emplaceDeck));
+            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
+            _findPosition = findPosition.Require(nameof(findPosition));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
+            _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
+            _logger = logger.Require(nameof(logger));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _delete = delete;
             
@@ -188,7 +188,7 @@ namespace Pact
             public DeckTrackingEvent(
                 DeckViewModel deckViewModel)
             {
-                _deckViewModel = deckViewModel.ThrowIfNull(nameof(deckViewModel));
+                _deckViewModel = deckViewModel.Require(nameof(deckViewModel));
             }
 
             public DeckViewModel DeckViewModel => _deckViewModel;

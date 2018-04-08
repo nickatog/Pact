@@ -16,14 +16,14 @@ namespace Pact
             IDecklistSerializer serializer,
             Encoding encoding = null)
         {
-            _serializer = serializer.ThrowIfNull(nameof(serializer));
+            _serializer = serializer.Require(nameof(serializer));
 
             _encoding = encoding ?? Encoding.Default;
         }
 
         async Task<Decklist> IDecklistSerializer.Deserialize(Stream stream)
         {
-            stream.ThrowIfNull(nameof(stream));
+            stream.Require(nameof(stream));
 
             string deckstring = null;
             using (var reader = new StreamReader(stream, _encoding))
@@ -49,7 +49,7 @@ namespace Pact
 
         async Task IDecklistSerializer.Serialize(Stream stream, Decklist decklist)
         {
-            stream.ThrowIfNull(nameof(stream));
+            stream.Require(nameof(stream));
 
             byte[] bytes;
             using (var dataStream = new MemoryStream())

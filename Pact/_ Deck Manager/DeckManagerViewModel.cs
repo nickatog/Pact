@@ -15,6 +15,7 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
         private readonly IDeckViewModelFactory _deckViewModelFactory;
@@ -28,6 +29,7 @@ namespace Pact
         public DeckManagerViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
             IDeckViewModelFactory deckViewModelFactory,
@@ -36,16 +38,17 @@ namespace Pact
             ILogger logger,
             Valkyrie.IEventDispatcher viewEventDispatcher)
         {
-            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
-            _deckInfoRepository = deckInfoRepository.ThrowIfNull(nameof(deckInfoRepository));
-            _decklistSerializer = decklistSerializer.ThrowIfNull(nameof(decklistSerializer));
-            _deckViewModelFactory = deckViewModelFactory.ThrowIfNull(nameof(deckViewModelFactory));
-            _eventDispatcherFactory = eventDispatcherFactory.ThrowIfNull(nameof(eventDispatcherFactory));
-            _logger = logger.ThrowIfNull(nameof(logger));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
+            _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckViewModelFactory = deckViewModelFactory.Require(nameof(deckViewModelFactory));
+            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _logger = logger.Require(nameof(logger));
             _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
-            eventStreamFactory.ThrowIfNull(nameof(eventStreamFactory));
+            eventStreamFactory.Require(nameof(eventStreamFactory));
 
             _gameEventDispatcher = _eventDispatcherFactory.Create();
             RegisterDebugHandlers();
@@ -111,63 +114,10 @@ namespace Pact
         private readonly IList<DeckViewModel> _decks;
         public IEnumerable<DeckViewModel> Decks => _decks;
 
-        // Abstract these and move elsewhere
-        public struct DeckImportDetails
-        {
-            public Decklist Decklist { get; private set; }
-            public string Title { get; private set; }
-
-            public DeckImportDetails(
-                string title,
-                Decklist decklist)
-            {
-                Decklist = decklist;
-                Title = title;
-            }
-        }
-
-        public interface IDeckImportInterface
-        {
-            Task<DeckImportDetails?> GetDecklist();
-        }
-
-        public interface IDeckImportModalViewModelFactory
-        {
-            // what's the generic return type for the modal?
-            // probably not the DeckImportDetails that the deck import interface returns
-        }
-
-        public sealed class DeckImportInterface
-            : IDeckImportInterface
-        {
-            private readonly IDecklistSerializer _decklistSerializer;
-
-            public DeckImportInterface(
-                IDecklistSerializer decklistSerializer)
-            {
-                _decklistSerializer = decklistSerializer.ThrowIfNull(nameof(decklistSerializer));
-            }
-
-            Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
-            {
-                // create view model (via factory?)
-                // pass to modal display, along with result handler
-                // handler inspects result and creates deck import details object for task completion source
-
-                var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
-                if (!(view.ShowDialog() ?? false))
-                    return Task.FromResult<DeckImportDetails?>(default);
-
-                return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.DeckTitle, view.Deck));
-            }
-        }
-
         public ICommand ImportDeck =>
             new DelegateCommand(
                 async () =>
                 {
-                    IDeckImportInterface deckImportInterface = new DeckImportInterface(_decklistSerializer);
-
                     // go back to using a view model here? or is it just jumping through hoops at that point to get to an "appropriate" way of doing things
                     // it seems that this would need to know about the view either way
                     // unless this didn't create the view itself, and set a view model property on some top-level object?
@@ -175,7 +125,7 @@ namespace Pact
                     //var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
                     //if (view.ShowDialog() ?? false)
 
-                    DeckImportDetails? deck = await deckImportInterface.GetDecklist();
+                    DeckImportDetails? deck = await _deckImportInterface.GetDecklist();
                     if (deck == null)
                         return;
 
@@ -267,6 +217,70 @@ namespace Pact
         public string GetInterfaces(params string[] names)
         {
             return string.Join(", ", names.Select(__name => "IHas" + __name));
+        }
+    }
+
+    // Abstract these and move elsewhere
+    public struct DeckImportDetails
+    {
+        public Decklist Decklist { get; private set; }
+        public string Title { get; private set; }
+
+        public DeckImportDetails(
+            string title,
+            Decklist decklist)
+        {
+            Decklist = decklist;
+            Title = title;
+        }
+    }
+
+    public interface IDeckImportInterface
+    {
+        Task<DeckImportDetails?> GetDecklist();
+    }
+
+    public sealed class DeckImportInterface
+        : IDeckImportInterface
+    {
+        private readonly IModalDisplay _modalDisplay;
+        private readonly IDeckImportModalViewModelFactory _viewModelFactory;
+
+        public DeckImportInterface(
+            IModalDisplay modalDisplay,
+            IDeckImportModalViewModelFactory viewModelFactory)
+        {
+            _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
+            _viewModelFactory = viewModelFactory.Require(nameof(viewModelFactory));
+        }
+
+        Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
+        {
+            // create view model (via factory?)
+            // pass to modal display, along with result handler
+            // handler inspects result and creates deck import details object for task completion source
+
+            var result = new TaskCompletionSource<DeckImportDetails?>();
+
+            _modalDisplay.Show(
+                _viewModelFactory.Create(),
+                __result =>
+                {
+                    DeckImportDetails? res = null;
+
+                    if (__result.HasValue)
+                        res = new DeckImportDetails(__result.Value.Title, __result.Value.Decklist);
+
+                    result.SetResult(res);
+                });
+
+            //var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
+            //if (!(view.ShowDialog() ?? false))
+            //    return Task.FromResult<DeckImportDetails?>(default);
+
+            //return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.DeckTitle, view.Deck));
+
+            return result.Task;
         }
     }
 }

@@ -28,9 +28,9 @@ namespace Pact
             string cardID,
             int count)
         {
-            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
-            _gameEventDispatcher = gameEventDispatcher.ThrowIfNull(nameof(gameEventDispatcher));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
             _cardID = cardID;

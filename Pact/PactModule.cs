@@ -21,6 +21,7 @@ namespace Pact
                     new DeckManagerViewModel(
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IConfigurationSettings>(),
+                        __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<IDeckInfoRepository>(),
                         __context.Resolve<IDecklistSerializer>(),
                         __context.Resolve<IDeckViewModelFactory>(),
@@ -72,6 +73,18 @@ namespace Pact
             .RegisterDecorator<IConfigurationSettings>(
                 (__context, __inner) =>
                     new EventDispatchingConfigurationSettings(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
+            .SingleInstance();
+
+            // IDeckImportInterface
+            builder
+            .RegisterType<DeckImportInterface>()
+            .As<IDeckImportInterface>()
+            .SingleInstance();
+
+            // IDeckImportModalViewModelFactory
+            builder
+            .RegisterType<DeckImportModalViewModelFactory>()
+            .As<IDeckImportModalViewModelFactory>()
             .SingleInstance();
 
             // IDeckInfoRepository

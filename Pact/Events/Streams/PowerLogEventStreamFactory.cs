@@ -13,8 +13,8 @@ namespace Pact
             IConfigurationSettings configurationSettings,
             IEnumerable<IGameStateDebugEventParser> eventParsers)
         {
-            _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
-            _eventParsers = eventParsers.ThrowIfNull(nameof(eventParsers));
+            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _eventParsers = eventParsers.Require(nameof(eventParsers));
         }
 
         IEventStream IEventStreamFactory.Create()

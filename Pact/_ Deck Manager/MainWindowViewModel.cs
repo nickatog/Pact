@@ -30,11 +30,22 @@ namespace Pact
             _viewModel = _deckManagerViewModel;
         }
 
-        public void SetModalViewModel(
-            IModalViewModel viewModel)
+        public IModalViewModel ModalViewModel { get; private set; }
+
+        public void SetModalViewModel<TResult>(
+            IModalViewModel<TResult> viewModel)
         {
-            // set private property
-            // raise property changed event
+            viewModel.OnClosed +=
+                __result =>
+                {
+                    ModalViewModel = null;
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModalViewModel)));
+                };
+
+            ModalViewModel = viewModel;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModalViewModel)));
         }
 
         public ICommand ShowConfigurationSettings =>

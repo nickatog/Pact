@@ -22,12 +22,12 @@ namespace Pact
             IGameResultStorage gameResultStorage,
             ILogger logger)
         {
-            _cardInfoProvider = cardInfoProvider.ThrowIfNull(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.ThrowIfNull(nameof(configurationSettings));
-            _eventDispatcherFactory = eventDispatcherFactory.ThrowIfNull(nameof(eventDispatcherFactory));
-            _eventStreamFactory = eventStreamFactory.ThrowIfNull(nameof(eventStreamFactory));
-            _gameResultStorage = gameResultStorage.ThrowIfNull(nameof(gameResultStorage));
-            _logger = logger.ThrowIfNull(nameof(logger));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
+            _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
+            _logger = logger.Require(nameof(logger));
         }
 
         DeckViewModel IDeckViewModelFactory.Create(

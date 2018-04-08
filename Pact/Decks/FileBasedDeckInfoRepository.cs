@@ -17,9 +17,9 @@ namespace Pact
             ICollectionSerializer<DeckInfo> deckInfoCollectionSerializer,
             string filePath)
         {
-            _deckInfoCollectionSerializer = deckInfoCollectionSerializer.ThrowIfNull(nameof(deckInfoCollectionSerializer));
+            _deckInfoCollectionSerializer = deckInfoCollectionSerializer.Require(nameof(deckInfoCollectionSerializer));
 
-            _filePath = filePath.ThrowIfNull(nameof(filePath));
+            _filePath = filePath.Require(nameof(filePath));
         }
 
         async Task<IEnumerable<DeckInfo>> IDeckInfoRepository.GetAll()

@@ -1,4 +1,5 @@
 ﻿using System;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -10,12 +11,12 @@ namespace Pact
         public ModalDisplay(
             MainWindowViewModel mainWindowViewModel)
         {
-            _mainWindowViewModel = mainWindowViewModel ?? throw new ArgumentNullException(nameof(mainWindowViewModel));
+            _mainWindowViewModel = mainWindowViewModel.Require(nameof(mainWindowViewModel));
         }
 
-        void IModalDisplay.Show<TViewModel>(
-            IModalViewModel<TViewModel> viewModel,
-            Action<TViewModel> onClosed)
+        void IModalDisplay.Show<TResult>(
+            IModalViewModel<TResult> viewModel,
+            Action<TResult> onClosed)
         {
             if (viewModel == null)
                 throw new ArgumentNullException(nameof(viewModel));

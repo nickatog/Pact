@@ -1,11 +1,11 @@
-﻿<Window x:Class="Pact.DeckImportView"
+﻿<UserControl x:Class="Pact.DeckImportView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
         mc:Ignorable="d"
-        Title="Import Deck" Height="200" Width="300" WindowStartupLocation="CenterOwner">
+        Height="200" Width="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -26,8 +26,8 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             
-            <Button Grid.Column="0" Content="Cancel" IsCancel="True" Margin="0,0,1,0" />
+            <Button Grid.Column="0" Content="Cancel" Command="{Binding Cancel}" Margin="0,0,1,0" />
             <Button Grid.Column="1" Content="Import" Command="{Binding ImportDeck}" Margin="1,0,0,0" />
         </Grid>
     </Grid>
-</Window>
+</UserControl>

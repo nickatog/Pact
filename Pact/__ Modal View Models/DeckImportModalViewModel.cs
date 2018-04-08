@@ -1,18 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Pact
 {
-    public struct DeckImportModalReturn
-    { }
+    public struct DeckImportModalResult
+    {
+        public Decklist Decklist { get; private set; }
+        public string Title { get; private set; }
+
+        public DeckImportModalResult(
+            string title,
+            Decklist decklist)
+        {
+            Decklist = decklist;
+            Title = title;
+        }
+    }
 
     public sealed class DeckImportModalViewModel
-        : IModalViewModel<DeckImportModalReturn?>
+        : IModalViewModel<DeckImportModalResult?>
     {
         private readonly IDecklistSerializer _decklistSerializer;
 
@@ -22,9 +30,9 @@ namespace Pact
             _decklistSerializer = decklistSerializer ?? throw new ArgumentNullException(nameof(decklistSerializer));
         }
 
-        public Decklist Deck { get; private set; }
-
         public string DeckString { get; set; }
+
+        public ICommand Cancel => new DelegateCommand(() => OnClosed?.Invoke(null));
 
         public ICommand ImportDeck =>
             new DelegateCommand(
@@ -32,22 +40,21 @@ namespace Pact
                 {
                     try
                     {
+                        Decklist decklist = default;
+
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
-                            Deck = _decklistSerializer.Deserialize(stream).Result;
+                            decklist = _decklistSerializer.Deserialize(stream).Result;
+
+                        OnClosed?.Invoke(new DeckImportModalResult(DeckTitle, decklist));
                     }
                     catch (Exception)
                     {
-                        return;
+                        // notify user that deserialization failed for some reason
                     }
-
-                    // how are we closing the modal now that it's not its own window?
-                    //DialogResult = true;
-
-                    //Close();
                 });
 
         public string DeckTitle { get; set; }
 
-        public event Action<DeckImportModalReturn?> OnClosed;
+        public event Action<DeckImportModalResult?> OnClosed;
     }
 }

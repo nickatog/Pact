@@ -6,6 +6,9 @@
         <DataTemplate DataType="{x:Type local:ConfigurationSettingsViewModel}">
             <local:ConfigurationSettingsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type local:DeckImportModalViewModel}">
+            <local:DeckImportView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DeckManagerViewModel}">
             <local:DeckManagerView />
         </DataTemplate>
@@ -18,6 +21,7 @@
 
         <local:CardCountToOpacityConverter x:Key="CardCountToOpacity" />
         <local:ClassNameToBrushConverter x:Key="ClassNameToBrush" />
+        <local:CollapsedVisibilityWhenNullConverter x:Key="CollapsedVisibilityWhenNull" />
         <local:HiddenWhenZeroCountConverter x:Key="HiddenWhenZeroCount" />
         <local:OpponentCoinStatusToBrushConverter x:Key="OpponentCoinStatusToBrush" />
         <local:OpponentCoinStatusToVisibilityConverter x:Key="OpponentCoinStatusToVisibility" />
