@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Pact"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:behaviors="clr-namespace:Pact.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -33,21 +32,48 @@
             Command="{Binding SaveSettings}"
             Margin="4" />
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
+        <Label
+            Content="Player Deck Tracker"
+            FontSize="20" FontWeight="Bold" />
 
-            <Label Grid.Row="0" Content="Font size:" FontSize="14" HorizontalAlignment="Left" />
-            <TextBox Grid.Row="1" Text="{Binding ElementName=FontSizeSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" Template="{StaticResource TextBox}" FontSize="14" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <i:Interaction.Behaviors>
-                    <behaviors:AllowOnlyPositiveIntegers />
-                </i:Interaction.Behaviors>
-            </TextBox>
-            <Slider Grid.Row="2" Name="FontSizeSlider" Value="{Binding FontSize}" Minimum="6" Maximum="48" Margin="10,0,10,0" TickFrequency="1" IsSnapToTickEnabled="True" />
+        <Rectangle
+            Fill="Black"
+            Height="1"
+            Margin="10,0,10,4" />
+
+        <Grid Margin="10,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <Label
+                Grid.Row="0" Grid.Column="0"
+                Content="Font size: "
+                FontSize="14"
+                VerticalAlignment="Center" HorizontalAlignment="Right" />
+        
+            <TextBox
+                Grid.Row="0" Grid.Column="1"
+                Text="{Binding ElementName=FontSizeSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"
+                IsEnabled="False"
+                FontSize="14" 
+                Template="{StaticResource TextBox}"
+                Width="30"
+                VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
+        
+            <Slider
+                Grid.Row="0" Grid.Column="2"
+                DockPanel.Dock="Right"
+                Name="FontSizeSlider"
+                Value="{Binding FontSize}" Minimum="6" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True"
+                VerticalAlignment="Center"
+                Margin="10,0,10,0" />
         </Grid>
     </StackPanel>
 </UserControl>
