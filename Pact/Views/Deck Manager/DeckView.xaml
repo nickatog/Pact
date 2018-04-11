@@ -67,9 +67,34 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
+                    
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label
+                            Grid.Column="0"
+                            Content="{Binding Title}"
+                            FontFamily="Arial" FontSize="18" FontWeight="Bold"
+                            VerticalAlignment="Top"
+                            Margin="-2,-2,0,0" />
 
-                    <!-- FontAwesome pencil icon: f303 -->
-                    <Label Content="{Binding Title}" Grid.Row="0" FontFamily="Arial" FontSize="18" FontWeight="Bold" VerticalAlignment="Top" Margin="-2,-2,0,0" />
+                        <Button
+                            Grid.Column="1"
+                            Content="&#xf044;"
+                            FontFamily="{StaticResource FontAwesome}" FontSize="18"
+                            Margin="0,5,4,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <ContentPresenter />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" VerticalAlignment="Top">
                         <Label Content="Wins: " />
