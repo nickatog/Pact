@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Pact.Extensions.Contract;
 
@@ -14,6 +17,7 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly IDecklistSerializer _decklistSerializer;
         private readonly Action<DeckViewModel> _delete;
         private readonly Action<DeckViewModel, int> _emplaceDeck;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
@@ -32,6 +36,7 @@ namespace Pact
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            IDecklistSerializer decklistSerializer,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
@@ -48,6 +53,7 @@ namespace Pact
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
             _emplaceDeck = emplaceDeck.Require(nameof(emplaceDeck));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
@@ -78,6 +84,23 @@ namespace Pact
         private bool _canDelete = true;
 
         public string Class => _cardInfoProvider.GetCardInfo(_decklist.HeroID)?.Class;
+
+        public ICommand CopyDeck =>
+            new DelegateCommand(
+                () =>
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        _decklistSerializer.Serialize(stream, _decklist).Wait();
+
+                        stream.Position = 0;
+
+                        var bytes = new byte[stream.Length];
+                        stream.Read(bytes, 0, (int)stream.Length);
+
+                        Clipboard.SetText(Encoding.Default.GetString(bytes));
+                    }
+                });
 
         public Guid DeckID => _deckID;
 

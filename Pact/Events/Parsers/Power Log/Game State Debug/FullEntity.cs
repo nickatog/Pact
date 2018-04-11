@@ -61,6 +61,9 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                             // Jade Idol
                             if (parentBlockEntityCardID.Eq("CFM_602"))
                                 events.Add(new Events.CardAddedToDeck(playerID, "CFM_602"));
+                            // Un'Goro Pack
+                            else if (parentBlockEntityCardID.Eq("UNG_851"))
+                                events.Add(new Events.CardAddedToDeck(playerID, "UNG_851t1"));
                         }
                         else if (parentBlockType.Eq("TRIGGER") && zoneTag.Eq("DECK"))
                         {

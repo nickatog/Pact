@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
         mc:Ignorable="d"
-        Title="Pact" Height="500" Width="350" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="Segoe UI">
+        Title="Pact" Height="500" Width="400" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="Segoe UI">
     <Window.Resources>
         <ControlTemplate x:Key="SideButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">

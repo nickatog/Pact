@@ -15,7 +15,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
-        private IEnumerable<TrackedCardViewModel> _cards;
+        private IList<TrackedCardViewModel> _cards;
         private readonly Decklist _decklist;
         private bool? _opponentCoinStatus;
 
@@ -37,6 +37,27 @@ namespace Pact
             _decklist = decklist;
 
             Reset();
+
+            _gameEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
+                    __ =>
+                    {
+                        if (_cards.Any(__card => string.Equals(__card.CardID, __.CardID, StringComparison.OrdinalIgnoreCase)))
+                            return;
+
+                        int? playerID = _cards.First()?.PlayerID;
+
+                        _cards.Add(new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __.CardID, 1, playerID));
+
+                        _cards =
+                            _cards
+                            .OrderBy(__card => __card.Cost)
+                            .ThenBy(__card => __card.Name)
+                            .ToList();
+
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                    }));
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.GameStarted>(__ => Reset()));
@@ -61,8 +82,6 @@ namespace Pact
 
             foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
                 _gameEventDispatcher.RegisterHandler(handler);
-
-            // card added to deck: if not a card that originally started in the deck, add new view model for it
 
             _viewEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(

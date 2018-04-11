@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using System.Windows;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -17,14 +18,25 @@ namespace Pact
             ISerializer<ConfigurationStorage> configurationSerializer,
             string filePath)
         {
-            _configurationSerializer = configurationSerializer ?? throw new ArgumentNullException(nameof(configurationSerializer));
-            _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
+            _configurationSerializer = configurationSerializer.Require(nameof(configurationSerializer));
+            _filePath = filePath.Require(nameof(filePath));
 
             if (!File.Exists(_filePath))
                 return;
 
             using (var stream = new FileStream(_filePath, FileMode.Open))
                 _configurationStorage = _configurationSerializer.Deserialize(stream).Result;
+        }
+
+        int IConfigurationSettings.CardTextOffset
+        {
+            get => _configurationStorage.CardTextOffset ?? 0;
+            set
+            {
+                _configurationStorage.CardTextOffset = value;
+
+                SaveToFile();
+            }
         }
 
         int IConfigurationSettings.FontSize
@@ -82,6 +94,13 @@ namespace Pact
     public struct ConfigurationStorage
         : ISerializable<ConfigurationStorage>
     {
+        private int? _cardTextOffset;
+        public int? CardTextOffset
+        {
+            get => _cardTextOffset;
+            set { _cardTextOffset = value; }
+        }
+
         private int? _fontSize;
         public int? FontSize
         {

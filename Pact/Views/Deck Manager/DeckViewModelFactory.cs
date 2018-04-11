@@ -9,6 +9,7 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly IDecklistSerializer _decklistSerializer;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IGameResultStorage _gameResultStorage;
@@ -17,6 +18,7 @@ namespace Pact
         public DeckViewModelFactory(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            IDecklistSerializer decklistSerializer,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             IGameResultStorage gameResultStorage,
@@ -24,6 +26,7 @@ namespace Pact
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
             _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
@@ -45,6 +48,7 @@ namespace Pact
                 new DeckViewModel(
                     _cardInfoProvider,
                     _configurationSettings,
+                    _decklistSerializer,
                     _eventDispatcherFactory,
                     _eventStreamFactory,
                     gameEventDispatcher,

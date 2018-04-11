@@ -17,6 +17,17 @@ namespace Pact
             _eventDispatcher = eventDispatcher ?? throw new ArgumentNullException(nameof(eventDispatcher));
         }
 
+        int IConfigurationSettings.CardTextOffset
+        {
+            get => _configurationSettings.CardTextOffset;
+            set
+            {
+                _configurationSettings.CardTextOffset = value;
+
+                _eventDispatcher.DispatchEvent(new Events.DeckTrackerCardTextOffsetChanged());
+            }
+        }
+
         int IConfigurationSettings.FontSize
         {
             get => _configurationSettings.FontSize;

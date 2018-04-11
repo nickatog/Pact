@@ -98,6 +98,7 @@
     <Compile Include="Configuration\FileBasedConfigurationSettings.cs" />
     <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
+    <Compile Include="Converters\SingleValueToThicknessConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
     <Compile Include="Behaviors\WindowBehavior.cs" />
     <Compile Include="Cards\CardInfo.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Events\CardRemovedFromDeck.cs" />
     <Compile Include="Events\GameEnded.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
+    <Compile Include="Events\View Events\DeckTrackerCardTextOffsetChanged.cs" />
     <Compile Include="Events\View Events\DeckTrackerFontSizeChanged.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />

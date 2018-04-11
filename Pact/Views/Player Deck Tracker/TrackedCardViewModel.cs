@@ -26,7 +26,8 @@ namespace Pact
             Valkyrie.IEventDispatcher gameEventDispatcher,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             string cardID,
-            int count)
+            int count,
+            int? playerID = null)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
@@ -35,6 +36,9 @@ namespace Pact
 
             _cardID = cardID;
             _count = count;
+
+            if (playerID.HasValue)
+                _playerID = playerID.Value;
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
@@ -100,6 +104,13 @@ namespace Pact
                 _gameEventDispatcher.RegisterHandler(handler);
 
             _viewEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.DeckTrackerCardTextOffsetChanged>(
+                    __event =>
+                    {
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CardTextOffset"));
+                    }));
+
+            _viewEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
                     __event =>
                     {
@@ -142,6 +153,10 @@ namespace Pact
             System.Diagnostics.Debug.WriteLine("DESTRUCTOR!");
         }
 
+        public string CardID => _cardID;
+
+        public int CardTextOffset => _configurationSettings.CardTextOffset;
+
         public string Class => _cardInfoProvider.GetCardInfo(_cardID)?.Class ?? "<UNKNOWN>";
 
         public int Cost => _cardInfoProvider.GetCardInfo(_cardID)?.Cost ?? 0;
@@ -151,6 +166,8 @@ namespace Pact
         public int FontSize => _configurationSettings.FontSize;
 
         public string Name => _cardInfoProvider.GetCardInfo(_cardID)?.Name ?? "<UNKNOWN>";
+
+        public int PlayerID => _playerID;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

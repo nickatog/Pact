@@ -50,6 +50,7 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             
             <Label
@@ -72,6 +73,29 @@
                 DockPanel.Dock="Right"
                 Name="FontSizeSlider"
                 Value="{Binding FontSize}" Minimum="6" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True"
+                VerticalAlignment="Center"
+                Margin="10,0,10,0" />
+
+            <Label
+                Grid.Row="1" Grid.Column="0"
+                Content="Card text offset: "
+                FontSize="14"
+                VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+            <TextBox
+                Grid.Row="1" Grid.Column="1"
+                Text="{Binding ElementName=CardTextOffsetSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"
+                IsEnabled="False"
+                FontSize="14" 
+                Template="{StaticResource TextBox}"
+                Width="30"
+                VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
+
+            <Slider
+                Grid.Row="1" Grid.Column="2"
+                DockPanel.Dock="Right"
+                Name="CardTextOffsetSlider"
+                Value="{Binding CardTextOffset}" Minimum="-20" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True"
                 VerticalAlignment="Center"
                 Margin="10,0,10,0" />
         </Grid>

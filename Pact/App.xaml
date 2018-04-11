@@ -26,6 +26,7 @@
         <local:OpponentCoinStatusToBrushConverter x:Key="OpponentCoinStatusToBrush" />
         <local:OpponentCoinStatusToVisibilityConverter x:Key="OpponentCoinStatusToVisibility" />
         <local:SelectedViewMatchesNameConverter x:Key="SelectedViewMatchesName" />
+        <local:SingleValueToThicknessConverter x:Key="SingleValueToThickness" />
 
         <FontFamily x:Key="BelweMedium">/fonts/Belwe-Medium.ttf#Belwe-Medium</FontFamily>
         <FontFamily x:Key="FontAwesome">/fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
