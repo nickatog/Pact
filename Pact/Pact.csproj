@@ -94,6 +94,7 @@
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
     <Compile Include="Behaviors\SaveWindowPositionBehavior.cs" />
+    <Compile Include="Behaviors\TestBehavior.cs" />
     <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
     <Compile Include="Configuration\FileBasedConfigurationSettings.cs" />
     <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />

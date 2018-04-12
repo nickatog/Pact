@@ -32,7 +32,7 @@
         <FontFamily x:Key="FontAwesome">/fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
 
         <ControlTemplate x:Key="ButtonMajor" TargetType="Button">
-            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4">
+            <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4" Background="Transparent">
                 <Label
                     Content="{TemplateBinding Content}"
                     FontFamily="Segoe UI" FontSize="18" FontWeight="Bold"
