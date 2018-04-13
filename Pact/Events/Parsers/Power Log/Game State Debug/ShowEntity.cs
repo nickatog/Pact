@@ -79,8 +79,8 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                                 events.Add(new Events.CardEnteredPlayFromDeck(playerID, cardID));
                             else if (zoneTag.Eq("GRAVEYARD"))
                                 events.Add(new Events.CardOverdrawnFromDeck(playerID, cardID));
-
-                            // if zoneTag.Eq("SETASIDE") then removed from deck? is there anything that would put it in setaside then back in the deck?
+                            else if (zoneTag.Eq("SETASIDE"))
+                                events.Add(new Events.CardRemovedFromDeck(playerID, cardID));
                         }
                     }
 
