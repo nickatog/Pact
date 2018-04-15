@@ -1,34 +1,36 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace Pact.Behaviors
 {
-    public static class TestBehavior
+    public static class ToggleVisibilityBehavior
     {
         public static readonly DependencyProperty ToggleButton =
             DependencyProperty.RegisterAttached(
                 "ToggleButton",
-                typeof(UIElement),
-                typeof(TestBehavior),
+                typeof(Button),
+                typeof(ToggleVisibilityBehavior),
                 new UIPropertyMetadata(null, OnToggleButtonChanged));
 
-        public static UIElement GetToggleButton(System.Windows.Controls.Button window)
+        public static Button GetToggleButton(UIElement element)
         {
-            return (UIElement)window.GetValue(ToggleButton);
+            return (Button)element.GetValue(ToggleButton);
         }
 
         private static void OnToggleButtonChanged(DependencyObject @object, DependencyPropertyChangedEventArgs args)
         {
-            if (@object is System.Windows.Controls.Button window)
+            if (@object is UIElement element)
             {
-                window.Click +=
+                Button button = GetToggleButton(element);
+                if (button == null)
+                    return;
+
+                button.Click +=
                     (__1, __2) =>
-                    {
-                        UIElement target = GetToggleButton(window);
-
-                        Visibility currentVisibility = target.Visibility;
-
-                        target.Visibility = currentVisibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-                    };
+                        element.Visibility =
+                            element.Visibility == Visibility.Visible
+                            ? Visibility.Collapsed
+                            : Visibility.Visible;
             }
         }
     }

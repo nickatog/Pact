@@ -67,7 +67,9 @@ namespace Pact
             
             _deckID = deckID;
             _decklist = decklist;
-            _title = title;
+            _title = title ?? string.Empty;
+
+            Title = _title;
 
             _gameResults = new List<GameResult>(gameResults ?? Enumerable.Empty<GameResult>());
 
@@ -127,7 +129,7 @@ namespace Pact
 
         public int Position => _findPosition(this);
 
-        public string Title => _title ?? string.Empty;
+        public string Title { get; set; }
 
         public ICommand TrackDeck =>
             new DelegateCommand(

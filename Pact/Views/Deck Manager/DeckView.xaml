@@ -76,16 +76,34 @@
 
                         <Label
                             Grid.Column="0"
-                            x:Name="DeckTitle"
                             Content="{Binding Title}"
                             FontFamily="Arial" FontSize="18" FontWeight="Bold"
                             VerticalAlignment="Top"
                             Margin="-2,-2,0,0">
-                            
+                            <Label.Style>
+                                <Style>
+                                    <Setter Property="behaviors:ToggleVisibilityBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                </Style>
+                            </Label.Style>
                         </Label>
+
+                        <TextBox
+                            Grid.Column="0"
+                            Text="{Binding Title}"
+                            FontFamily="Arial" FontSize="18" FontWeight="Bold"
+                            VerticalAlignment="Top"
+                            Margin="-2,-2,0,0"
+                            Visibility="Collapsed">
+                            <TextBox.Style>
+                                <Style>
+                                    <Setter Property="behaviors:ToggleVisibilityBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                </Style>
+                            </TextBox.Style>                            
+                        </TextBox>
 
                         <Button
                             Grid.Column="1"
+                            x:Name="EditDeckTitle"
                             Content="&#xf044;"
                             FontFamily="{StaticResource FontAwesome}" FontSize="18"
                             Margin="0,5,4,0">
@@ -96,12 +114,6 @@
                                     </Grid>
                                 </ControlTemplate>
                             </Button.Template>
-
-                            <Button.Style>
-                                <Style>
-                                    <Setter Property="behaviors:TestBehavior.ToggleButton" Value="{Binding ElementName=DeckTitle}" />
-                                </Style>
-                            </Button.Style>
                         </Button>
                     </Grid>
 
