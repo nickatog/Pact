@@ -82,7 +82,8 @@
                             Margin="-2,-2,0,0">
                             <Label.Style>
                                 <Style>
-                                    <Setter Property="behaviors:ToggleVisibilityBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="behaviors:SetCollapsedOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="behaviors:SetVisibleOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
                                 </Style>
                             </Label.Style>
                         </Label>
@@ -92,13 +93,15 @@
                             Text="{Binding Title}"
                             FontFamily="Arial" FontSize="18" FontWeight="Bold"
                             VerticalAlignment="Top"
-                            Margin="-2,-2,0,0"
+                            Margin="0,2,4,4"
                             Visibility="Collapsed">
                             <TextBox.Style>
                                 <Style>
-                                    <Setter Property="behaviors:ToggleVisibilityBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="behaviors:SetCollapsedOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="behaviors:SetVisibleOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="behaviors:SelectAllOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
                                 </Style>
-                            </TextBox.Style>                            
+                            </TextBox.Style>
                         </TextBox>
 
                         <Button
@@ -106,7 +109,8 @@
                             x:Name="EditDeckTitle"
                             Content="&#xf044;"
                             FontFamily="{StaticResource FontAwesome}" FontSize="18"
-                            Margin="0,5,4,0">
+                            Margin="0,5,4,0"
+                            Panel.ZIndex="1">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Grid>
@@ -114,6 +118,39 @@
                                     </Grid>
                                 </ControlTemplate>
                             </Button.Template>
+
+                            <Button.Style>
+                                <Style>
+                                    <Setter Property="behaviors:CollapseOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="behaviors:ShowOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Grid Grid.Column="1" Background="White" Panel.ZIndex="0" />
+
+                        <Button
+                            Grid.Column="1"
+                            x:Name="SaveDeckTitle"
+                            Content="&#xf044;"
+                            FontFamily="{StaticResource FontAwesome}" FontSize="18"
+                            Foreground="Green"
+                            Margin="0,5,4,0"
+                            Panel.ZIndex="-1">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <ContentPresenter />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+
+                            <Button.Style>
+                                <Style>
+                                    <Setter Property="behaviors:CollapseOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="behaviors:ShowOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </Grid>
 
