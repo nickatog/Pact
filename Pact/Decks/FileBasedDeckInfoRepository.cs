@@ -22,7 +22,27 @@ namespace Pact
             _filePath = filePath.Require(nameof(filePath));
         }
 
-        async Task<IEnumerable<DeckInfo>> IDeckInfoRepository.GetAll()
+        Task<IEnumerable<DeckInfo>> IDeckInfoRepository.GetAll()
+        {
+            return _GetAll();
+        }
+
+        async Task IDeckInfoRepository.Save(DeckInfo deckInfo)
+        {
+            IEnumerable<DeckInfo> deckInfos =
+                (await _GetAll().ConfigureAwait(false))
+                .Where(__deckInfo => __deckInfo.DeckID != deckInfo.DeckID)
+                .Concat(new List<DeckInfo> { deckInfo });
+
+            await _SaveAll(deckInfos).ConfigureAwait(false);
+        }
+
+        Task IDeckInfoRepository.Save(IEnumerable<DeckInfo> deckInfos)
+        {
+            return _SaveAll(deckInfos);
+        }
+
+        private async Task<IEnumerable<DeckInfo>> _GetAll()
         {
             var fileInfo = new FileInfo(_filePath);
             if (!fileInfo.Exists || fileInfo.Length <= 0)
@@ -32,7 +52,7 @@ namespace Pact
                 return await _deckInfoCollectionSerializer.Deserialize(stream).ConfigureAwait(false);
         }
 
-        async Task IDeckInfoRepository.Save(IEnumerable<DeckInfo> deckInfos)
+        private async Task _SaveAll(IEnumerable<DeckInfo> deckInfos)
         {
             var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(_filePath));
             if (!directoryInfo.Exists)

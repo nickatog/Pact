@@ -6,6 +6,7 @@ namespace Pact
     public interface IDeckInfoRepository
     {
         Task<IEnumerable<DeckInfo>> GetAll();
+        Task Save(DeckInfo deckInfo);
         Task Save(IEnumerable<DeckInfo> deckInfos);
     }
 }
