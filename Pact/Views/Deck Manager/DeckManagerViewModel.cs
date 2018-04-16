@@ -99,11 +99,18 @@ namespace Pact
 
                                     SaveDecks();
                                 },
-                                __deck => SaveDecks(),
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
                                 __deckInfo.Title,
                                 __deckInfo.GameResults)));
+
+            foreach (DeckViewModel viewModel in _decks)
+                viewModel.PropertyChanged +=
+                    (__source, __args) =>
+                    {
+                        if (string.Equals(__args?.PropertyName, "Title", StringComparison.OrdinalIgnoreCase))
+                            SaveDecks();
+                    };
 
             Decklist DeserializeDecklist(string text)
             {
@@ -132,8 +139,7 @@ namespace Pact
 
                     var deckID = Guid.NewGuid();
 
-                    _decks.Insert(
-                        0,
+                    DeckViewModel viewModel =
                         _deckViewModelFactory.Create(
                             _gameEventDispatcher,
                             _viewEventDispatcher,
@@ -160,10 +166,18 @@ namespace Pact
 
                                 SaveDecks();
                             },
-                            __deck => SaveDecks(),
                             deckID,
                             deck.Value.Decklist,
-                            deck.Value.Title));
+                            deck.Value.Title);
+
+                    viewModel.PropertyChanged +=
+                        (__source, __args) =>
+                        {
+                            if (string.Equals(__args?.PropertyName, "Title", StringComparison.OrdinalIgnoreCase))
+                                SaveDecks();
+                        };
+
+                    _decks.Insert(0, viewModel);
 
                     SaveDecks();
                 });

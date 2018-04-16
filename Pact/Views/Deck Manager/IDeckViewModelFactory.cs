@@ -11,7 +11,6 @@ namespace Pact
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
             Action<DeckViewModel> delete,
-            Action<DeckViewModel> saveDeck,
             Guid deckID,
             Decklist decklist,
             string title,
