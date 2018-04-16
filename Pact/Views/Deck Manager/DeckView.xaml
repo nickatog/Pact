@@ -132,7 +132,7 @@
                         <Button
                             Grid.Column="1"
                             x:Name="SaveDeckTitle"
-                            Content="&#xf044;"
+                            Content="&#xf044;" Command="{Binding SaveDeckTitle}"
                             FontFamily="{StaticResource FontAwesome}" FontSize="18"
                             Foreground="Green"
                             Margin="0,5,4,0"

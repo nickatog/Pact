@@ -26,6 +26,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
+        private readonly Action<DeckViewModel> _saveDeck;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         private readonly Guid _deckID;
@@ -46,6 +47,7 @@ namespace Pact
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
             Action<DeckViewModel> delete,
+            Action<DeckViewModel> saveDeck,
             Guid deckID,
             Decklist decklist,
             string title,
@@ -61,6 +63,7 @@ namespace Pact
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
             _logger = logger.Require(nameof(logger));
+            _saveDeck = saveDeck.Require(nameof(saveDeck));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _delete = delete;
@@ -128,6 +131,15 @@ namespace Pact
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
         public int Position => _findPosition(this);
+
+        public ICommand SaveDeckTitle =>
+            new DelegateCommand(
+                () =>
+                {
+                    _saveDeck(this);
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title"));
+                });
 
         public string Title { get; set; }
 

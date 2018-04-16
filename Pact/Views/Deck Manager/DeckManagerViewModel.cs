@@ -99,6 +99,7 @@ namespace Pact
 
                                     SaveDecks();
                                 },
+                                __deck => SaveDecks(),
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
                                 __deckInfo.Title,
@@ -159,6 +160,7 @@ namespace Pact
 
                                 SaveDecks();
                             },
+                            __deck => SaveDecks(),
                             deckID,
                             deck.Value.Decklist,
                             deck.Value.Title));
