@@ -104,14 +104,6 @@ namespace Pact
                                 __deckInfo.Title,
                                 __deckInfo.GameResults)));
 
-            foreach (DeckViewModel viewModel in _decks)
-                viewModel.PropertyChanged +=
-                    (__source, __args) =>
-                    {
-                        if (string.Equals(__args?.PropertyName, "Title", StringComparison.OrdinalIgnoreCase))
-                            SaveDecks();
-                    };
-
             Decklist DeserializeDecklist(string text)
             {
                 using (var stream = new MemoryStream(Encoding.Default.GetBytes(text)))
@@ -169,13 +161,6 @@ namespace Pact
                             deckID,
                             deck.Value.Decklist,
                             deck.Value.Title);
-
-                    viewModel.PropertyChanged +=
-                        (__source, __args) =>
-                        {
-                            if (string.Equals(__args?.PropertyName, "Title", StringComparison.OrdinalIgnoreCase))
-                                SaveDecks();
-                        };
 
                     _decks.Insert(0, viewModel);
 

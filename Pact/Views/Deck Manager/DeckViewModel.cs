@@ -17,16 +17,19 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
-        private readonly Action<DeckViewModel> _delete;
-        private readonly Action<DeckViewModel, int> _emplaceDeck;
+        private readonly IDeckTrackerInterface _deckTrackerInterface;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
-        private readonly Func<DeckViewModel, int> _findPosition;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+
+        private readonly Action<DeckViewModel> _deleteDeck;
+        private readonly Action<DeckViewModel, int> _emplaceDeck;
+        private readonly Func<DeckViewModel, int> _findDeckPosition;
 
         private readonly Guid _deckID;
         private readonly Decklist _decklist;
@@ -36,7 +39,9 @@ namespace Pact
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
+            IDeckTrackerInterface deckTrackerInterface,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
@@ -53,17 +58,19 @@ namespace Pact
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
             _emplaceDeck = emplaceDeck.Require(nameof(emplaceDeck));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
-            _findPosition = findPosition.Require(nameof(findPosition));
+            _findDeckPosition = findPosition.Require(nameof(findPosition));
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
             _logger = logger.Require(nameof(logger));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
-            _delete = delete;
+            _deleteDeck = delete;
             
             _deckID = deckID;
             _decklist = decklist;
@@ -73,11 +80,16 @@ namespace Pact
 
             _gameResults = new List<GameResult>(gameResults ?? Enumerable.Empty<GameResult>());
 
+            // Needs to get unregistered when deck is deleted so the view model can get garbage collected
             _viewEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<DeckTrackingEvent>(
                     __event =>
                     {
-                        _canDelete = __event.DeckViewModel != this;
+                        IsTracking = __event.DeckViewModel == this;
+
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsTracking"));
+
+                        _canDelete = !IsTracking;
 
                         _deleteCanExecuteChanged?.Invoke();
                     }));
@@ -111,7 +123,7 @@ namespace Pact
         private Action _deleteCanExecuteChanged;
         public ICommand Delete =>
             new DelegateCommand(
-                () => _delete(this),
+                () => _deleteDeck(this),
                 canExecute:
                     () => _canDelete,
                 canExecuteChangedClient:
@@ -125,12 +137,32 @@ namespace Pact
 
         public IEnumerable<GameResult> GameResults => _gameResults;
 
+        public bool IsTracking { get; private set; }
+
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
-        public int Position => _findPosition(this);
+        public int Position => _findDeckPosition(this);
 
         public ICommand SaveDeckTitle =>
-            new DelegateCommand(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title")));
+            new DelegateCommand(
+                () =>
+                {
+                    string deckstring;
+
+                    using (var stream = new MemoryStream())
+                    {
+                        _decklistSerializer.Serialize(stream, _decklist).Wait();
+
+                        stream.Position = 0;
+
+                        using (var reader = new StreamReader(stream))
+                            deckstring = reader.ReadToEnd();
+                    }
+
+                    _deckInfoRepository.Save(new DeckInfo(_deckID, deckstring, Title, (ushort)_findDeckPosition(this), _gameResults));
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title"));
+                });
 
         public string Title { get; set; }
 
@@ -142,19 +174,7 @@ namespace Pact
 
                     Valkyrie.IEventDispatcher trackerEventDispatcher = _eventDispatcherFactory.Create();
 
-                    // This view model also knows about a view... Should it be changed somehow?
-                    // We can create the other view model in here, but then what do we do with it?
-                    // Require a parameter for an Action<PlayerDeckTrackerViewModel> that will load it?
-                    // Feels like that logic will still exist in another view model somewhere though
-                    // Route it through an abstraction like IPlayerDeckTracker(.Load(viewModel))?
-                    var trackerWindow =
-                        PlayerDeckTrackerView.GetWindowFor(
-                            new PlayerDeckTrackerViewModel(
-                                _cardInfoProvider,
-                                _configurationSettings,
-                                trackerEventDispatcher,
-                                _viewEventDispatcher,
-                                _decklist));
+                    _deckTrackerInterface.StartTracking(trackerEventDispatcher, _viewEventDispatcher, _decklist);
 
                     IEventStream eventStream = _eventStreamFactory.Create();
                     var cancellation = new CancellationTokenSource();
@@ -181,6 +201,7 @@ namespace Pact
 
                                 _gameResults.Add(gameResult);
 
+                                // save via deck repository instead?
                                 _gameResultStorage.SaveGameResult(_deckID, gameResult);
 
                                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Wins"));
@@ -202,7 +223,24 @@ namespace Pact
 
                     _viewEventDispatcher.RegisterHandler(unregisterHandlers);
 
-                    trackerWindow.Show();
+                    IsTracking = true;
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsTracking"));
+                });
+
+        public ICommand UntrackDeck =>
+            new DelegateCommand(
+                () =>
+                {
+                    _deckTrackerInterface.Close();
+
+                    IsTracking = false;
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsTracking"));
+
+                    _canDelete = true;
+
+                    _deleteCanExecuteChanged?.Invoke();
                 });
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);

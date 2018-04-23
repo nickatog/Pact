@@ -115,6 +115,12 @@ namespace Pact
                     new TextDecklistSerializer(__inner), "base")
             .SingleInstance();
 
+            // IDeckTrackerInterface
+            builder
+            .RegisterType<PlayerDeckTrackerInterface>()
+            .As<IDeckTrackerInterface>()
+            .SingleInstance();
+
             // DeckViewModelFactory
             builder
             .RegisterType<DeckViewModelFactory>()

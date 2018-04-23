@@ -186,7 +186,17 @@
                             Grid.Column="2"
                             Content="Track" Command="{Binding TrackDeck}"
                             Template="{StaticResource bottomButton}"
-                            BorderThickness="1,1,0,0" />
+                            BorderThickness="1,1,0,0"
+                            Panel.ZIndex="{Binding IsTracking, Converter={StaticResource HiddenVisibilityWhenMatchesBool}, ConverterParameter=True}" />
+
+                        <Grid Grid.Column="2" Background="White" Panel.ZIndex="0" />
+
+                        <Button
+                            Grid.Column="2"
+                            Content="Untrack" Command="{Binding UntrackDeck}"
+                            Template="{StaticResource bottomButton}"
+                            BorderThickness="1,1,0,0"
+                            Panel.ZIndex="{Binding IsTracking, Converter={StaticResource HiddenVisibilityWhenMatchesBool}, ConverterParameter=False}" />
                     </Grid>
                 </Grid>
 

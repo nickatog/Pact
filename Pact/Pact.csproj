@@ -98,6 +98,7 @@
     <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
     <Compile Include="Configuration\FileBasedConfigurationSettings.cs" />
     <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />
+    <Compile Include="Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="Converters\SingleValueToThicknessConverter.cs" />
     <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
@@ -118,6 +119,8 @@
     <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Game Results\FileBasedGameResultStorage.cs" />
+    <Compile Include="Tracker\IDeckTrackerInterface.cs" />
+    <Compile Include="Tracker\PlayerDeckTrackerInterface.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModel.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModelFactory.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />

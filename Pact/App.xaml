@@ -22,6 +22,7 @@
         <local:CardCountToOpacityConverter x:Key="CardCountToOpacity" />
         <local:ClassNameToBrushConverter x:Key="ClassNameToBrush" />
         <local:CollapsedVisibilityWhenNullConverter x:Key="CollapsedVisibilityWhenNull" />
+        <local:HiddenVisibilityWhenMatchesBoolConverter x:Key="HiddenVisibilityWhenMatchesBool" />
         <local:HiddenWhenZeroCountConverter x:Key="HiddenWhenZeroCount" />
         <local:OpponentCoinStatusToBrushConverter x:Key="OpponentCoinStatusToBrush" />
         <local:OpponentCoinStatusToVisibilityConverter x:Key="OpponentCoinStatusToVisibility" />
