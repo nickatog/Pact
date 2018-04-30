@@ -11,7 +11,12 @@ namespace Pact.Behaviors
         private IConfigurationSettings ConfigurationSettings =>
             ((PlayerDeckTrackerViewModel)AssociatedObject.DataContext).ConfigurationSettings;
 
-        private Timer _timer;
+        private readonly Timer _timer;
+
+        public SaveWindowPositionBehavior()
+        {
+            _timer = new Timer(SaveWindowPosition, null, Timeout.Infinite, Timeout.Infinite);
+        }
 
         protected override void OnAttached()
         {
@@ -22,10 +27,7 @@ namespace Pact.Behaviors
 
         private void OnLocationChanged(object sender, EventArgs args)
         {
-            if (_timer == null)
-                _timer = new Timer(SaveWindowPosition, null, Timeout.Infinite, Timeout.Infinite);
-
-            _timer?.Change(1000, Timeout.Infinite);
+            _timer.Change(1000, Timeout.Infinite);
         }
 
         private void SaveWindowPosition(object state)
@@ -50,8 +52,6 @@ namespace Pact.Behaviors
 
             configurationSettings.TrackerWindowLocation = new Point(left, top);
             configurationSettings.TrackerWindowSize = size;
-
-            _timer = null;
         }
     }
 }

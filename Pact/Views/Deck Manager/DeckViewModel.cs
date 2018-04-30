@@ -17,6 +17,7 @@ namespace Pact
     {
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
         private readonly IDeckTrackerInterface _deckTrackerInterface;
@@ -32,13 +33,14 @@ namespace Pact
         private readonly Func<DeckViewModel, int> _findDeckPosition;
 
         private readonly Guid _deckID;
-        private readonly Decklist _decklist;
+        private Decklist _decklist;
         private IList<GameResult> _gameResults;
         private string _title;
 
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
             IDeckTrackerInterface deckTrackerInterface,
@@ -58,6 +60,7 @@ namespace Pact
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
             _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
             _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
@@ -92,6 +95,9 @@ namespace Pact
                         _canDelete = !IsTracking;
 
                         _deleteCanExecuteChanged?.Invoke();
+
+                        _canReplace = !IsTracking;
+                        _replaceCanExecuteChanged?.Invoke();
                     }));
         }
 
@@ -143,23 +149,32 @@ namespace Pact
 
         public int Position => _findDeckPosition(this);
 
+        private bool _canReplace = true;
+        private Action _replaceCanExecuteChanged;
+        public ICommand Replace =>
+            new DelegateCommand(
+                async () =>
+                {
+                    DeckImportDetails? deckImportResult = await _deckImportInterface.GetDecklist();
+                    if (!deckImportResult.HasValue)
+                        return;
+
+                    _decklist = deckImportResult.Value.Decklist;
+
+                    SaveDeckToRepository();
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Class"));
+                },
+                canExecute:
+                    () => _canReplace,
+                canExecuteChangedClient:
+                    __canExecuteChanged => _replaceCanExecuteChanged = __canExecuteChanged);
+
         public ICommand SaveDeckTitle =>
             new DelegateCommand(
                 () =>
                 {
-                    string deckstring;
-
-                    using (var stream = new MemoryStream())
-                    {
-                        _decklistSerializer.Serialize(stream, _decklist).Wait();
-
-                        stream.Position = 0;
-
-                        using (var reader = new StreamReader(stream))
-                            deckstring = reader.ReadToEnd();
-                    }
-
-                    _deckInfoRepository.Save(new DeckInfo(_deckID, deckstring, Title, (ushort)_findDeckPosition(this), _gameResults));
+                    SaveDeckToRepository();
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title"));
                 });
@@ -241,11 +256,31 @@ namespace Pact
                     _canDelete = true;
 
                     _deleteCanExecuteChanged?.Invoke();
+
+                    _canReplace = true;
+                    _replaceCanExecuteChanged?.Invoke();
                 });
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void SaveDeckToRepository()
+        {
+            string deckstring;
+
+            using (var stream = new MemoryStream())
+            {
+                _decklistSerializer.Serialize(stream, _decklist).Wait();
+
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream))
+                    deckstring = reader.ReadToEnd();
+            }
+
+            _deckInfoRepository.Save(new DeckInfo(_deckID, deckstring, Title, (ushort)_findDeckPosition(this), _gameResults));
+        }
 
         private sealed class DeckTrackingEvent
         {
