@@ -37,7 +37,7 @@ namespace Pact
             await _SaveAll(deckInfos).ConfigureAwait(false);
         }
 
-        Task IDeckInfoRepository.Save(IEnumerable<DeckInfo> deckInfos)
+        Task IDeckInfoRepository.ReplaceAll(IEnumerable<DeckInfo> deckInfos)
         {
             return _SaveAll(deckInfos);
         }

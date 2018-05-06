@@ -53,6 +53,10 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             {
                 events.Add(new Events.CardEnteredPlayFromDeck(playerID, cardID));
             }
+            else if (tag.Eq("ZONE") && entityZone.Eq("PLAY") && value.Eq("DECK") && entityAttributes.TryGetValue("cardId", out string entityCardID))
+            {
+                events.Add(new Events.CardAddedToDeck(playerID, entityCardID));
+            }
             else if (tag.Eq("ZONE") && value.Eq("GRAVEYARD") && parseContext.CoinEntityID != null && parseContext.CoinEntityID.Eq(entityID))
                 events.Add(new Events.OpponentCoinLost());
             else if (tag.Eq("STATE") && value.Eq("COMPLETE"))

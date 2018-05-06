@@ -20,15 +20,15 @@ namespace Pact
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
+        private readonly AsyncSemaphore _deckPersistenceMutex;
         private readonly IDeckTrackerInterface _deckTrackerInterface;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
-        private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
-        private readonly Action<DeckViewModel> _deleteDeck;
+        // try to eliminate the need for the first couple delegates by sending out events to get handled elsewhere (deck manager view model)?
         private readonly Action<DeckViewModel, int> _emplaceDeck;
         private readonly Func<DeckViewModel, int> _findDeckPosition;
 
@@ -43,16 +43,15 @@ namespace Pact
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
+            AsyncSemaphore deckPersistenceMutex,
             IDeckTrackerInterface deckTrackerInterface,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
-            IGameResultStorage gameResultStorage,
             ILogger logger,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
-            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             string title,
@@ -63,17 +62,15 @@ namespace Pact
             _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
             _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckPersistenceMutex = deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
             _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
             _emplaceDeck = emplaceDeck.Require(nameof(emplaceDeck));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
             _findDeckPosition = findPosition.Require(nameof(findPosition));
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
-            _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
             _logger = logger.Require(nameof(logger));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
-
-            _deleteDeck = delete;
             
             _deckID = deckID;
             _decklist = decklist;
@@ -129,7 +126,7 @@ namespace Pact
         private Action _deleteCanExecuteChanged;
         public ICommand Delete =>
             new DelegateCommand(
-                () => _deleteDeck(this),
+                () => _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(_deckID)),
                 canExecute:
                     () => _canDelete,
                 canExecuteChangedClient:
@@ -161,9 +158,9 @@ namespace Pact
 
                     _decklist = deckImportResult.Value.Decklist;
 
-                    SaveDeckToRepository();
-
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Class"));
+
+                    await SaveDeckToRepository();
                 },
                 canExecute:
                     () => _canReplace,
@@ -172,11 +169,11 @@ namespace Pact
 
         public ICommand SaveDeckTitle =>
             new DelegateCommand(
-                () =>
+                async () =>
                 {
-                    SaveDeckToRepository();
-
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title"));
+
+                    await SaveDeckToRepository();
                 });
 
         public string Title { get; set; }
@@ -206,7 +203,7 @@ namespace Pact
 
                     var recordGameResult =
                         new Valkyrie.DelegateEventHandler<Events.GameEnded>(
-                            __event =>
+                            async __event =>
                             {
                                 var timestamp = DateTime.UtcNow;
 
@@ -216,11 +213,10 @@ namespace Pact
 
                                 _gameResults.Add(gameResult);
 
-                                // save via deck repository instead?
-                                _gameResultStorage.SaveGameResult(_deckID, gameResult);
-
                                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Wins"));
                                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Losses"));
+
+                                await SaveDeckToRepository();
                             });
 
                     _gameEventDispatcher.RegisterHandler(recordGameResult);
@@ -265,21 +261,20 @@ namespace Pact
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void SaveDeckToRepository()
+        private async Task SaveDeckToRepository()
         {
-            string deckstring;
-
-            using (var stream = new MemoryStream())
+            using (await _deckPersistenceMutex.WaitAsync().ConfigureAwait(false))
             {
-                _decklistSerializer.Serialize(stream, _decklist).Wait();
+                using (var stream = new MemoryStream())
+                {
+                    await _decklistSerializer.Serialize(stream, _decklist);
 
-                stream.Position = 0;
+                    stream.Position = 0;
 
-                using (var reader = new StreamReader(stream))
-                    deckstring = reader.ReadToEnd();
+                    using (var reader = new StreamReader(stream))
+                        await _deckInfoRepository.Save(new DeckInfo(_deckID, reader.ReadToEnd(), Title, (ushort)_findDeckPosition(this), _gameResults)).ConfigureAwait(false);
+                }
             }
-
-            _deckInfoRepository.Save(new DeckInfo(_deckID, deckstring, Title, (ushort)_findDeckPosition(this), _gameResults));
         }
 
         private sealed class DeckTrackingEvent

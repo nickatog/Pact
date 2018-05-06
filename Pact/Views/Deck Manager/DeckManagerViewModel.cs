@@ -18,6 +18,7 @@ namespace Pact
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
+        private readonly AsyncSemaphore _deckPersistenceMutex;
         private readonly IDeckViewModelFactory _deckViewModelFactory;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly ILogger _logger;
@@ -32,6 +33,7 @@ namespace Pact
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
+            AsyncSemaphore deckPersistenceMutex,
             IDeckViewModelFactory deckViewModelFactory,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
@@ -43,6 +45,7 @@ namespace Pact
             _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
             _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckPersistenceMutex = deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
             _deckViewModelFactory = deckViewModelFactory.Require(nameof(deckViewModelFactory));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _logger = logger.Require(nameof(logger));
@@ -76,7 +79,7 @@ namespace Pact
                             _deckViewModelFactory.Create(
                                 _gameEventDispatcher,
                                 _viewEventDispatcher,
-                                (__deck, __sourcePosition) =>
+                                async (__deck, __sourcePosition) =>
                                 {
                                     int position = _decks.IndexOf(__deck);
 
@@ -88,21 +91,26 @@ namespace Pact
 
                                     _decks.Insert(position, sourceDeck);
 
-                                    SaveDecks();
+                                    await SaveDecks();
                                 },
                                 __deck => _decks.IndexOf(__deck),
-                                __deck =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
-
-                                    _decks.RemoveAt(position);
-
-                                    SaveDecks();
-                                },
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
                                 __deckInfo.Title,
                                 __deckInfo.GameResults)));
+
+            _viewEventDispatcher.RegisterHandler(
+                new Valkyrie.DelegateEventHandler<Events.DeckDeleted>(
+                    async __event =>
+                    {
+                        DeckViewModel deck = _decks.FirstOrDefault(__deck => __deck.DeckID == __event.DeckID);
+                        if (deck == null)
+                            return;
+
+                        _decks.Remove(deck);
+
+                        await SaveDecks();
+                    }));
 
             Decklist DeserializeDecklist(string text)
             {
@@ -135,7 +143,7 @@ namespace Pact
                         _deckViewModelFactory.Create(
                             _gameEventDispatcher,
                             _viewEventDispatcher,
-                            (__deck, __sourcePosition) =>
+                            async (__deck, __sourcePosition) =>
                             {
                                 int position = _decks.IndexOf(__deck);
 
@@ -147,44 +155,39 @@ namespace Pact
 
                                 _decks.Insert(position, sourceDeck);
 
-                                SaveDecks();
+                                await SaveDecks();
                             },
                             __deck => _decks.IndexOf(__deck),
-                            __deck =>
-                            {
-                                int position = _decks.IndexOf(__deck);
-
-                                _decks.RemoveAt(position);
-
-                                SaveDecks();
-                            },
                             deckID,
                             deck.Value.Decklist,
                             deck.Value.Title);
 
                     _decks.Insert(0, viewModel);
 
-                    SaveDecks();
+                    await SaveDecks();
                 });
 
-        private void SaveDecks()
+        private async Task SaveDecks()
         {
-            var deckInfos =
-                _decks.Select(
-                    __deck =>
-                    {
-                        using (var stream = new MemoryStream())
+            using (await _deckPersistenceMutex.WaitAsync().ConfigureAwait(false))
+            {
+                IEnumerable<DeckInfo> deckInfos =
+                    _decks.Select(
+                        __deck =>
                         {
-                            _decklistSerializer.Serialize(stream, __deck.Decklist);
+                            using (var stream = new MemoryStream())
+                            {
+                                _decklistSerializer.Serialize(stream, __deck.Decklist);
 
-                            stream.Position = 0;
+                                stream.Position = 0;
 
-                            using (var reader = new StreamReader(stream))
-                                return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), __deck.Title, (UInt16)_decks.IndexOf(__deck), __deck.GameResults);
-                        }
-                    });
+                                using (var reader = new StreamReader(stream))
+                                    return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), __deck.Title, (UInt16)_decks.IndexOf(__deck), __deck.GameResults);
+                            }
+                        });
 
-            _deckInfoRepository.Save(deckInfos).Wait();
+                await _deckInfoRepository.ReplaceAll(deckInfos).ConfigureAwait(false);
+            }
         }
 
         [Conditional("DEBUG")]
@@ -213,11 +216,6 @@ namespace Pact
             _gameEventDispatcher.RegisterHandler(
                 new Valkyrie.DelegateEventHandler<Events.PlayerReceivedCoin>(
                     __event => _logger.Write($"{DateTime.Now} - Player received the coin!")));
-        }
-
-        public string GetInterfaces(params string[] names)
-        {
-            return string.Join(", ", names.Select(__name => "IHas" + __name));
         }
     }
 

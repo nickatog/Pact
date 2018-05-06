@@ -12,6 +12,15 @@ namespace Pact
         protected override void Load(ContainerBuilder builder)
         {
             builder
+            .Register(
+                __context =>
+                {
+                    return new AsyncSemaphore();
+                })
+            .Named<AsyncSemaphore>("DeckPersistence")
+            .SingleInstance();
+
+            builder
             .RegisterType<ConfigurationSettingsViewModel>()
             .AsSelf();
 
@@ -24,6 +33,7 @@ namespace Pact
                         __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<IDeckInfoRepository>(),
                         __context.Resolve<IDecklistSerializer>(),
+                        __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
                         __context.Resolve<IDeckViewModelFactory>(),
                         __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                         __context.Resolve<IEventStreamFactory>(),
@@ -121,9 +131,24 @@ namespace Pact
             .As<IDeckTrackerInterface>()
             .SingleInstance();
 
-            // DeckViewModelFactory
+            // IDeckViewModelFactory
             builder
-            .RegisterType<DeckViewModelFactory>()
+            .Register(
+                __context =>
+                {
+                    return
+                        new DeckViewModelFactory(
+                            __context.Resolve<ICardInfoProvider>(),
+                            __context.Resolve<IConfigurationSettings>(),
+                            __context.Resolve<IDeckImportInterface>(),
+                            __context.Resolve<IDeckInfoRepository>(),
+                            __context.Resolve<IDecklistSerializer>(),
+                            __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
+                            __context.Resolve<IDeckTrackerInterface>(),
+                            __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
+                            __context.Resolve<IEventStreamFactory>(),
+                            __context.Resolve<ILogger>());
+                })
             .As<IDeckViewModelFactory>()
             .SingleInstance();
 
@@ -147,23 +172,6 @@ namespace Pact
             builder
             .RegisterType<PowerLogEventStreamFactory>()
             .As<IEventStreamFactory>()
-            .SingleInstance();
-
-            // IGameResultStorage
-            builder
-            .Register(
-                __context =>
-                {
-                    string filePath =
-                        Path.Combine(
-                            Path.Combine(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                "Pact"),
-                            ".decks");
-
-                    return new FileBasedGameResultStorage(__context.Resolve<ICollectionSerializer<DeckInfo>>(), filePath);
-                })
-            .As<IGameResultStorage>()
             .SingleInstance();
 
             // IGameStateDebugEventParsers

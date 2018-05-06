@@ -10,7 +10,6 @@ namespace Pact
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
-            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             string title,

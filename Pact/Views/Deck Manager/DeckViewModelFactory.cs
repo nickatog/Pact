@@ -12,10 +12,10 @@ namespace Pact
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
+        private readonly AsyncSemaphore _deckPersistenceMutex;
         private readonly IDeckTrackerInterface _deckTrackerInterface;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
-        private readonly IGameResultStorage _gameResultStorage;
         private readonly ILogger _logger;
 
         public DeckViewModelFactory(
@@ -24,10 +24,10 @@ namespace Pact
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
+            AsyncSemaphore deckPersistenceMutex,
             IDeckTrackerInterface deckTrackerInterface,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
-            IGameResultStorage gameResultStorage,
             ILogger logger)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
@@ -35,10 +35,10 @@ namespace Pact
             _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
             _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckPersistenceMutex = deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
             _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
-            _gameResultStorage = gameResultStorage.Require(nameof(gameResultStorage));
             _logger = logger.Require(nameof(logger));
         }
 
@@ -47,7 +47,6 @@ namespace Pact
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
-            Action<DeckViewModel> delete,
             Guid deckID,
             Decklist decklist,
             string title,
@@ -60,16 +59,15 @@ namespace Pact
                     _deckImportInterface,
                     _deckInfoRepository,
                     _decklistSerializer,
+                    _deckPersistenceMutex,
                     _deckTrackerInterface,
                     _eventDispatcherFactory,
                     _eventStreamFactory,
                     gameEventDispatcher,
-                    _gameResultStorage,
                     _logger,
                     viewEventDispatcher,
                     emplaceDeck,
                     findPosition,
-                    delete,
                     deckID,
                     decklist,
                     title,
