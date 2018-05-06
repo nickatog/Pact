@@ -26,6 +26,7 @@ namespace Pact
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
+        private readonly IUserConfirmation _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         // try to eliminate the need for the first couple delegates by sending out events to get handled elsewhere (deck manager view model)?
@@ -49,6 +50,7 @@ namespace Pact
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
+            IUserConfirmation userConfirmation,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
@@ -70,6 +72,7 @@ namespace Pact
             _findDeckPosition = findPosition.Require(nameof(findPosition));
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _logger = logger.Require(nameof(logger));
+            _userConfirmation = userConfirmation.Require(nameof(userConfirmation));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
             
             _deckID = deckID;
@@ -126,7 +129,13 @@ namespace Pact
         private Action _deleteCanExecuteChanged;
         public ICommand Delete =>
             new DelegateCommand(
-                () => _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(_deckID)),
+                async () =>
+                {
+                    if (!await _userConfirmation.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
+                        return;
+
+                    _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(_deckID));
+                },
                 canExecute:
                     () => _canDelete,
                 canExecuteChangedClient:

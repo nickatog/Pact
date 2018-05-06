@@ -126,6 +126,7 @@
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModelFactory.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\IDeckImportViewModelFactory.cs" />
+    <Compile Include="Views\IUserConfirmation.cs" />
     <Compile Include="Views\Modals\IModalDisplay.cs" />
     <Compile Include="Views\Modals\IModalViewModel.cs" />
     <Compile Include="IUserPrompt.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Views\Player Deck Tracker\TrackedCardViewModel.cs" />
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
+    <Compile Include="Views\UserConfirmation.cs" />
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
