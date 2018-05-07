@@ -18,6 +18,9 @@
         <DataTemplate DataType="{x:Type local:TrackedCardViewModel}">
             <local:TrackedCardView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type local:UserConfirmationModalViewModel}">
+            <local:UserConfirmationView />
+        </DataTemplate>
 
         <local:CardCountToOpacityConverter x:Key="CardCountToOpacity" />
         <local:ClassNameToBrushConverter x:Key="ClassNameToBrush" />

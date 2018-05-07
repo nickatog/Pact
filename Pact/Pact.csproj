@@ -127,6 +127,7 @@
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\IDeckImportViewModelFactory.cs" />
     <Compile Include="Views\IUserConfirmation.cs" />
+    <Compile Include="Views\IUserConfirmationModalViewModelFactory.cs" />
     <Compile Include="Views\Modals\IModalDisplay.cs" />
     <Compile Include="Views\Modals\IModalViewModel.cs" />
     <Compile Include="IUserPrompt.cs" />
@@ -202,6 +203,11 @@
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
     <Compile Include="Views\UserConfirmation.cs" />
+    <Compile Include="Views\UserConfirmationModalViewModel.cs" />
+    <Compile Include="Views\UserConfirmationModalViewModelFactory.cs" />
+    <Compile Include="Views\UserConfirmationView.xaml.cs">
+      <DependentUpon>UserConfirmationView.xaml</DependentUpon>
+    </Compile>
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -245,6 +251,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Player Deck Tracker\TrackedCardView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

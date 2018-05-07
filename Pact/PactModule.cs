@@ -147,7 +147,8 @@ namespace Pact
                             __context.Resolve<IDeckTrackerInterface>(),
                             __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                             __context.Resolve<IEventStreamFactory>(),
-                            __context.Resolve<ILogger>());
+                            __context.Resolve<ILogger>(),
+                            __context.Resolve<IUserConfirmation>());
                 })
             .As<IDeckViewModelFactory>()
             .SingleInstance();
@@ -235,6 +236,18 @@ namespace Pact
                 __context =>
                     new Serializer<DeckInfo>(DeckInfo.Deserialize))
             .As<ISerializer<DeckInfo>>()
+            .SingleInstance();
+
+            // IUserConfirmation
+            builder
+            .RegisterType<ModalUserConfirmation>()
+            .As<IUserConfirmation>()
+            .SingleInstance();
+
+            // IUserConfirmationModalViewModelFactory
+            builder
+            .RegisterType<UserConfirmationModalViewModelFactory>()
+            .As<IUserConfirmationModalViewModelFactory>()
             .SingleInstance();
 
             // IUserPromptService

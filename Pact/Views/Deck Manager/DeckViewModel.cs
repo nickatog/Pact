@@ -107,8 +107,11 @@ namespace Pact
 
         public ICommand CopyDeck =>
             new DelegateCommand(
-                () =>
+                async () =>
                 {
+                    if (!await _userConfirmation.Confirm("Copy deck to clipboard?", "Yes", "No"))
+                        return;
+
                     using (var stream = new MemoryStream())
                     {
                         _decklistSerializer.Serialize(stream, _decklist).Wait();
@@ -131,8 +134,8 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    if (!await _userConfirmation.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
-                        return;
+                    //if (!await _userConfirmation.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
+                    //    return;
 
                     _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(_deckID));
                 },

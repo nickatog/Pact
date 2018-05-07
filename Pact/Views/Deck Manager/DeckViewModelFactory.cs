@@ -17,6 +17,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly ILogger _logger;
+        private readonly IUserConfirmation _userConfirmation;
 
         public DeckViewModelFactory(
             ICardInfoProvider cardInfoProvider,
@@ -28,7 +29,8 @@ namespace Pact
             IDeckTrackerInterface deckTrackerInterface,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
-            ILogger logger)
+            ILogger logger,
+            IUserConfirmation userConfirmation)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
@@ -40,6 +42,7 @@ namespace Pact
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
             _logger = logger.Require(nameof(logger));
+            _userConfirmation = userConfirmation.Require(nameof(userConfirmation));
         }
 
         DeckViewModel IDeckViewModelFactory.Create(
@@ -65,6 +68,7 @@ namespace Pact
                     _eventStreamFactory,
                     gameEventDispatcher,
                     _logger,
+                    _userConfirmation,
                     viewEventDispatcher,
                     emplaceDeck,
                     findPosition,
