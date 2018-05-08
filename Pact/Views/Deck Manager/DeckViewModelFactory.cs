@@ -17,7 +17,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly ILogger _logger;
-        private readonly IUserConfirmation _userConfirmation;
+        private readonly IUserConfirmationInterface _userConfirmation;
 
         public DeckViewModelFactory(
             ICardInfoProvider cardInfoProvider,
@@ -30,7 +30,7 @@ namespace Pact
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             ILogger logger,
-            IUserConfirmation userConfirmation)
+            IUserConfirmationInterface userConfirmation)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));

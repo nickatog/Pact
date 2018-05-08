@@ -148,7 +148,7 @@ namespace Pact
                             __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                             __context.Resolve<IEventStreamFactory>(),
                             __context.Resolve<ILogger>(),
-                            __context.Resolve<IUserConfirmation>());
+                            __context.Resolve<IUserConfirmationInterface>());
                 })
             .As<IDeckViewModelFactory>()
             .SingleInstance();
@@ -240,8 +240,8 @@ namespace Pact
 
             // IUserConfirmation
             builder
-            .RegisterType<ModalUserConfirmation>()
-            .As<IUserConfirmation>()
+            .RegisterType<ModalUserConfirmationInterface>()
+            .As<IUserConfirmationInterface>()
             .SingleInstance();
 
             // IUserConfirmationModalViewModelFactory

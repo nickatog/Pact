@@ -26,7 +26,7 @@ namespace Pact
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
-        private readonly IUserConfirmation _userConfirmation;
+        private readonly IUserConfirmationInterface _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         // try to eliminate the need for the first couple delegates by sending out events to get handled elsewhere (deck manager view model)?
@@ -50,7 +50,7 @@ namespace Pact
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
-            IUserConfirmation userConfirmation,
+            IUserConfirmationInterface userConfirmation,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
@@ -121,9 +121,37 @@ namespace Pact
                         var bytes = new byte[stream.Length];
                         stream.Read(bytes, 0, (int)stream.Length);
 
+                        Thread.Sleep(1000);
+
                         Clipboard.SetText(Encoding.Default.GetString(bytes));
                     }
                 });
+
+
+        public interface INotifyWaiter
+        {
+            Task Perform(
+                Action @delegate);
+        }
+
+        public sealed class ModalNotifyWaiter
+            : INotifyWaiter
+        {
+            private readonly IModalDisplay _modalDisplay;
+
+            public ModalNotifyWaiter(
+                IModalDisplay modalDisplay)
+            {
+                _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
+            }
+
+            Task INotifyWaiter.Perform(
+                Action @delegate)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 
         public Guid DeckID => _deckID;
 

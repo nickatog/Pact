@@ -3,13 +3,13 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class ModalUserConfirmation
-        : IUserConfirmation
+    public sealed class ModalUserConfirmationInterface
+        : IUserConfirmationInterface
     {
         private readonly IModalDisplay _modalDisplay;
         private readonly IUserConfirmationModalViewModelFactory _viewModelFactory;
 
-        public ModalUserConfirmation(
+        public ModalUserConfirmationInterface(
             IModalDisplay modalDisplay,
             IUserConfirmationModalViewModelFactory viewModelFactory)
         {
@@ -17,15 +17,15 @@ namespace Pact
             _viewModelFactory = viewModelFactory.Require(nameof(viewModelFactory));
         }
 
-        Task<bool> IUserConfirmation.Confirm(
-            string message,
-            string accept,
-            string decline)
+        Task<bool> IUserConfirmationInterface.Confirm(
+            string messageText,
+            string acceptText,
+            string declineText)
         {
             var result = new TaskCompletionSource<bool>();
 
             _modalDisplay.Show(
-                _viewModelFactory.Create(message, accept, decline),
+                _viewModelFactory.Create(messageText, acceptText, declineText),
                 __result => result.SetResult(__result));
 
             return result.Task;

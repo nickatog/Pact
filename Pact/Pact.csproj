@@ -126,8 +126,12 @@
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModelFactory.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\IDeckImportViewModelFactory.cs" />
-    <Compile Include="Views\IUserConfirmation.cs" />
-    <Compile Include="Views\IUserConfirmationModalViewModelFactory.cs" />
+    <Compile Include="Views\Modals\Notify Waiter\NotifyWaiterModalViewModel.cs" />
+    <Compile Include="Views\Modals\Notify Waiter\NotifyWaiterView.xaml.cs">
+      <DependentUpon>NotifyWaiterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Modals\User Confirmation\IUserConfirmationInterface.cs" />
+    <Compile Include="Views\Modals\User Confirmation\IUserConfirmationModalViewModelFactory.cs" />
     <Compile Include="Views\Modals\IModalDisplay.cs" />
     <Compile Include="Views\Modals\IModalViewModel.cs" />
     <Compile Include="IUserPrompt.cs" />
@@ -202,10 +206,10 @@
     <Compile Include="Views\Player Deck Tracker\TrackedCardViewModel.cs" />
     <Compile Include="Decks\TextDecklistSerializer.cs" />
     <Compile Include="Decks\Varint.cs" />
-    <Compile Include="Views\UserConfirmation.cs" />
-    <Compile Include="Views\UserConfirmationModalViewModel.cs" />
-    <Compile Include="Views\UserConfirmationModalViewModelFactory.cs" />
-    <Compile Include="Views\UserConfirmationView.xaml.cs">
+    <Compile Include="Views\Modals\User Confirmation\ModalUserConfirmationInterface.cs" />
+    <Compile Include="Views\Modals\User Confirmation\UserConfirmationModalViewModel.cs" />
+    <Compile Include="Views\Modals\User Confirmation\UserConfirmationModalViewModelFactory.cs" />
+    <Compile Include="Views\Modals\User Confirmation\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
     <Page Include="UserPromptView.xaml">
@@ -246,6 +250,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\Modals\Notify Waiter\NotifyWaiterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Player Deck Tracker\PlayerDeckTrackerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -254,7 +262,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UserConfirmationView.xaml">
+    <Page Include="Views\Modals\User Confirmation\UserConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
