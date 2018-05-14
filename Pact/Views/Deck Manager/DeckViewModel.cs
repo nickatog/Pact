@@ -26,6 +26,7 @@ namespace Pact
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
+        private readonly IWaitInterface _notifyWaiter;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
@@ -50,6 +51,7 @@ namespace Pact
             IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
+            IWaitInterface notifyWaiter,
             IUserConfirmationInterface userConfirmation,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Action<DeckViewModel, int> emplaceDeck,
@@ -72,6 +74,7 @@ namespace Pact
             _findDeckPosition = findPosition.Require(nameof(findPosition));
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _logger = logger.Require(nameof(logger));
+            _notifyWaiter = notifyWaiter.Require(nameof(notifyWaiter));
             _userConfirmation = userConfirmation.Require(nameof(userConfirmation));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
             
@@ -112,45 +115,26 @@ namespace Pact
                     if (!await _userConfirmation.Confirm("Copy deck to clipboard?", "Yes", "No"))
                         return;
 
-                    using (var stream = new MemoryStream())
-                    {
-                        _decklistSerializer.Serialize(stream, _decklist).Wait();
+                    byte[] bytes = null;
 
-                        stream.Position = 0;
+                    await _notifyWaiter.Perform(
+                        () =>
+                        {
+                            using (var stream = new MemoryStream())
+                            {
+                                _decklistSerializer.Serialize(stream, _decklist).Wait();
 
-                        var bytes = new byte[stream.Length];
-                        stream.Read(bytes, 0, (int)stream.Length);
+                                stream.Position = 0;
 
-                        Thread.Sleep(1000);
+                                bytes = new byte[stream.Length];
+                                stream.Read(bytes, 0, (int)stream.Length);
 
-                        Clipboard.SetText(Encoding.Default.GetString(bytes));
-                    }
+                                Thread.Sleep(1000);
+                            }
+                        });
+
+                    Clipboard.SetText(Encoding.Default.GetString(bytes));
                 });
-
-
-        public interface INotifyWaiter
-        {
-            Task Perform(
-                Action @delegate);
-        }
-
-        public sealed class ModalNotifyWaiter
-            : INotifyWaiter
-        {
-            private readonly IModalDisplay _modalDisplay;
-
-            public ModalNotifyWaiter(
-                IModalDisplay modalDisplay)
-            {
-                _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
-            }
-
-            Task INotifyWaiter.Perform(
-                Action @delegate)
-            {
-                throw new NotImplementedException();
-            }
-        }
 
 
         public Guid DeckID => _deckID;
@@ -286,11 +270,9 @@ namespace Pact
                     _deckTrackerInterface.Close();
 
                     IsTracking = false;
-
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsTracking"));
 
                     _canDelete = true;
-
                     _deleteCanExecuteChanged?.Invoke();
 
                     _canReplace = true;
@@ -305,6 +287,8 @@ namespace Pact
         {
             using (await _deckPersistenceMutex.WaitAsync().ConfigureAwait(false))
             {
+                DeckInfo deckInfo;
+
                 using (var stream = new MemoryStream())
                 {
                     await _decklistSerializer.Serialize(stream, _decklist);
@@ -312,8 +296,10 @@ namespace Pact
                     stream.Position = 0;
 
                     using (var reader = new StreamReader(stream))
-                        await _deckInfoRepository.Save(new DeckInfo(_deckID, reader.ReadToEnd(), Title, (ushort)_findDeckPosition(this), _gameResults)).ConfigureAwait(false);
+                        deckInfo = new DeckInfo(_deckID, reader.ReadToEnd(), Title, (ushort)_findDeckPosition(this), _gameResults);
                 }
+
+                await _deckInfoRepository.Save(deckInfo).ConfigureAwait(false);
             }
         }
 

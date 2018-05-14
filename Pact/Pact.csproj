@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Views\Wait\IWaitInterface.cs" />
     <Compile Include="Utility\AsyncSemaphore.cs" />
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
@@ -126,11 +127,12 @@
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportViewModelFactory.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\DeckImportResult.cs" />
     <Compile Include="Views\Deck Manager\Deck Import\IDeckImportViewModelFactory.cs" />
-    <Compile Include="Views\Modals\Notify Waiter\NotifyWaiterModalViewModel.cs" />
+    <Compile Include="Views\Wait\IWaitModalViewModelFactory.cs" />
+    <Compile Include="Views\Wait\WaitModalViewModel.cs" />
     <Compile Include="Views\Modals\Notify Waiter\NotifyWaiterView.xaml.cs">
       <DependentUpon>NotifyWaiterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Modals\User Confirmation\IUserConfirmationInterface.cs" />
+    <Compile Include="Views\User Confirmation\IUserConfirmationInterface.cs" />
     <Compile Include="Views\Modals\User Confirmation\IUserConfirmationModalViewModelFactory.cs" />
     <Compile Include="Views\Modals\IModalDisplay.cs" />
     <Compile Include="Views\Modals\IModalViewModel.cs" />
@@ -212,6 +214,8 @@
     <Compile Include="Views\Modals\User Confirmation\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Wait\ModalWaitInterface.cs" />
+    <Compile Include="Views\Wait\WaitModalViewModelFactory.cs" />
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

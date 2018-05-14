@@ -148,6 +148,7 @@ namespace Pact
                             __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                             __context.Resolve<IEventStreamFactory>(),
                             __context.Resolve<ILogger>(),
+                            __context.Resolve<IWaitInterface>(),
                             __context.Resolve<IUserConfirmationInterface>());
                 })
             .As<IDeckViewModelFactory>()
@@ -222,7 +223,7 @@ namespace Pact
             builder
             .RegisterType<MainWindowModalDisplay>()
             .As<IModalDisplay>();
-
+            
             // ISerializers
             builder
             .Register(
@@ -254,6 +255,18 @@ namespace Pact
             builder
             .RegisterType<UserPrompt>()
             .As<IUserPrompt>()
+            .SingleInstance();
+
+            // IWaitInterface
+            builder
+            .RegisterType<ModalWaitInterface>()
+            .As<IWaitInterface>()
+            .SingleInstance();
+
+            // IWaitModalViewModelFactory
+            builder
+            .RegisterType<WaitModalViewModelFactory>()
+            .As<IWaitModalViewModelFactory>()
             .SingleInstance();
 
             // MainWindowViewModel
