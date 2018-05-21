@@ -18,6 +18,7 @@ namespace Pact
         private IList<TrackedCardViewModel> _cards;
         private readonly Decklist _decklist;
         private bool? _opponentCoinStatus;
+        private int _playerID;
 
         private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
         private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
@@ -42,6 +43,9 @@ namespace Pact
                 new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
                     __ =>
                     {
+                        if (__.PlayerID != _playerID)
+                            return;
+
                         if (_cards.Any(__card => string.Equals(__card.CardID, __.CardID, StringComparison.OrdinalIgnoreCase)))
                             return;
 
@@ -79,6 +83,10 @@ namespace Pact
 
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
                     }));
+
+            _gameEventHandlers.Add(
+                new Valkyrie.DelegateEventHandler<Events.PlayerDetermined>(
+                    __event => _playerID = __event.PlayerID));
 
             foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
                 _gameEventDispatcher.RegisterHandler(handler);

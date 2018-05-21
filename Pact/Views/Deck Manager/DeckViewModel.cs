@@ -279,6 +279,8 @@ namespace Pact
                     _replaceCanExecuteChanged?.Invoke();
                 });
 
+        public Valkyrie.IEventDispatcher ViewEventDispatcher => _viewEventDispatcher;
+
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);
 
         public event PropertyChangedEventHandler PropertyChanged;

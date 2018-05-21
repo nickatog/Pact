@@ -46,6 +46,10 @@ namespace Pact.Behaviors
 
         private void AssociatedObject_Drop(object sender, DragEventArgs e)
         {
+            // Is it possible to dispatch an event to handle "swap decks x and y" instead of asking the deck itself to do it?
+            // This would eliminate the need for the deck's view model to know how to perform those actions, since it shouldn't
+            //Valkyrie.IEventDispatcher a = ((DeckViewModel)AssociatedObject.DataContext).ViewEventDispatcher;
+
             int targetPosition = DeckPosition;
             if (int.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out int sourcePosition) && sourcePosition != targetPosition)
             {
