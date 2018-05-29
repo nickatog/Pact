@@ -1,43 +1,70 @@
-﻿using Pact.Extensions.Contract;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class PlayerDeckTrackerInterface
         : IDeckTrackerInterface
     {
-        private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
+        private readonly IEventStreamFactory _eventStreamFactory;
+        private readonly IPlayerDeckTrackerViewModelFactory _playerDeckTrackerViewModelFactory;
 
+        private CancellationTokenSource _cancellation;
         private PlayerDeckTrackerView _view;
         private PlayerDeckTrackerViewModel _viewModel;
 
         public PlayerDeckTrackerInterface(
-            ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings)
+            Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
+            IEventStreamFactory eventStreamFactory,
+            IPlayerDeckTrackerViewModelFactory playerDeckTrackerViewModelFactory)
         {
-            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
+            _playerDeckTrackerViewModelFactory = playerDeckTrackerViewModelFactory.Require(nameof(playerDeckTrackerViewModelFactory));
         }
 
         void IDeckTrackerInterface.Close()
         {
-            _viewModel?.Cleanup();
+            Reset();
 
             _view?.Hide();
         }
 
+        private void Reset()
+        {
+            _cancellation?.Cancel();
+
+            _viewModel?.Cleanup();
+        }
+
         void IDeckTrackerInterface.StartTracking(
-            Valkyrie.IEventDispatcher gameEventDispatcher,
-            Valkyrie.IEventDispatcher viewEventDispatcher,
             Decklist decklist)
         {
-            _viewModel =
-                new PlayerDeckTrackerViewModel(
-                    _cardInfoProvider,
-                    _configurationSettings,
-                    gameEventDispatcher,
-                    viewEventDispatcher,
-                    decklist);
+            Reset();
+
+            Valkyrie.IEventDispatcher trackerEventDispatcher = _eventDispatcherFactory.Create();
+
+            _viewModel = _playerDeckTrackerViewModelFactory.Create(trackerEventDispatcher, decklist);
+            
+            _cancellation = new CancellationTokenSource();
+
+            Task.Run(
+                async () =>
+                {
+                    IEventStream eventStream = _eventStreamFactory.Create();
+
+                    while (true)
+                    {
+                        object @event = await eventStream.ReadNext();
+
+                        if (_cancellation.IsCancellationRequested)
+                            return;
+
+                        trackerEventDispatcher.DispatchEvent(@event);
+                    }
+                });
 
             _view = PlayerDeckTrackerView.GetWindowFor(_viewModel);
 

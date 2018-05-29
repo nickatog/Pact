@@ -22,10 +22,9 @@ namespace Pact
         private readonly IDeckViewModelFactory _deckViewModelFactory;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly ILogger _logger;
+        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
-        // Should this be a dependency instead? Likely shared outside just this view model and across the entire application
-        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
 
         public DeckManagerViewModel(
             ICardInfoProvider cardInfoProvider,
@@ -79,20 +78,6 @@ namespace Pact
                             _deckViewModelFactory.Create(
                                 _gameEventDispatcher,
                                 _viewEventDispatcher,
-                                async (__deck, __sourcePosition) =>
-                                {
-                                    int position = _decks.IndexOf(__deck);
-
-                                    if (__sourcePosition > _decks.Count)
-                                        return;
-
-                                    DeckViewModel sourceDeck = _decks[__sourcePosition];
-                                    _decks.RemoveAt(__sourcePosition);
-
-                                    _decks.Insert(position, sourceDeck);
-
-                                    await SaveDecks();
-                                },
                                 __deck => _decks.IndexOf(__deck),
                                 __deckInfo.DeckID,
                                 DeserializeDecklist(__deckInfo.DeckString),
@@ -106,8 +91,24 @@ namespace Pact
                         DeckViewModel deck = _decks.FirstOrDefault(__deck => __deck.DeckID == __event.DeckID);
                         if (deck == null)
                             return;
-
+                        
                         _decks.Remove(deck);
+
+                        await SaveDecks();
+                    }));
+
+            _viewEventDispatcher.RegisterHandler(
+                new Valkyrie.DelegateEventHandler<Events.MoveDeck>(
+                    async __event =>
+                    {
+                        int sourcePosition = __event.SourcePosition;
+                        if (sourcePosition > _decks.Count)
+                            return;
+
+                        DeckViewModel sourceDeck = _decks[sourcePosition];
+                        _decks.RemoveAt(sourcePosition);
+
+                        _decks.Insert(__event.TargetPosition, sourceDeck);
 
                         await SaveDecks();
                     }));
@@ -143,20 +144,6 @@ namespace Pact
                         _deckViewModelFactory.Create(
                             _gameEventDispatcher,
                             _viewEventDispatcher,
-                            async (__deck, __sourcePosition) =>
-                            {
-                                int position = _decks.IndexOf(__deck);
-
-                                if (__sourcePosition > _decks.Count)
-                                    return;
-
-                                DeckViewModel sourceDeck = _decks[__sourcePosition];
-                                _decks.RemoveAt(__sourcePosition);
-
-                                _decks.Insert(position, sourceDeck);
-
-                                await SaveDecks();
-                            },
                             __deck => _decks.IndexOf(__deck),
                             deckID,
                             deck.Value.Decklist,

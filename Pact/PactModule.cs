@@ -223,6 +223,17 @@ namespace Pact
             builder
             .RegisterType<MainWindowModalDisplay>()
             .As<IModalDisplay>();
+
+            // IPlayerDeckTrackerViewModelFactory
+            builder
+            .Register(
+                __context =>
+                    new PlayerDeckTrackerViewModelFactory(
+                        __context.Resolve<ICardInfoProvider>(),
+                        __context.Resolve<IConfigurationSettings>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+            .As<IPlayerDeckTrackerViewModelFactory>()
+            .SingleInstance();
             
             // ISerializers
             builder

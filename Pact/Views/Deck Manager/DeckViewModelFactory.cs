@@ -51,7 +51,6 @@ namespace Pact
         DeckViewModel IDeckViewModelFactory.Create(
             Valkyrie.IEventDispatcher gameEventDispatcher,
             Valkyrie.IEventDispatcher viewEventDispatcher,
-            Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
             Guid deckID,
             Decklist decklist,
@@ -74,7 +73,6 @@ namespace Pact
                     _notifyWaiter,
                     _userConfirmation,
                     viewEventDispatcher,
-                    emplaceDeck,
                     findPosition,
                     deckID,
                     decklist,

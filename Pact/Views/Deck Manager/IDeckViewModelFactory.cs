@@ -8,7 +8,6 @@ namespace Pact
         DeckViewModel Create(
             Valkyrie.IEventDispatcher gameEventDispatcher,
             Valkyrie.IEventDispatcher viewEventDispatcher,
-            Action<DeckViewModel, int> emplaceDeck,
             Func<DeckViewModel, int> findPosition,
             Guid deckID,
             Decklist decklist,

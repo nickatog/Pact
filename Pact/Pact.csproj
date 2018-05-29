@@ -91,6 +91,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Events\View Events\MoveDeck.cs" />
+    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerViewModelFactory.cs" />
     <Compile Include="Views\Wait\IWaitInterface.cs" />
     <Compile Include="Utility\AsyncSemaphore.cs" />
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
