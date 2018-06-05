@@ -1,22 +1,30 @@
-﻿using System.Threading;
+﻿#region Namespaces
+using System.Threading;
 using System.Threading.Tasks;
 using Pact.Extensions.Contract;
+using Valkyrie;
+#endregion // Namespaces
 
 namespace Pact
 {
-    public sealed class PlayerDeckTrackerInterface
-        : IDeckTrackerInterface
+    public sealed class WindowedPlayerDeckTrackerInterface
+        : IPlayerDeckTrackerInterface
     {
-        private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
+        #region Dependencies
+        private readonly IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IPlayerDeckTrackerViewModelFactory _playerDeckTrackerViewModelFactory;
+        #endregion // Dependencies
 
+        #region Fields
         private CancellationTokenSource _cancellation;
         private PlayerDeckTrackerView _view;
         private PlayerDeckTrackerViewModel _viewModel;
+        #endregion // Fields
 
-        public PlayerDeckTrackerInterface(
-            Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
+        #region Constructors
+        public WindowedPlayerDeckTrackerInterface(
+            IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             IPlayerDeckTrackerViewModelFactory playerDeckTrackerViewModelFactory)
         {
@@ -24,8 +32,9 @@ namespace Pact
             _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
             _playerDeckTrackerViewModelFactory = playerDeckTrackerViewModelFactory.Require(nameof(playerDeckTrackerViewModelFactory));
         }
+        #endregion // Constructors
 
-        void IDeckTrackerInterface.Close()
+        void IPlayerDeckTrackerInterface.Close()
         {
             Reset();
 
@@ -39,17 +48,17 @@ namespace Pact
             _viewModel?.Cleanup();
         }
 
-        void IDeckTrackerInterface.StartTracking(
+        void IPlayerDeckTrackerInterface.TrackDeck(
             Decklist decklist)
         {
             Reset();
 
-            Valkyrie.IEventDispatcher trackerEventDispatcher = _eventDispatcherFactory.Create();
+            IEventDispatcher eventDispatcher = _eventDispatcherFactory.Create();
 
-            _viewModel = _playerDeckTrackerViewModelFactory.Create(trackerEventDispatcher, decklist);
+            _viewModel = _playerDeckTrackerViewModelFactory.Create(eventDispatcher, decklist);
             
             _cancellation = new CancellationTokenSource();
-
+            
             Task.Run(
                 async () =>
                 {
@@ -62,7 +71,7 @@ namespace Pact
                         if (_cancellation.IsCancellationRequested)
                             return;
 
-                        trackerEventDispatcher.DispatchEvent(@event);
+                        eventDispatcher.DispatchEvent(@event);
                     }
                 });
 

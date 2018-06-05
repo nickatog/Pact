@@ -35,8 +35,8 @@ namespace Pact
                         __context.Resolve<IDecklistSerializer>(),
                         __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
                         __context.Resolve<IDeckViewModelFactory>(),
-                        __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
-                        __context.Resolve<IEventStreamFactory>(),
+                        __context.Resolve<IEventStream>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
                         __context.Resolve<ILogger>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<DeckManagerViewModel>();
@@ -125,12 +125,6 @@ namespace Pact
                     new TextDecklistSerializer(__inner), "base")
             .SingleInstance();
 
-            // IDeckTrackerInterface
-            builder
-            .RegisterType<PlayerDeckTrackerInterface>()
-            .As<IDeckTrackerInterface>()
-            .SingleInstance();
-
             // IDeckViewModelFactory
             builder
             .Register(
@@ -144,12 +138,13 @@ namespace Pact
                             __context.Resolve<IDeckInfoRepository>(),
                             __context.Resolve<IDecklistSerializer>(),
                             __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
-                            __context.Resolve<IDeckTrackerInterface>(),
+                            __context.Resolve<IPlayerDeckTrackerInterface>(),
                             __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
-                            __context.Resolve<IEventStreamFactory>(),
+                            __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
                             __context.Resolve<ILogger>(),
                             __context.Resolve<IWaitInterface>(),
-                            __context.Resolve<IUserConfirmationInterface>());
+                            __context.Resolve<IUserConfirmationInterface>(),
+                            __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
                 })
             .As<IDeckViewModelFactory>()
             .SingleInstance();
@@ -158,9 +153,14 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                {
-                    return __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create();
-                })
+                    __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create())
+            .Named<Valkyrie.IEventDispatcher>("game")
+            .SingleInstance();
+
+            builder
+            .Register(
+                __context =>
+                    __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create())
             .Named<Valkyrie.IEventDispatcher>("view")
             .SingleInstance();
 
@@ -168,6 +168,14 @@ namespace Pact
             builder
             .RegisterType<Valkyrie.InMemoryEventDispatcherFactory>()
             .As<Valkyrie.IEventDispatcherFactory>()
+            .SingleInstance();
+
+            // IEventStream
+            builder
+            .Register(
+                __context =>
+                    __context.Resolve<IEventStreamFactory>().Create())
+            .As<IEventStream>()
             .SingleInstance();
 
             // IEventStreamFactory
@@ -223,6 +231,12 @@ namespace Pact
             builder
             .RegisterType<MainWindowModalDisplay>()
             .As<IModalDisplay>();
+
+            // IPlayerDeckTrackerInterface
+            builder
+            .RegisterType<WindowedPlayerDeckTrackerInterface>()
+            .As<IPlayerDeckTrackerInterface>()
+            .SingleInstance();
 
             // IPlayerDeckTrackerViewModelFactory
             builder

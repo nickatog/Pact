@@ -1,10 +1,10 @@
 ﻿namespace Pact
 {
-    public interface IDeckTrackerInterface
+    public interface IPlayerDeckTrackerInterface
     {
         void Close();
 
-        void StartTracking(
+        void TrackDeck(
             Decklist decklist);
     }
 }

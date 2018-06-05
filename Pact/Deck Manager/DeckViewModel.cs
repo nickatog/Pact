@@ -24,9 +24,8 @@ namespace Pact
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
         private readonly AsyncSemaphore _deckPersistenceMutex;
-        private readonly IDeckTrackerInterface _deckTrackerInterface;
+        private readonly IPlayerDeckTrackerInterface _deckTrackerInterface;
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
-        private readonly IEventStreamFactory _eventStreamFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
         private readonly IWaitInterface _notifyWaiter;
@@ -50,9 +49,8 @@ namespace Pact
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
             AsyncSemaphore deckPersistenceMutex,
-            IDeckTrackerInterface deckTrackerInterface,
+            IPlayerDeckTrackerInterface deckTrackerInterface,
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
-            IEventStreamFactory eventStreamFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
             IWaitInterface notifyWaiter,
@@ -72,7 +70,6 @@ namespace Pact
             _deckPersistenceMutex = deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
             _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
             _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
-            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _logger = logger.Require(nameof(logger));
             _notifyWaiter = notifyWaiter.Require(nameof(notifyWaiter));
@@ -133,8 +130,8 @@ namespace Pact
                 {
                     if (!await _userConfirmation.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
                         return;
-
-                    _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(DeckID));
+                    
+                    _viewEventDispatcher.DispatchEvent(new Commands.DeleteDeck(DeckID));
                 },
                 canExecute:
                     () => _canDelete,
@@ -196,7 +193,7 @@ namespace Pact
                 {
                     _viewEventDispatcher.DispatchEvent(new DeckTrackingEvent(this));
 
-                    _deckTrackerInterface.StartTracking(Decklist);
+                    _deckTrackerInterface.TrackDeck(Decklist);
 
                     var recordGameResult =
                         new Valkyrie.DelegateEventHandler<Events.GameEnded>(

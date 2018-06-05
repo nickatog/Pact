@@ -1,20 +1,28 @@
-﻿using System.Windows.Input;
-using Pact.Extensions.Contract;
+﻿#region Namespaces
+using System;
+using System.Windows.Input;
+#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class ConfigurationSettingsViewModel
     {
+        #region Dependencies
         private readonly IConfigurationSettings _configurationSettings;
+        #endregion // Dependencies
 
+        #region Constructors
         public ConfigurationSettingsViewModel(
             IConfigurationSettings configurationSettings)
         {
-            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _configurationSettings =
+                configurationSettings
+                ?? throw new ArgumentNullException(nameof(configurationSettings));
 
             CardTextOffset = _configurationSettings.CardTextOffset;
             FontSize = _configurationSettings.FontSize;
         }
+        #endregion // Constructors
 
         public int CardTextOffset { get; set; }
 

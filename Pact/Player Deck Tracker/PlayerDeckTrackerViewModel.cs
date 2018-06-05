@@ -1,20 +1,25 @@
-﻿using System;
+﻿#region Namespaces
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Pact.Extensions.Contract;
 using Pact.Extensions.Enumerable;
+#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class PlayerDeckTrackerViewModel
         : INotifyPropertyChanged
     {
+        #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+        #endregion // Dependencies
 
+        #region Fields
         private IList<TrackedCardViewModel> _cards;
         private readonly Decklist _decklist;
         private bool? _opponentCoinStatus;
@@ -22,7 +27,9 @@ namespace Pact
 
         private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
         private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
+        #endregion // Fields
 
+        #region Constructors
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
@@ -41,17 +48,17 @@ namespace Pact
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
-                    __ =>
+                    __event =>
                     {
-                        if (__.PlayerID != _playerID)
+                        if (__event.PlayerID != _playerID)
                             return;
 
-                        if (_cards.Any(__card => string.Equals(__card.CardID, __.CardID, StringComparison.OrdinalIgnoreCase)))
+                        if (_cards.Any(__card => string.Equals(__card.CardID, __event.CardID, StringComparison.OrdinalIgnoreCase)))
                             return;
 
                         int? playerID = _cards.First()?.PlayerID;
 
-                        _cards.Add(new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __.CardID, 1, playerID));
+                        _cards.Add(new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __event.CardID, 1, playerID));
 
                         _cards =
                             _cards
@@ -64,25 +71,16 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.GameStarted>(__ => Reset()));
+                new Valkyrie.DelegateEventHandler<Events.GameStarted>(
+                    __ => Reset()));
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(
-                    __ =>
-                    {
-                        _opponentCoinStatus = false;
-
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
-                    }));
+                    __ => OpponentCoinStatus = false));
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.OpponentReceivedCoin>(
-                    __ =>
-                    {
-                        _opponentCoinStatus = true;
-
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
-                    }));
+                    __ => OpponentCoinStatus = true));
 
             _gameEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.PlayerDetermined>(
@@ -93,12 +91,14 @@ namespace Pact
 
             _viewEventHandlers.Add(
                 new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
-                    __ =>
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"))));
+                    __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"))));
 
             foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
                 _viewEventDispatcher.RegisterHandler(handler);
         }
+        #endregion // Constructors
+
+        public IEnumerable<TrackedCardViewModel> Cards => _cards;
 
         public void Cleanup()
         {
@@ -111,13 +111,28 @@ namespace Pact
             _cards.ForEach(__card => __card.Cleanup());
         }
 
+        public IConfigurationSettings ConfigurationSettings => _configurationSettings;
+
+        public int Count => _cards.Sum(__card => __card.Count);
+
+        public int FontSize => _configurationSettings.FontSize;
+
+        public bool? OpponentCoinStatus
+        {
+            get => _opponentCoinStatus;
+            private set
+            {
+                _opponentCoinStatus = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
+            }
+        }
+
         private void Reset()
         {
-            _opponentCoinStatus = null;
+            OpponentCoinStatus = null;
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
-
-            _cards.ForEach(__ => __.Cleanup());
+            _cards.ForEach(__card => __card.Cleanup());
 
             _cards =
                 _decklist.Cards
@@ -136,21 +151,6 @@ namespace Pact
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
         }
-
-        ~PlayerDeckTrackerViewModel()
-        {
-            System.Diagnostics.Debug.WriteLine("PlayerDeckTrackerViewModel::Destructor()");
-        }
-
-        public IEnumerable<TrackedCardViewModel> Cards => _cards;
-
-        public IConfigurationSettings ConfigurationSettings => _configurationSettings;
-
-        public int Count => _cards.Sum(__card => __card.Count);
-
-        public int FontSize => _configurationSettings.FontSize;
-
-        public bool? OpponentCoinStatus => _opponentCoinStatus;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

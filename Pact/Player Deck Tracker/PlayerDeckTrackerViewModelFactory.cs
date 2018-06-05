@@ -1,33 +1,33 @@
-﻿using Pact.Extensions.Contract;
+﻿#region Namespaces
+using Pact.Extensions.Contract;
+using Valkyrie;
+#endregion // Namespaces
 
 namespace Pact
 {
-    public interface IPlayerDeckTrackerViewModelFactory
-    {
-        PlayerDeckTrackerViewModel Create(
-            Valkyrie.IEventDispatcher gameEventDispatcher,
-            Decklist decklist);
-    }
-
     public sealed class PlayerDeckTrackerViewModelFactory
         : IPlayerDeckTrackerViewModelFactory
     {
+        #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
-        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+        private readonly IEventDispatcher _viewEventDispatcher;
+        #endregion // Dependencies
 
+        #region Constructors
         public PlayerDeckTrackerViewModelFactory(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
-            Valkyrie.IEventDispatcher viewEventDispatcher)
+            IEventDispatcher viewEventDispatcher)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
         }
+        #endregion // Constructors
 
         PlayerDeckTrackerViewModel IPlayerDeckTrackerViewModelFactory.Create(
-            Valkyrie.IEventDispatcher gameEventDispatcher,
+            IEventDispatcher gameEventDispatcher,
             Decklist decklist)
         {
             return

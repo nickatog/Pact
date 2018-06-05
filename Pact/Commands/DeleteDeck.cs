@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Pact.Events
+namespace Pact.Commands
 {
-    public sealed class DeckDeleted
+    public sealed class DeleteDeck
     {
-        public DeckDeleted(
+        public DeleteDeck(
             Guid deckID)
         {
             DeckID = deckID;

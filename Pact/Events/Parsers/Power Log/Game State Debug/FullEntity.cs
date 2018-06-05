@@ -58,8 +58,11 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                         if (parentBlockType.Eq("POWER") && zoneTag.Eq("DECK"))
                         {
+                            // Fal'dorei Strider
+                            if (parentBlockEntityCardID.Eq("LOOT_026"))
+                                events.Add(new Events.CardAddedToDeck(playerID, "LOOT_026e"));
                             // Jade Idol
-                            if (parentBlockEntityCardID.Eq("CFM_602"))
+                            else if (parentBlockEntityCardID.Eq("CFM_602"))
                                 events.Add(new Events.CardAddedToDeck(playerID, "CFM_602"));
                             // Un'Goro Pack
                             else if (parentBlockEntityCardID.Eq("UNG_851"))
