@@ -96,7 +96,9 @@
     <Compile Include="Deck Manager\Deck Import\DeckImportInterface.cs" />
     <Compile Include="Deck Manager\Deck Import\IDeckImportInterface.cs" />
     <Compile Include="Player Deck Tracker\IPlayerDeckTrackerViewModelFactory.cs" />
+    <Compile Include="Player Deck Tracker\ITrackedCardViewModelFactory.cs" />
     <Compile Include="Player Deck Tracker\PlayerDeckTrackerViewModelFactory.cs" />
+    <Compile Include="Player Deck Tracker\TrackedCardViewModelFactory.cs" />
     <Compile Include="Views\Wait\IWaitInterface.cs" />
     <Compile Include="Utility\AsyncSemaphore.cs" />
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />

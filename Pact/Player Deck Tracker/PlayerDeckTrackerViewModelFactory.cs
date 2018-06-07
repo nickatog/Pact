@@ -1,4 +1,5 @@
 ﻿#region Namespaces
+using System;
 using Pact.Extensions.Contract;
 using Valkyrie;
 #endregion // Namespaces
@@ -11,6 +12,7 @@ namespace Pact
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
+        private readonly ITrackedCardViewModelFactory _trackedCardViewModelFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
 
@@ -18,10 +20,16 @@ namespace Pact
         public PlayerDeckTrackerViewModelFactory(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
+            ITrackedCardViewModelFactory trackedCardViewModelFactory,
             IEventDispatcher viewEventDispatcher)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
             _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+
+            _trackedCardViewModelFactory =
+                trackedCardViewModelFactory
+                ?? throw new ArgumentNullException(nameof(trackedCardViewModelFactory));
+
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
         }
         #endregion // Constructors
@@ -35,6 +43,7 @@ namespace Pact
                     _cardInfoProvider,
                     _configurationSettings,
                     gameEventDispatcher,
+                    _trackedCardViewModelFactory,
                     _viewEventDispatcher,
                     decklist);
         }

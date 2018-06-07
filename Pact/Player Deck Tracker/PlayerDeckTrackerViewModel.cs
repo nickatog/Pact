@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Pact.Extensions.Contract;
+using Valkyrie;
 using Pact.Extensions.Enumerable;
 #endregion // Namespaces
 
@@ -15,53 +15,79 @@ namespace Pact
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
-        private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
-        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+        private readonly IEventDispatcher _gameEventDispatcher;
+        private readonly ITrackedCardViewModelFactory _trackedCardViewModelFactory;
+        private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
 
         #region Fields
-        private IList<TrackedCardViewModel> _cards;
         private readonly Decklist _decklist;
         private bool? _opponentCoinStatus;
         private int _playerID;
+        private IList<TrackedCardViewModel> _trackedCardViewModels;
 
-        private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
-        private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
+        private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
+        private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
         #endregion // Fields
 
         #region Constructors
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
-            Valkyrie.IEventDispatcher gameEventDispatcher,
-            Valkyrie.IEventDispatcher viewEventDispatcher,
+            IEventDispatcher gameEventDispatcher,
+            ITrackedCardViewModelFactory trackedCardViewModelFactory,
+            IEventDispatcher viewEventDispatcher,
             Decklist decklist)
         {
-            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
-            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
-            _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+            _cardInfoProvider =
+                cardInfoProvider
+                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
+
+            _configurationSettings =
+                configurationSettings
+                ?? throw new ArgumentNullException(nameof(configurationSettings));
+
+            _gameEventDispatcher =
+                gameEventDispatcher
+                ?? throw new ArgumentNullException(nameof(gameEventDispatcher));
+
+            _trackedCardViewModelFactory =
+                trackedCardViewModelFactory
+                ?? throw new ArgumentNullException(nameof(trackedCardViewModelFactory));
+
+            _viewEventDispatcher =
+                viewEventDispatcher
+                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
             _decklist = decklist;
 
             Reset();
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
+                new DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
                     {
                         if (__event.PlayerID != _playerID)
                             return;
 
-                        if (_cards.Any(__card => string.Equals(__card.CardID, __event.CardID, StringComparison.OrdinalIgnoreCase)))
+                        if (_trackedCardViewModels.Any(__card => string.Equals(__card.CardID, __event.CardID, StringComparison.OrdinalIgnoreCase)))
                             return;
 
-                        int? playerID = _cards.First()?.PlayerID;
+                        int? playerID = _trackedCardViewModels.First()?.PlayerID;
 
-                        _cards.Add(new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __event.CardID, 1, playerID));
+                        TrackedCardViewModel cardViewModel = _trackedCardViewModelFactory.Create(_gameEventDispatcher, __event.CardID, 1, playerID);
 
-                        _cards =
-                            _cards
+                        cardViewModel.PropertyChanged +=
+                            (__sender, __args) =>
+                            {
+                                if (__args.PropertyName == "Count")
+                                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                            };
+
+                        _trackedCardViewModels.Add(cardViewModel);
+
+                        _trackedCardViewModels =
+                            _trackedCardViewModels
                             .OrderBy(__card => __card.Cost)
                             .ThenBy(__card => __card.Name)
                             .ToList();
@@ -71,34 +97,34 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.GameStarted>(
+                new DelegateEventHandler<Events.GameStarted>(
                     __ => Reset()));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.OpponentCoinLost>(
+                new DelegateEventHandler<Events.OpponentCoinLost>(
                     __ => OpponentCoinStatus = false));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.OpponentReceivedCoin>(
+                new DelegateEventHandler<Events.OpponentReceivedCoin>(
                     __ => OpponentCoinStatus = true));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.PlayerDetermined>(
+                new DelegateEventHandler<Events.PlayerDetermined>(
                     __event => _playerID = __event.PlayerID));
 
-            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
+            foreach (IEventHandler handler in _gameEventHandlers)
                 _gameEventDispatcher.RegisterHandler(handler);
 
             _viewEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
+                new DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
                     __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"))));
 
-            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
+            foreach (IEventHandler handler in _viewEventHandlers)
                 _viewEventDispatcher.RegisterHandler(handler);
         }
         #endregion // Constructors
 
-        public IEnumerable<TrackedCardViewModel> Cards => _cards;
+        public IEnumerable<TrackedCardViewModel> Cards => _trackedCardViewModels;
 
         public void Cleanup()
         {
@@ -108,12 +134,12 @@ namespace Pact
             _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
             _viewEventHandlers.Clear();
 
-            _cards.ForEach(__card => __card.Cleanup());
+            _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
         }
 
         public IConfigurationSettings ConfigurationSettings => _configurationSettings;
 
-        public int Count => _cards.Sum(__card => __card.Count);
+        public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
 
         public int FontSize => _configurationSettings.FontSize;
 
@@ -124,7 +150,7 @@ namespace Pact
             {
                 _opponentCoinStatus = value;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OpponentCoinStatus"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OpponentCoinStatus)));
             }
         }
 
@@ -132,24 +158,24 @@ namespace Pact
         {
             OpponentCoinStatus = null;
 
-            _cards.ForEach(__card => __card.Cleanup());
+            _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
 
-            _cards =
+            _trackedCardViewModels =
                 _decklist.Cards
-                .Select(__card => new TrackedCardViewModel(_cardInfoProvider, _configurationSettings, _gameEventDispatcher, _viewEventDispatcher, __card.CardID, __card.Count))
-                .OrderBy(__trackedCard => __trackedCard.Cost)
-                .ThenBy(__trackedCard => __trackedCard.Name)
+                .Select(__card => _trackedCardViewModelFactory.Create(_gameEventDispatcher, __card.CardID, __card.Count))
+                .OrderBy(__trackedCardViewModel => __trackedCardViewModel.Cost)
+                .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                 .ToList();
 
-            foreach (TrackedCardViewModel card in _cards)
-                card.PropertyChanged +=
+            foreach (TrackedCardViewModel trackedCardViewModel in _trackedCardViewModels)
+                trackedCardViewModel.PropertyChanged +=
                     (__sender, __args) =>
                     {
-                        if (__args.PropertyName == "Count")
-                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                        if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
                     };
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Cards)));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

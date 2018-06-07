@@ -245,6 +245,7 @@ namespace Pact
                     new PlayerDeckTrackerViewModelFactory(
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IConfigurationSettings>(),
+                        __context.Resolve<ITrackedCardViewModelFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<IPlayerDeckTrackerViewModelFactory>()
             .SingleInstance();
@@ -262,6 +263,17 @@ namespace Pact
                 __context =>
                     new Serializer<DeckInfo>(DeckInfo.Deserialize))
             .As<ISerializer<DeckInfo>>()
+            .SingleInstance();
+
+            // ITrackedCardViewModelFactory
+            builder
+            .Register(
+                __context =>
+                    new TrackedCardViewModelFactory(
+                        __context.Resolve<ICardInfoProvider>(),
+                        __context.Resolve<IConfigurationSettings>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+            .As<ITrackedCardViewModelFactory>()
             .SingleInstance();
 
             // IUserConfirmation

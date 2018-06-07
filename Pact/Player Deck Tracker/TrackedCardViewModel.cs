@@ -1,173 +1,170 @@
-﻿using System;
+﻿#region Namespaces
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Pact.Extensions.Contract;
+using Valkyrie;
+using Pact.Extensions.Enumerable;
+#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class TrackedCardViewModel
         : INotifyPropertyChanged
     {
+        #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSettings _configurationSettings;
-        private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
-        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+        private readonly IEventDispatcher _gameEventDispatcher;
+        private readonly IEventDispatcher _viewEventDispatcher;
+        #endregion // Dependencies
 
-        private readonly string _cardID;
+        #region Fields
         private int _count;
+        private int? _playerID;
 
-        private readonly IList<Valkyrie.IEventHandler> _gameEventHandlers = new List<Valkyrie.IEventHandler>();
-        private readonly IList<Valkyrie.IEventHandler> _viewEventHandlers = new List<Valkyrie.IEventHandler>();
-        private int _playerID;
+        private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
+        private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
+        #endregion // Fields
 
+        #region Constructors
         public TrackedCardViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSettings configurationSettings,
-            Valkyrie.IEventDispatcher gameEventDispatcher,
-            Valkyrie.IEventDispatcher viewEventDispatcher,
+            IEventDispatcher gameEventDispatcher,
+            IEventDispatcher viewEventDispatcher,
             string cardID,
             int count,
             int? playerID = null)
         {
-            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
-            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
-            _viewEventDispatcher = viewEventDispatcher ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+            _cardInfoProvider =
+                cardInfoProvider
+                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
 
-            _cardID = cardID;
+            _configurationSettings =
+                configurationSettings
+                ?? throw new ArgumentNullException(nameof(configurationSettings));
+
+            _gameEventDispatcher =
+                gameEventDispatcher
+                ?? throw new ArgumentNullException(nameof(gameEventDispatcher));
+
+            _viewEventDispatcher =
+                viewEventDispatcher
+                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+
+            CardID = cardID;
             _count = count;
-
-            if (playerID.HasValue)
-                _playerID = playerID.Value;
+            _playerID = playerID;
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardAddedToDeck>(
+                new DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            IncrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count++;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardDrawnFromDeck>(
+                new DelegateEventHandler<Events.CardDrawnFromDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            DecrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count--;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardEnteredPlayFromDeck>(
+                new DelegateEventHandler<Events.CardEnteredPlayFromDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            DecrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count--;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardOverdrawnFromDeck>(
+                new DelegateEventHandler<Events.CardOverdrawnFromDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            DecrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count--;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardRemovedFromDeck>(
+                new DelegateEventHandler<Events.CardRemovedFromDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            DecrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count--;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
+                new DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
                     __event =>
                     {
-                        if (__event.PlayerID == _playerID && __event.CardID == _cardID)
-                            IncrementCount();
+                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                            Count++;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.MulliganOptionPresented>(
+                new DelegateEventHandler<Events.MulliganOptionPresented>(
                     __event =>
                     {
-                        if (__event.CardID == _cardID)
-                            DecrementCount();
+                        if (__event.CardID == CardID)
+                            Count--;
                     }));
 
             _gameEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.PlayerDetermined>(
+                new DelegateEventHandler<Events.PlayerDetermined>(
                     __event => _playerID = __event.PlayerID));
 
-            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
-                _gameEventDispatcher.RegisterHandler(handler);
+            _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
             _viewEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.DeckTrackerCardTextOffsetChanged>(
+                new DelegateEventHandler<Events.DeckTrackerCardTextOffsetChanged>(
                     __event =>
-                    {
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CardTextOffset"));
-                    }));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CardTextOffset)))));
 
             _viewEventHandlers.Add(
-                new Valkyrie.DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
+                new DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
                     __event =>
-                    {
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"));
-                    }));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
 
-            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
-                _viewEventDispatcher.RegisterHandler(handler);
-
-            void DecrementCount()
-            {
-                _count--;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
-            }
-
-            void IncrementCount()
-            {
-                _count++;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
-            }
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
+        #endregion // Constructors
 
-        public void Cleanup()
-        {
-            foreach (Valkyrie.IEventHandler handler in _gameEventHandlers)
-                _gameEventDispatcher.UnregisterHandler(handler);
-
-            _gameEventHandlers.Clear();
-
-            foreach (Valkyrie.IEventHandler handler in _viewEventHandlers)
-                _viewEventDispatcher.UnregisterHandler(handler);
-
-            _viewEventHandlers.Clear();
-        }
-
-        ~TrackedCardViewModel()
-        {
-            System.Diagnostics.Debug.WriteLine("DESTRUCTOR!");
-        }
-
-        public string CardID => _cardID;
+        public string CardID { get; private set; }
 
         public int CardTextOffset => _configurationSettings.CardTextOffset;
 
-        public string Class => _cardInfoProvider.GetCardInfo(_cardID)?.Class ?? "<UNKNOWN>";
+        public string Class => _cardInfoProvider.GetCardInfo(CardID)?.Class ?? "<UNKNOWN>";
 
-        public int Cost => _cardInfoProvider.GetCardInfo(_cardID)?.Cost ?? 0;
+        public void Cleanup()
+        {
+            _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.UnregisterHandler(__handler));
+            _gameEventHandlers.Clear();
 
-        public int Count => _count;
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
+            _viewEventHandlers.Clear();
+        }
+
+        public int Cost => _cardInfoProvider.GetCardInfo(CardID)?.Cost ?? 0;
+
+        public int Count
+        {
+            get => _count;
+            private set
+            {
+                _count = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
+            }
+        }
 
         public int FontSize => _configurationSettings.FontSize;
 
-        public string Name => _cardInfoProvider.GetCardInfo(_cardID)?.Name ?? "<UNKNOWN>";
+        public string Name => _cardInfoProvider.GetCardInfo(CardID)?.Name ?? "<UNKNOWN>";
 
-        public int PlayerID => _playerID;
+        public int? PlayerID => _playerID;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
