@@ -92,6 +92,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\MoveDeck.cs" />
+    <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Deck Manager\Deck Import\DeckImportDetails.cs" />
     <Compile Include="Deck Manager\Deck Import\DeckImportInterface.cs" />
     <Compile Include="Deck Manager\Deck Import\IDeckImportInterface.cs" />

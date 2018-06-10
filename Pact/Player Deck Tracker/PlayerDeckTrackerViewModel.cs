@@ -75,25 +75,30 @@ namespace Pact
 
                         int? playerID = _trackedCardViewModels.First()?.PlayerID;
 
-                        TrackedCardViewModel cardViewModel = _trackedCardViewModelFactory.Create(_gameEventDispatcher, __event.CardID, 1, playerID);
+                        TrackedCardViewModel trackedCardViewModel =
+                            _trackedCardViewModelFactory.Create(
+                                _gameEventDispatcher,
+                                __event.CardID,
+                                1,
+                                playerID);
 
-                        cardViewModel.PropertyChanged +=
+                        trackedCardViewModel.PropertyChanged +=
                             (__sender, __args) =>
                             {
-                                if (__args.PropertyName == "Count")
-                                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                                if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
+                                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
                             };
 
-                        _trackedCardViewModels.Add(cardViewModel);
+                        _trackedCardViewModels.Add(trackedCardViewModel);
 
                         _trackedCardViewModels =
                             _trackedCardViewModels
-                            .OrderBy(__card => __card.Cost)
-                            .ThenBy(__card => __card.Name)
+                            .OrderBy(__trackedCardViewModel => __trackedCardViewModel.Cost)
+                            .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                             .ToList();
 
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cards"));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Cards)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
                     }));
 
             _gameEventHandlers.Add(
@@ -117,7 +122,7 @@ namespace Pact
 
             _viewEventHandlers.Add(
                 new DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
-                    __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FontSize"))));
+                    __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
 
             foreach (IEventHandler handler in _viewEventHandlers)
                 _viewEventDispatcher.RegisterHandler(handler);
@@ -137,6 +142,7 @@ namespace Pact
             _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
         }
 
+        // Remove this and add a global ambient context so the views that need this can reference it?
         public IConfigurationSettings ConfigurationSettings => _configurationSettings;
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
@@ -176,6 +182,7 @@ namespace Pact
                     };
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Cards)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
