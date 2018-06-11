@@ -77,12 +77,19 @@ namespace Pact
 
                     return new FileBasedConfigurationSettings(__context.Resolve<ISerializer<ConfigurationStorage>>(), filePath);
                 })
-            .Named<IConfigurationSettings>("base");
+            .Named<IEditableConfigurationSettings>("base");
 
             builder
-            .RegisterDecorator<IConfigurationSettings>(
+            .RegisterDecorator<IEditableConfigurationSettings>(
                 (__context, __inner) =>
                     new EventDispatchingConfigurationSettings(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
+            .SingleInstance();
+
+            builder
+            .Register(
+                __context =>
+                    __context.Resolve<IEditableConfigurationSettings>())
+            .As<IConfigurationSettings>()
             .SingleInstance();
 
             // IDeckImportInterface

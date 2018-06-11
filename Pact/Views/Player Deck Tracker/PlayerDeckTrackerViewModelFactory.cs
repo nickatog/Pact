@@ -1,6 +1,5 @@
 ﻿#region Namespaces
 using System;
-using Pact.Extensions.Contract;
 using Valkyrie;
 #endregion // Namespaces
 
@@ -23,14 +22,21 @@ namespace Pact
             ITrackedCardViewModelFactory trackedCardViewModelFactory,
             IEventDispatcher viewEventDispatcher)
         {
-            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
+            _cardInfoProvider =
+                cardInfoProvider
+                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
+
+            _configurationSettings =
+                configurationSettings
+                ?? throw new ArgumentNullException(nameof(configurationSettings));
 
             _trackedCardViewModelFactory =
                 trackedCardViewModelFactory
                 ?? throw new ArgumentNullException(nameof(trackedCardViewModelFactory));
 
-            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _viewEventDispatcher =
+                viewEventDispatcher
+                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
         }
         #endregion // Constructors
 

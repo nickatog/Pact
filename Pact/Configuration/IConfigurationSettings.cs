@@ -4,7 +4,7 @@ namespace Pact
 {
     public interface IConfigurationSettings
     {
-        int CardTextOffset { get; set; }
+        int CardTextOffset { get; }
         int FontSize { get; set; }
         string PowerLogFilePath { get; set; }
         Point? TrackerWindowLocation { get; set; }

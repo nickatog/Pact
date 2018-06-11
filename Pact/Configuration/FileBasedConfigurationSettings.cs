@@ -1,25 +1,36 @@
-﻿using System;
+﻿#region Namespaces
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using System.Windows;
-using Pact.Extensions.Contract;
+#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class FileBasedConfigurationSettings
-        : IConfigurationSettings
+        : IEditableConfigurationSettings
     {
+        #region Dependencies
         private readonly ISerializer<ConfigurationStorage> _configurationSerializer;
+        #endregion // Dependencies
+
+        #region Fields
         private ConfigurationStorage _configurationStorage;
         private readonly string _filePath;
+        #endregion // Fields
 
         public FileBasedConfigurationSettings(
             ISerializer<ConfigurationStorage> configurationSerializer,
             string filePath)
         {
-            _configurationSerializer = configurationSerializer.Require(nameof(configurationSerializer));
-            _filePath = filePath.Require(nameof(filePath));
+            _configurationSerializer =
+                configurationSerializer
+                ?? throw new ArgumentNullException(nameof(configurationSerializer));
+
+            _filePath =
+                filePath
+                ?? throw new ArgumentNullException(nameof(filePath));
 
             if (!File.Exists(_filePath))
                 return;
@@ -28,14 +39,12 @@ namespace Pact
                 _configurationStorage = _configurationSerializer.Deserialize(stream).Result;
         }
 
-        int IConfigurationSettings.CardTextOffset
+        public int CardTextOffset
         {
             get => _configurationStorage.CardTextOffset ?? 0;
             set
             {
                 _configurationStorage.CardTextOffset = value;
-
-                SaveToFile();
             }
         }
 
@@ -87,6 +96,16 @@ namespace Pact
         {
             using (var stream = new FileStream(_filePath, FileMode.Create))
                 _configurationSerializer.Serialize(stream, _configurationStorage).Wait();
+        }
+
+        Task IEditableConfigurationSettings.SaveChanges(
+            IEditableConfigurationSettings configurationSettings,
+            Action<IEditableConfigurationSettings> configurationChanges)
+        {
+            configurationChanges?.Invoke(configurationSettings);
+
+            using (var stream = new FileStream(_filePath, FileMode.Create))
+                return _configurationSerializer.Serialize(stream, _configurationStorage);
         }
     }
 

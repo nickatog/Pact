@@ -1,30 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
+using Pact.Extensions.Enumerable;
 
 namespace Pact
 {
     public sealed class EventDispatchingConfigurationSettings
-        : IConfigurationSettings
+        : IEditableConfigurationSettings
     {
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly IEditableConfigurationSettings _configurationSettings;
         private readonly Valkyrie.IEventDispatcher _eventDispatcher;
 
+        private readonly IList<object> _pendingEvents = new List<object>();
+
         public EventDispatchingConfigurationSettings(
-            IConfigurationSettings configurationSettings,
+            IEditableConfigurationSettings configurationSettings,
             Valkyrie.IEventDispatcher eventDispatcher)
         {
             _configurationSettings = configurationSettings ?? throw new ArgumentNullException(nameof(configurationSettings));
             _eventDispatcher = eventDispatcher ?? throw new ArgumentNullException(nameof(eventDispatcher));
         }
 
-        int IConfigurationSettings.CardTextOffset
+        public int CardTextOffset
         {
             get => _configurationSettings.CardTextOffset;
             set
             {
                 _configurationSettings.CardTextOffset = value;
 
-                _eventDispatcher.DispatchEvent(new Events.DeckTrackerCardTextOffsetChanged());
+                _pendingEvents.Add(new Events.DeckTrackerCardTextOffsetChanged());
             }
         }
 
@@ -35,7 +40,7 @@ namespace Pact
             {
                 _configurationSettings.FontSize = value;
 
-                _eventDispatcher.DispatchEvent(new Events.DeckTrackerFontSizeChanged());
+                _pendingEvents.Add(new Events.DeckTrackerFontSizeChanged());
             }
         }
 
@@ -64,6 +69,16 @@ namespace Pact
             {
                 _configurationSettings.TrackerWindowSize = value;
             }
+        }
+
+        async Task IEditableConfigurationSettings.SaveChanges(
+            IEditableConfigurationSettings configurationSettings,
+            Action<IEditableConfigurationSettings> configurationChanges)
+        {
+            await _configurationSettings.SaveChanges(configurationSettings, configurationChanges);
+
+            _pendingEvents.ForEach(__event => _eventDispatcher.DispatchEvent(__event));
+            _pendingEvents.Clear();
         }
     }
 }

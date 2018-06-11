@@ -1,7 +1,7 @@
 ﻿#region Namespaces
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Pact.Extensions.Contract;
 using Valkyrie;
 #endregion // Namespaces
 
@@ -28,9 +28,17 @@ namespace Pact
             IEventStreamFactory eventStreamFactory,
             IPlayerDeckTrackerViewModelFactory playerDeckTrackerViewModelFactory)
         {
-            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
-            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
-            _playerDeckTrackerViewModelFactory = playerDeckTrackerViewModelFactory.Require(nameof(playerDeckTrackerViewModelFactory));
+            _eventDispatcherFactory =
+                eventDispatcherFactory
+                ?? throw new ArgumentNullException(nameof(eventDispatcherFactory));
+
+            _eventStreamFactory =
+                eventStreamFactory
+                ?? throw new ArgumentNullException(nameof(eventStreamFactory));
+
+            _playerDeckTrackerViewModelFactory =
+                playerDeckTrackerViewModelFactory
+                ?? throw new ArgumentNullException(nameof(playerDeckTrackerViewModelFactory));
         }
         #endregion // Constructors
 

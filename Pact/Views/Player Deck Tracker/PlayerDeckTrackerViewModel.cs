@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using Valkyrie;
 using Pact.Extensions.Enumerable;
+using Pact.StringExtensions;
 #endregion // Namespaces
 
 namespace Pact
@@ -70,7 +71,7 @@ namespace Pact
                         if (__event.PlayerID != _playerID)
                             return;
 
-                        if (_trackedCardViewModels.Any(__card => string.Equals(__card.CardID, __event.CardID, StringComparison.OrdinalIgnoreCase)))
+                        if (_trackedCardViewModels.Any(__trackedCardViewModel => __trackedCardViewModel.CardID.Eq(__event.CardID)))
                             return;
 
                         int? playerID = _trackedCardViewModels.First()?.PlayerID;
@@ -168,14 +169,14 @@ namespace Pact
 
             _trackedCardViewModels =
                 _decklist.Cards
-                .Select(__card => _trackedCardViewModelFactory.Create(_gameEventDispatcher, __card.CardID, __card.Count))
+                .Select(__cardInfo => _trackedCardViewModelFactory.Create(_gameEventDispatcher, __cardInfo.CardID, __cardInfo.Count))
                 .OrderBy(__trackedCardViewModel => __trackedCardViewModel.Cost)
                 .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                 .ToList();
 
             foreach (TrackedCardViewModel trackedCardViewModel in _trackedCardViewModels)
                 trackedCardViewModel.PropertyChanged +=
-                    (__sender, __args) =>
+                    (__, __args) =>
                     {
                         if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
