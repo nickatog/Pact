@@ -13,7 +13,7 @@ namespace Pact
     {
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
@@ -29,7 +29,7 @@ namespace Pact
         #region Constructors
         public TrackedCardViewModel(
             ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings,
+            IConfigurationSource configurationSource,
             IEventDispatcher gameEventDispatcher,
             IEventDispatcher viewEventDispatcher,
             string cardID,
@@ -40,9 +40,9 @@ namespace Pact
                 cardInfoProvider
                 ?? throw new ArgumentNullException(nameof(cardInfoProvider));
 
-            _configurationSettings =
-                configurationSettings
-                ?? throw new ArgumentNullException(nameof(configurationSettings));
+            _configurationSource =
+                configurationSource
+                ?? throw new ArgumentNullException(nameof(configurationSource));
 
             _gameEventDispatcher =
                 gameEventDispatcher
@@ -119,14 +119,12 @@ namespace Pact
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
             _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckTrackerCardTextOffsetChanged>(
+                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
                     __event =>
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CardTextOffset)))));
-
-            _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
-                    __event =>
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
+                    {
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CardTextOffset)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)));
+                    }));
 
             _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
@@ -134,7 +132,7 @@ namespace Pact
 
         public string CardID { get; private set; }
 
-        public int CardTextOffset => _configurationSettings.CardTextOffset;
+        public int CardTextOffset => _configurationSource.GetSettings().Result.CardTextOffset;
 
         public string Class => _cardInfoProvider.GetCardInfo(CardID)?.Class ?? "<UNKNOWN>";
 
@@ -160,7 +158,7 @@ namespace Pact
             }
         }
 
-        public int FontSize => _configurationSettings.FontSize;
+        public int FontSize => _configurationSource.GetSettings().Result.FontSize;
 
         public string Name => _cardInfoProvider.GetCardInfo(CardID)?.Name ?? "<UNKNOWN>";
 

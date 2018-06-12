@@ -1,27 +1,36 @@
-﻿using System.Collections.Generic;
-using Pact.Extensions.Contract;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Pact
 {
     public sealed class PowerLogEventStreamFactory
         : IEventStreamFactory
     {
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly IConfigurationSource _configurationSource;
         private readonly IEnumerable<IGameStateDebugEventParser> _eventParsers;
 
+        private string _powerLogFilePath;
+
         public PowerLogEventStreamFactory(
-            IConfigurationSettings configurationSettings,
+            IConfigurationSource configurationSource,
             IEnumerable<IGameStateDebugEventParser> eventParsers)
         {
-            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
-            _eventParsers = eventParsers.Require(nameof(eventParsers));
+            _configurationSource =
+                configurationSource
+                ?? throw new ArgumentNullException(nameof(configurationSource));
+
+            _eventParsers =
+                eventParsers
+                ?? throw new ArgumentNullException(nameof(eventParsers));
+
+            _powerLogFilePath = _configurationSource.GetSettings().Result.PowerLogFilePath;
         }
 
         IEventStream IEventStreamFactory.Create()
         {
             return
                 new PowerLogEventStream(
-                    _configurationSettings.PowerLogFilePath,
+                    _powerLogFilePath,
                     new GameStateDebugPowerLogEventParser(_eventParsers));
         }
     }

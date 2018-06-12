@@ -8,16 +8,28 @@ namespace Pact
     public sealed class ConfigurationSettingsViewModel
     {
         #region Dependencies
-        private readonly IEditableConfigurationSettings _configurationSettings;
+        private readonly IConfigurationSource _configurationSource;
+        private readonly IConfigurationStorage _configurationStorage;
         #endregion // Dependencies
+
+        #region Fields
+        private readonly IConfigurationSettings _configurationSettings;
+        #endregion // Fields
 
         #region Constructors
         public ConfigurationSettingsViewModel(
-            IEditableConfigurationSettings configurationSettings)
+            IConfigurationSource configurationSource,
+            IConfigurationStorage configurationStorage)
         {
-            _configurationSettings =
-                configurationSettings
-                ?? throw new ArgumentNullException(nameof(configurationSettings));
+            _configurationSource =
+                configurationSource
+                ?? throw new ArgumentNullException(nameof(configurationSource));
+
+            _configurationStorage =
+                configurationStorage
+                ?? throw new ArgumentNullException(nameof(configurationStorage));
+
+            _configurationSettings = _configurationSource.GetSettings().Result;
 
             CardTextOffset = _configurationSettings.CardTextOffset;
             FontSize = _configurationSettings.FontSize;
@@ -32,12 +44,11 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _configurationSettings.SaveChanges(
-                        _configurationSettings,
-                        __configurationSettings =>
+                    _configurationStorage.SaveChanges(
+                        new ConfigurationData(_configurationSource.GetSettings().Result)
                         {
-                            __configurationSettings.CardTextOffset = CardTextOffset;
-                            __configurationSettings.FontSize = FontSize;
+                            CardTextOffset = CardTextOffset,
+                            FontSize = FontSize
                         });
                 });
     }

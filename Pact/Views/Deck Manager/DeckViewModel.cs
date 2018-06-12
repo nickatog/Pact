@@ -19,7 +19,6 @@ namespace Pact
     {
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
@@ -44,7 +43,6 @@ namespace Pact
         #region Constructors
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings,
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
@@ -63,7 +61,6 @@ namespace Pact
             IEnumerable<GameResult> gameResults = null)
         {
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _configurationSettings = configurationSettings.Require(nameof(configurationSettings));
             _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
             _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
             _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));

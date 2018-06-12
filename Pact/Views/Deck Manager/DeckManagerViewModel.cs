@@ -16,7 +16,6 @@ namespace Pact
     {
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
@@ -32,7 +31,6 @@ namespace Pact
         #region Constructors
         public DeckManagerViewModel(
             ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings,
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
@@ -46,10 +44,6 @@ namespace Pact
             _cardInfoProvider =
                 cardInfoProvider
                 ?? throw new ArgumentNullException(nameof(cardInfoProvider));
-
-            _configurationSettings =
-                configurationSettings
-                ?? throw new ArgumentNullException(nameof(configurationSettings));
 
             _deckImportInterface =
                 deckImportInterface

@@ -1,26 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 
 namespace Pact
 {
-    public static class ConfigurationSettings
+    public sealed class ConfigurationSettings
+        : IConfigurationSettings
     {
-        private static IConfigurationSettings _global;
-        public static IConfigurationSettings Global
+        public ConfigurationSettings(
+            ConfigurationData configurationData)
         {
-            get
-            {
-                // default to something
-
-                return _global;
-            }
-            set
-            {
-                _global = value;
-            }
+            CardTextOffset = configurationData.CardTextOffset;
+            FontSize = configurationData.FontSize ?? 12;
+            PowerLogFilePath = configurationData.PowerLogFilePath ?? @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
+            TrackerWindowLocation = configurationData.TrackerWindowLocation;
+            TrackerWindowSize = configurationData.TrackerWindowSize;
         }
+
+        public int CardTextOffset { get; private set; }
+
+        public int FontSize { get; private set; }
+
+        public string PowerLogFilePath { get; private set; }
+
+        public Point? TrackerWindowLocation { get; private set; }
+
+        public Size? TrackerWindowSize { get; private set; }
     }
 }

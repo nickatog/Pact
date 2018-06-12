@@ -5,9 +5,13 @@ namespace Pact
     public interface IConfigurationSettings
     {
         int CardTextOffset { get; }
-        int FontSize { get; set; }
-        string PowerLogFilePath { get; set; }
-        Point? TrackerWindowLocation { get; set; }
-        Size? TrackerWindowSize { get; set; }
+
+        int FontSize { get; }
+
+        string PowerLogFilePath { get; }
+
+        Point? TrackerWindowLocation { get; }
+
+        Size? TrackerWindowSize { get; }
     }
 }

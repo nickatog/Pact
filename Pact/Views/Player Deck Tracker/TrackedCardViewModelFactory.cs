@@ -10,23 +10,23 @@ namespace Pact
     {
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
 
         #region Constructors
         public TrackedCardViewModelFactory(
             ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings,
+            IConfigurationSource configurationSource,
             IEventDispatcher viewEventDispatcher)
         {
             _cardInfoProvider =
                 cardInfoProvider
                 ?? throw new ArgumentNullException(nameof(cardInfoProvider));
 
-            _configurationSettings =
-                configurationSettings
-                ?? throw new ArgumentNullException(nameof(configurationSettings));
+            _configurationSource =
+                configurationSource
+                ?? throw new ArgumentNullException(nameof(configurationSource));
 
             _viewEventDispatcher =
                 viewEventDispatcher
@@ -43,7 +43,7 @@ namespace Pact
             return
                 new TrackedCardViewModel(
                     _cardInfoProvider,
-                    _configurationSettings,
+                    _configurationSource,
                     gameEventDispatcher,
                     _viewEventDispatcher,
                     cardID,

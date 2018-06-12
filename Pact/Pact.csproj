@@ -92,8 +92,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\MoveDeck.cs" />
+    <Compile Include="Configuration\CachingConfigurationSource.cs" />
+    <Compile Include="Configuration\ConfigurationData.cs" />
     <Compile Include="Configuration\ConfigurationSettings.cs" />
-    <Compile Include="Configuration\IEditableConfigurationSettings.cs" />
+    <Compile Include="Configuration\FileBasedConfigurationSource.cs" />
+    <Compile Include="Configuration\FileBasedConfigurationStorage.cs" />
+    <Compile Include="Configuration\IConfigurationSource.cs" />
+    <Compile Include="Configuration\IConfigurationStorage.cs" />
+    <Compile Include="Events\View Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Views\Deck Import\DeckImportDetails.cs" />
     <Compile Include="Views\Deck Import\DeckImportInterface.cs" />
     <Compile Include="Views\Deck Import\IDeckImportInterface.cs" />
@@ -108,7 +114,6 @@
     <Compile Include="Behaviors\SaveWindowPositionBehavior.cs" />
     <Compile Include="Behaviors\TestBehavior.cs" />
     <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
-    <Compile Include="Configuration\FileBasedConfigurationSettings.cs" />
     <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />
     <Compile Include="Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
@@ -122,8 +127,6 @@
     <Compile Include="Events\GameEnded.cs" />
     <Compile Include="Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
     <Compile Include="Commands\DeleteDeck.cs" />
-    <Compile Include="Events\View Events\DeckTrackerCardTextOffsetChanged.cs" />
-    <Compile Include="Events\View Events\DeckTrackerFontSizeChanged.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="Converters\ClassNameToBrushConverter.cs" />

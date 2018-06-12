@@ -11,6 +11,13 @@ namespace Pact
     {
         protected override void Load(ContainerBuilder builder)
         {
+            string configurationFilePath =
+                Path.Combine(
+                    Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "Pact"),
+                    ".config");
+
             builder
             .Register(
                 __context =>
@@ -29,7 +36,6 @@ namespace Pact
                 __context =>
                     new DeckManagerViewModel(
                         __context.Resolve<ICardInfoProvider>(),
-                        __context.Resolve<IConfigurationSettings>(),
                         __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<IDeckInfoRepository>(),
                         __context.Resolve<IDecklistSerializer>(),
@@ -63,33 +69,30 @@ namespace Pact
             .As(typeof(ICollectionSerializer<>))
             .SingleInstance();
 
-            // IConfigurationSettings
+            // IConfigurationSource
             builder
             .Register(
                 __context =>
-                {
-                    string filePath =
-                        Path.Combine(
-                            Path.Combine(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                "Pact"),
-                            ".config");
-
-                    return new FileBasedConfigurationSettings(__context.Resolve<ISerializer<ConfigurationStorage>>(), filePath);
-                })
-            .Named<IEditableConfigurationSettings>("base");
+                    new FileBasedConfigurationSource(__context.Resolve<ISerializer<ConfigurationData>>(), configurationFilePath))
+            .Named<IConfigurationSource>("base");
 
             builder
-            .RegisterDecorator<IEditableConfigurationSettings>(
+            .RegisterDecorator<IConfigurationSource>(
                 (__context, __inner) =>
-                    new EventDispatchingConfigurationSettings(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
+                    new CachingConfigurationSource(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
             .SingleInstance();
 
+            // IConfigurationStorage
             builder
             .Register(
                 __context =>
-                    __context.Resolve<IEditableConfigurationSettings>())
-            .As<IConfigurationSettings>()
+                    new FileBasedConfigurationStorage(__context.Resolve<ISerializer<ConfigurationData>>(), configurationFilePath))
+            .Named<IConfigurationStorage>("base");
+
+            builder
+            .RegisterDecorator<IConfigurationStorage>(
+                (__context, __inner) =>
+                    new EventDispatchingConfigurationStorage(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
             .SingleInstance();
 
             // IDeckImportInterface
@@ -140,7 +143,6 @@ namespace Pact
                     return
                         new DeckViewModelFactory(
                             __context.Resolve<ICardInfoProvider>(),
-                            __context.Resolve<IConfigurationSettings>(),
                             __context.Resolve<IDeckImportInterface>(),
                             __context.Resolve<IDeckInfoRepository>(),
                             __context.Resolve<IDecklistSerializer>(),
@@ -251,7 +253,8 @@ namespace Pact
                 __context =>
                     new PlayerDeckTrackerViewModelFactory(
                         __context.Resolve<ICardInfoProvider>(),
-                        __context.Resolve<IConfigurationSettings>(),
+                        __context.Resolve<IConfigurationSource>(),
+                        __context.Resolve<IConfigurationStorage>(),
                         __context.Resolve<ITrackedCardViewModelFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<IPlayerDeckTrackerViewModelFactory>()
@@ -261,8 +264,8 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new Serializer<ConfigurationStorage>(ConfigurationStorage.Deserialize))
-            .As<ISerializer<ConfigurationStorage>>()
+                    new Serializer<ConfigurationData>(ConfigurationData.Deserialize))
+            .As<ISerializer<ConfigurationData>>()
             .SingleInstance();
 
             builder
@@ -278,7 +281,7 @@ namespace Pact
                 __context =>
                     new TrackedCardViewModelFactory(
                         __context.Resolve<ICardInfoProvider>(),
-                        __context.Resolve<IConfigurationSettings>(),
+                        __context.Resolve<IConfigurationSource>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<ITrackedCardViewModelFactory>()
             .SingleInstance();

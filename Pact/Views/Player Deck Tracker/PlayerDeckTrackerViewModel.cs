@@ -15,7 +15,8 @@ namespace Pact
     {
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
-        private readonly IConfigurationSettings _configurationSettings;
+        private readonly IConfigurationSource _configurationSource;
+        private readonly IConfigurationStorage _configurationStorage;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly ITrackedCardViewModelFactory _trackedCardViewModelFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
@@ -34,7 +35,8 @@ namespace Pact
         #region Constructors
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
-            IConfigurationSettings configurationSettings,
+            IConfigurationSource configurationSource,
+            IConfigurationStorage configurationStorage,
             IEventDispatcher gameEventDispatcher,
             ITrackedCardViewModelFactory trackedCardViewModelFactory,
             IEventDispatcher viewEventDispatcher,
@@ -44,9 +46,13 @@ namespace Pact
                 cardInfoProvider
                 ?? throw new ArgumentNullException(nameof(cardInfoProvider));
 
-            _configurationSettings =
-                configurationSettings
-                ?? throw new ArgumentNullException(nameof(configurationSettings));
+            _configurationSource =
+                configurationSource
+                ?? throw new ArgumentNullException(nameof(configurationSource));
+
+            _configurationStorage =
+                configurationStorage
+                ?? throw new ArgumentNullException(nameof(configurationStorage));
 
             _gameEventDispatcher =
                 gameEventDispatcher
@@ -122,7 +128,7 @@ namespace Pact
                 _gameEventDispatcher.RegisterHandler(handler);
 
             _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckTrackerFontSizeChanged>(
+                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
                     __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
 
             foreach (IEventHandler handler in _viewEventHandlers)
@@ -144,11 +150,13 @@ namespace Pact
         }
 
         // Remove this and add a global ambient context so the views that need this can reference it?
-        public IConfigurationSettings ConfigurationSettings => _configurationSettings;
+        public IConfigurationSource ConfigurationSource => _configurationSource;
+
+        public IConfigurationStorage ConfigurationStorage => _configurationStorage;
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
 
-        public int FontSize => _configurationSettings.FontSize;
+        public int FontSize => _configurationSource.GetSettings().Result.FontSize;
 
         public bool? OpponentCoinStatus
         {
