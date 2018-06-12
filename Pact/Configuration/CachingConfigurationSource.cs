@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Valkyrie;
 
 namespace Pact
@@ -29,12 +28,14 @@ namespace Pact
                     __ => _cachedConfigurationSettings = null));
         }
 
-        Task<IConfigurationSettings> IConfigurationSource.GetSettings()
+        IConfigurationSettings IConfigurationSource.GetSettings()
         {
             if (_cachedConfigurationSettings != null)
-                return Task.FromResult(_cachedConfigurationSettings);
+                return _cachedConfigurationSettings;
 
-            return _configurationSource.GetSettings();
+            _cachedConfigurationSettings = _configurationSource.GetSettings();
+
+            return _cachedConfigurationSettings;
         }
     }
 }

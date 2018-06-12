@@ -5,36 +5,28 @@ namespace Pact
     public partial class PlayerDeckTrackerView
         : Window
     {
-        private static PlayerDeckTrackerView _window = new PlayerDeckTrackerView() { Owner = MainWindow.Window };
-
-        public PlayerDeckTrackerView()
-        {
-            InitializeComponent();
-        }
-
-        public static PlayerDeckTrackerView GetWindowFor(
+        public PlayerDeckTrackerView(
             PlayerDeckTrackerViewModel viewModel)
         {
-            if (_window.DataContext is PlayerDeckTrackerViewModel existingViewModel)
-                existingViewModel.Cleanup();
+            InitializeComponent();
 
-            Point? windowLocation = viewModel.ConfigurationSource.GetSettings().Result.TrackerWindowLocation;
+            Owner = MainWindow.Window;
+
+            Point? windowLocation = viewModel.ConfigurationSource.GetSettings().TrackerWindowLocation;
             if (windowLocation.HasValue)
             {
-                _window.Left = windowLocation.Value.X;
-                _window.Top = windowLocation.Value.Y;
+                Left = windowLocation.Value.X;
+                Top = windowLocation.Value.Y;
             }
 
-            Size? windowSize = viewModel.ConfigurationSource.GetSettings().Result.TrackerWindowSize;
+            Size? windowSize = viewModel.ConfigurationSource.GetSettings().TrackerWindowSize;
             if (windowSize.HasValue)
             {
-                _window.Width = windowSize.Value.Width;
-                _window.Height = windowSize.Value.Height;
+                Width = windowSize.Value.Width;
+                Height = windowSize.Value.Height;
             }
 
-            _window.DataContext = viewModel;
-
-            return _window;
+            DataContext = viewModel;
         }
     }
 }

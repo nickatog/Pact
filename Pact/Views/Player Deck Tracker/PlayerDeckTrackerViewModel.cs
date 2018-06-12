@@ -156,7 +156,7 @@ namespace Pact
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
 
-        public int FontSize => _configurationSource.GetSettings().Result.FontSize;
+        public int FontSize => _configurationSource.GetSettings().FontSize;
 
         public bool? OpponentCoinStatus
         {

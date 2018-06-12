@@ -45,8 +45,6 @@ namespace Pact
         void IPlayerDeckTrackerInterface.Close()
         {
             Reset();
-
-            _view?.Hide();
         }
 
         private void Reset()
@@ -54,6 +52,8 @@ namespace Pact
             _cancellation?.Cancel();
 
             _viewModel?.Cleanup();
+
+            _view?.Close();
         }
 
         void IPlayerDeckTrackerInterface.TrackDeck(
@@ -83,7 +83,7 @@ namespace Pact
                     }
                 });
 
-            _view = PlayerDeckTrackerView.GetWindowFor(_viewModel);
+            _view = new PlayerDeckTrackerView(_viewModel);
 
             _view.Show();
         }

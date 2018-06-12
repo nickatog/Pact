@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Pact
+﻿namespace Pact
 {
     public interface IConfigurationSource
     {
-        Task<IConfigurationSettings> GetSettings();
+        IConfigurationSettings GetSettings();
     }
 }

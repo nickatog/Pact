@@ -29,7 +29,7 @@ namespace Pact
                 configurationStorage
                 ?? throw new ArgumentNullException(nameof(configurationStorage));
 
-            _configurationSettings = _configurationSource.GetSettings().Result;
+            _configurationSettings = _configurationSource.GetSettings();
 
             CardTextOffset = _configurationSettings.CardTextOffset;
             FontSize = _configurationSettings.FontSize;
@@ -45,7 +45,7 @@ namespace Pact
                 () =>
                 {
                     _configurationStorage.SaveChanges(
-                        new ConfigurationData(_configurationSource.GetSettings().Result)
+                        new ConfigurationData(_configurationSource.GetSettings())
                         {
                             CardTextOffset = CardTextOffset,
                             FontSize = FontSize

@@ -55,7 +55,7 @@ namespace Pact.Behaviors
                 });
 
             configurationStorage.SaveChanges(
-                new ConfigurationData(configurationSource.GetSettings().Result)
+                new ConfigurationData(configurationSource.GetSettings())
                 {
                     TrackerWindowLocation = new Point(left, top),
                     TrackerWindowSize = size

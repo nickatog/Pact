@@ -132,7 +132,7 @@ namespace Pact
 
         public string CardID { get; private set; }
 
-        public int CardTextOffset => _configurationSource.GetSettings().Result.CardTextOffset;
+        public int CardTextOffset => _configurationSource.GetSettings().CardTextOffset;
 
         public string Class => _cardInfoProvider.GetCardInfo(CardID)?.Class ?? "<UNKNOWN>";
 
@@ -158,7 +158,7 @@ namespace Pact
             }
         }
 
-        public int FontSize => _configurationSource.GetSettings().Result.FontSize;
+        public int FontSize => _configurationSource.GetSettings().FontSize;
 
         public string Name => _cardInfoProvider.GetCardInfo(CardID)?.Name ?? "<UNKNOWN>";
 

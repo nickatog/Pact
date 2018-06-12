@@ -23,7 +23,7 @@ namespace Pact
                 eventParsers
                 ?? throw new ArgumentNullException(nameof(eventParsers));
 
-            _powerLogFilePath = _configurationSource.GetSettings().Result.PowerLogFilePath;
+            _powerLogFilePath = _configurationSource.GetSettings().PowerLogFilePath;
         }
 
         IEventStream IEventStreamFactory.Create()
