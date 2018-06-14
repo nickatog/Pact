@@ -8,11 +8,6 @@ namespace Pact.Behaviors
     public sealed class SaveWindowPositionBehavior
         : Behavior<Window>
     {
-        private IConfigurationSource ConfigurationSource =>
-            ((PlayerDeckTrackerViewModel)AssociatedObject.DataContext).ConfigurationSource;
-        private IConfigurationStorage ConfigurationStorage =>
-            ((PlayerDeckTrackerViewModel)AssociatedObject.DataContext).ConfigurationStorage;
-
         private readonly Timer _timer;
 
         public SaveWindowPositionBehavior()
@@ -39,9 +34,6 @@ namespace Pact.Behaviors
 
             Size size = default;
 
-            IConfigurationSource configurationSource = null;
-            IConfigurationStorage configurationStorage = null;
-
             Dispatcher.Invoke(
                 () =>
                 {
@@ -49,17 +41,14 @@ namespace Pact.Behaviors
                     top = AssociatedObject.Top;
 
                     size = AssociatedObject.RenderSize;
-
-                    configurationSource = ConfigurationSource;
-                    configurationStorage = ConfigurationStorage;
                 });
 
-            configurationStorage.SaveChanges(
-                new ConfigurationData(configurationSource.GetSettings())
+            GlobalConfigurationStorage.Instance.SaveChanges(
+                new ConfigurationData(GlobalConfigurationSource.Instance.GetSettings())
                 {
                     TrackerWindowLocation = new Point(left, top),
                     TrackerWindowSize = size
-                }).Wait();
+                });
         }
     }
 }

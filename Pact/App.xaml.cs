@@ -18,6 +18,9 @@ namespace Pact
             builder.RegisterInstance(Dispatcher);
 
             _container = builder.Build();
+
+            GlobalConfigurationSource.Instance = _container.Resolve<IConfigurationSource>();
+            GlobalConfigurationStorage.Instance = _container.Resolve<IConfigurationStorage>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

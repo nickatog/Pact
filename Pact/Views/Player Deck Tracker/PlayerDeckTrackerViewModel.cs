@@ -16,7 +16,6 @@ namespace Pact
         #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
-        private readonly IConfigurationStorage _configurationStorage;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly ITrackedCardViewModelFactory _trackedCardViewModelFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
@@ -49,10 +48,6 @@ namespace Pact
             _configurationSource =
                 configurationSource
                 ?? throw new ArgumentNullException(nameof(configurationSource));
-
-            _configurationStorage =
-                configurationStorage
-                ?? throw new ArgumentNullException(nameof(configurationStorage));
 
             _gameEventDispatcher =
                 gameEventDispatcher
@@ -148,11 +143,6 @@ namespace Pact
 
             _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
         }
-
-        // Remove this and add a global ambient context so the views that need this can reference it?
-        public IConfigurationSource ConfigurationSource => _configurationSource;
-
-        public IConfigurationStorage ConfigurationStorage => _configurationStorage;
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
 

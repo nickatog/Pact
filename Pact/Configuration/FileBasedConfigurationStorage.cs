@@ -28,7 +28,7 @@ namespace Pact
             ConfigurationData configurationData)
         {
             using (var stream = new FileStream(_filePath, FileMode.Create))
-                await _configurationSerializer.Serialize(stream, configurationData);
+                await _configurationSerializer.Serialize(stream, configurationData).ConfigureAwait(false);
         }
     }
 }

@@ -97,6 +97,8 @@
     <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Configuration\FileBasedConfigurationSource.cs" />
     <Compile Include="Configuration\FileBasedConfigurationStorage.cs" />
+    <Compile Include="Configuration\GlobalConfigurationSource.cs" />
+    <Compile Include="Configuration\GlobalConfigurationStorage.cs" />
     <Compile Include="Configuration\IConfigurationSource.cs" />
     <Compile Include="Configuration\IConfigurationStorage.cs" />
     <Compile Include="Events\View Events\ConfigurationSettingsSaved.cs" />
@@ -113,7 +115,7 @@
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
     <Compile Include="Behaviors\SaveWindowPositionBehavior.cs" />
     <Compile Include="Behaviors\TestBehavior.cs" />
-    <Compile Include="Configuration\EventDispatchingConfigurationSettings.cs" />
+    <Compile Include="Configuration\EventDispatchingConfigurationStorage.cs" />
     <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />
     <Compile Include="Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
     <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />

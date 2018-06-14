@@ -12,14 +12,14 @@ namespace Pact
 
             Owner = MainWindow.Window;
 
-            Point? windowLocation = viewModel.ConfigurationSource.GetSettings().TrackerWindowLocation;
+            Point? windowLocation = GlobalConfigurationSource.Instance.GetSettings().TrackerWindowLocation;
             if (windowLocation.HasValue)
             {
                 Left = windowLocation.Value.X;
                 Top = windowLocation.Value.Y;
             }
 
-            Size? windowSize = viewModel.ConfigurationSource.GetSettings().TrackerWindowSize;
+            Size? windowSize = GlobalConfigurationSource.Instance.GetSettings().TrackerWindowSize;
             if (windowSize.HasValue)
             {
                 Width = windowSize.Value.Width;
