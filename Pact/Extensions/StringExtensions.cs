@@ -9,9 +9,9 @@ namespace Pact.StringExtensions
     {
         private static readonly Regex s_tokenPattern =
             new Regex(
-                @"((?<Key>\w+)=(?<Value>(?:\[.*\]|\S*(?:\s+[^=]+\s)*)))",
+                @"((?<Key>\w+)=(?<Value>(?:\[(?>\[(?<DEPTH>)|\](?<-DEPTH>)|[^\[\]]*)*(?(DEPTH)(?!))\]|\S*(?:\s+[^=]+\s)*)))",
                 RegexOptions.Compiled);
-        
+
         public static bool Eq(
             this string left,
             string right)

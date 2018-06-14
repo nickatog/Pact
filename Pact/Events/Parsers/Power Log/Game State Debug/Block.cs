@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Pact.StringExtensions;
 
@@ -27,13 +28,21 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
             var nestedOffsetPattern = new Regex($@"^{match.Groups["Offset"].Value}    .*$");
 
-            BlockContext parentBlock = parseContext.ParentBlock;
-            parseContext.ParentBlock = new BlockContext(match.Groups["Attributes"].Value.ParseKeyValuePairs(), parentBlock);
+            IDictionary<string, string> attributes = match.Groups["Attributes"].Value.ParseKeyValuePairs();
+            attributes.TryGetValue("Entity", out string entity);
+            attributes.TryGetValue("TriggerKeyword", out string triggerKeyword);
+
+            IDictionary<string, string> entityAttributes = entity.Replace("[", string.Empty).Replace("]", string.Empty).ParseKeyValuePairs();
+            entityAttributes.TryGetValue("id", out string entityID);
+            entityAttributes.TryGetValue("player", out string entityPlayer);
 
             var linesConsumed = new List<string> { currentLine };
             lines.MoveNext();
 
             var events = new List<object>();
+
+            BlockContext parentBlock = parseContext.ParentBlock;
+            parseContext.ParentBlock = new BlockContext(attributes, parentBlock);
 
             while ((currentLine = lines.Current) != null)
             {
@@ -44,7 +53,10 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                     parseContext.ParentBlock = parentBlock;
 
-                    parsedEvents = events;
+                    parsedEvents =
+                        CreateBlockEvents()
+                        .Concat(events)
+                        .ToList();
 
                     return linesConsumed;
                 }
@@ -53,7 +65,10 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                 {
                     parseContext.ParentBlock = parentBlock;
 
-                    parsedEvents = events;
+                    parsedEvents =
+                        CreateBlockEvents()
+                        .Concat(events)
+                        .ToList();
 
                     return linesConsumed;
                 }
@@ -84,6 +99,19 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             }
 
             return linesConsumed;
+
+            IEnumerable<object> CreateBlockEvents()
+            {
+                var blockEvents = new List<object>();
+
+                if (triggerKeyword.Eq("TOPDECK"))
+                {
+                    if (int.TryParse(entityPlayer, out int playerID) && parseContext.EntityMappings.TryGetValue(entityID, out string cardID))
+                        blockEvents.Add(new Events.CardRemovedFromDeck(playerID, cardID));
+                }
+
+                return blockEvents;
+            }
         }
     }
 }
