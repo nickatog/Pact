@@ -10,6 +10,7 @@ namespace Pact
         private readonly IEventDispatcher _eventDispatcher;
 
         private IConfigurationSettings _cachedConfigurationSettings;
+        private readonly object _lock = new object();
 
         public CachingConfigurationSource(
             IConfigurationSource configurationSource,
@@ -33,7 +34,13 @@ namespace Pact
             if (_cachedConfigurationSettings != null)
                 return _cachedConfigurationSettings;
 
-            _cachedConfigurationSettings = _configurationSource.GetSettings();
+            lock (_lock)
+            {
+                if (_cachedConfigurationSettings != null)
+                    return _cachedConfigurationSettings;
+
+                _cachedConfigurationSettings = _configurationSource.GetSettings();
+            }
 
             return _cachedConfigurationSettings;
         }

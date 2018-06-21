@@ -18,6 +18,7 @@ namespace Pact
                         "Pact"),
                     ".config");
 
+            // AsyncSemaphores
             builder
             .Register(
                 __context =>
@@ -27,10 +28,12 @@ namespace Pact
             .Named<AsyncSemaphore>("DeckPersistence")
             .SingleInstance();
 
+            // ConfigurationSettingsViewModel
             builder
             .RegisterType<ConfigurationSettingsViewModel>()
             .AsSelf();
 
+            // DeckManagerViewModel
             builder
             .Register(
                 __context =>
@@ -46,6 +49,18 @@ namespace Pact
                         __context.Resolve<ILogger>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<DeckManagerViewModel>();
+
+            // IBackgroundWorkInterface
+            builder
+            .RegisterType<ModalBackgroundWorkInterface>()
+            .As<IBackgroundWorkInterface>()
+            .SingleInstance();
+
+            // IBackgroundWorkModalViewModelFactory
+            builder
+            .RegisterType<BackgroundWorkModalViewModelFactory>()
+            .As<IBackgroundWorkModalViewModelFactory>()
+            .SingleInstance();
 
             // ICardInfoProvider
             builder
@@ -151,7 +166,7 @@ namespace Pact
                             __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                             __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
                             __context.Resolve<ILogger>(),
-                            __context.Resolve<IWaitInterface>(),
+                            __context.Resolve<IBackgroundWorkInterface>(),
                             __context.Resolve<IUserConfirmationInterface>(),
                             __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
                 })
@@ -302,18 +317,6 @@ namespace Pact
             builder
             .RegisterType<UserPrompt>()
             .As<IUserPrompt>()
-            .SingleInstance();
-
-            // IWaitInterface
-            builder
-            .RegisterType<ModalWaitInterface>()
-            .As<IWaitInterface>()
-            .SingleInstance();
-
-            // IWaitModalViewModelFactory
-            builder
-            .RegisterType<WaitModalViewModelFactory>()
-            .As<IWaitModalViewModelFactory>()
             .SingleInstance();
 
             // MainWindowViewModel

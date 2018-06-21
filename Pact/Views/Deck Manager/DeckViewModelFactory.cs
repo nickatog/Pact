@@ -19,7 +19,7 @@ namespace Pact
         private readonly IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
-        private readonly IWaitInterface _notifyWaiter;
+        private readonly IBackgroundWorkInterface _notifyWaiter;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
@@ -35,7 +35,7 @@ namespace Pact
             IEventDispatcherFactory eventDispatcherFactory,
             IEventDispatcher gameEventDispatcher,
             ILogger logger,
-            IWaitInterface notifyWaiter,
+            IBackgroundWorkInterface notifyWaiter,
             IUserConfirmationInterface userConfirmation,
             IEventDispatcher viewEventDispatcher)
         {

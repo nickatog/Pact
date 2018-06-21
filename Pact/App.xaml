@@ -15,8 +15,8 @@
         <DataTemplate DataType="{x:Type local:DeckViewModel}">
             <local:DeckView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:WaitModalViewModel}">
-            <local:NotifyWaiterView />
+        <DataTemplate DataType="{x:Type local:BackgroundWorkModalViewModel}">
+            <local:BackgroundWorkView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:TrackedCardViewModel}">
             <local:TrackedCardView />

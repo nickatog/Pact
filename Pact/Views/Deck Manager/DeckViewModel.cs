@@ -27,7 +27,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
-        private readonly IWaitInterface _notifyWaiter;
+        private readonly IBackgroundWorkInterface _notifyWaiter;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
@@ -51,7 +51,7 @@ namespace Pact
             Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
-            IWaitInterface notifyWaiter,
+            IBackgroundWorkInterface notifyWaiter,
             IUserConfirmationInterface userConfirmation,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Func<DeckViewModel, int> findPosition,

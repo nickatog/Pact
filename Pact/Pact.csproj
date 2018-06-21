@@ -109,7 +109,7 @@
     <Compile Include="Views\Player Deck Tracker\ITrackedCardViewModelFactory.cs" />
     <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerViewModelFactory.cs" />
     <Compile Include="Views\Player Deck Tracker\TrackedCardViewModelFactory.cs" />
-    <Compile Include="_ Deprecated\Wait\IWaitInterface.cs" />
+    <Compile Include="Views\Background Work\IBackgroundWorkInterface.cs" />
     <Compile Include="Utility\AsyncSemaphore.cs" />
     <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="Behaviors\DeckDragBehavior.cs" />
@@ -142,10 +142,10 @@
     <Compile Include="Views\Deck Import\DeckImportViewModelFactory.cs" />
     <Compile Include="Views\Deck Import\DeckImportResult.cs" />
     <Compile Include="Views\Deck Import\IDeckImportViewModelFactory.cs" />
-    <Compile Include="_ Deprecated\Wait\IWaitModalViewModelFactory.cs" />
-    <Compile Include="_ Deprecated\Wait\WaitModalViewModel.cs" />
-    <Compile Include="_ Deprecated\Notify Waiter\NotifyWaiterView.xaml.cs">
-      <DependentUpon>NotifyWaiterView.xaml</DependentUpon>
+    <Compile Include="Views\Background Work\IBackgroundWorkModalViewModelFactory.cs" />
+    <Compile Include="Views\Background Work\BackgroundWorkModalViewModel.cs" />
+    <Compile Include="Views\Background Work\BackgroundWorkView.xaml.cs">
+      <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\User Confirmation\IUserConfirmationInterface.cs" />
     <Compile Include="Views\User Confirmation\IUserConfirmationModalViewModelFactory.cs" />
@@ -229,8 +229,8 @@
     <Compile Include="Views\User Confirmation\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="_ Deprecated\Wait\ModalWaitInterface.cs" />
-    <Compile Include="_ Deprecated\Wait\WaitModalViewModelFactory.cs" />
+    <Compile Include="Views\Background Work\ModalBackgroundWorkInterface.cs" />
+    <Compile Include="Views\Background Work\BackgroundWorkModalViewModelFactory.cs" />
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -269,7 +269,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="_ Deprecated\Notify Waiter\NotifyWaiterView.xaml">
+    <Page Include="Views\Background Work\BackgroundWorkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -342,6 +342,9 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="_ Deprecated\Notify Waiter\" />
+    <Folder Include="_ Deprecated\Wait\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

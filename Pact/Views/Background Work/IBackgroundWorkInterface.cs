@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public interface IWaitInterface
+    public interface IBackgroundWorkInterface
     {
         Task Perform(
-            Action @delegate);
+            Func<Action<string>, Task> @delegate);
     }
 }

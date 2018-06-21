@@ -1,5 +1,6 @@
 ﻿#region Namespaces
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 #endregion // Namespaces
 
@@ -10,6 +11,7 @@ namespace Pact
         #region Dependencies
         private readonly IConfigurationSource _configurationSource;
         private readonly IConfigurationStorage _configurationStorage;
+        private readonly IBackgroundWorkInterface _waitInterface;
         #endregion // Dependencies
 
         #region Fields
@@ -19,7 +21,8 @@ namespace Pact
         #region Constructors
         public ConfigurationSettingsViewModel(
             IConfigurationSource configurationSource,
-            IConfigurationStorage configurationStorage)
+            IConfigurationStorage configurationStorage,
+            IBackgroundWorkInterface waitInterface)
         {
             _configurationSource =
                 configurationSource
@@ -28,6 +31,10 @@ namespace Pact
             _configurationStorage =
                 configurationStorage
                 ?? throw new ArgumentNullException(nameof(configurationStorage));
+
+            _waitInterface =
+                waitInterface
+                ?? throw new ArgumentNullException(nameof(waitInterface));
 
             _configurationSettings = _configurationSource.GetSettings();
 
@@ -44,11 +51,21 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _configurationStorage.SaveChanges(
-                        new ConfigurationData(_configurationSource.GetSettings())
+                    _waitInterface.Perform(
+                        async __notifyStatus =>
                         {
-                            CardTextOffset = CardTextOffset,
-                            FontSize = FontSize
+                            __notifyStatus?.Invoke("Saving settings...");
+
+                            await _configurationStorage.SaveChanges(
+                                new ConfigurationData(_configurationSource.GetSettings())
+                                {
+                                    CardTextOffset = CardTextOffset,
+                                    FontSize = FontSize
+                                });
+
+                            __notifyStatus?.Invoke("Settings saved!");
+
+                            await Task.Delay(2000);
                         });
                 });
     }
