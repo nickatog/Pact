@@ -1,6 +1,8 @@
 ﻿#region Namespaces
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Input;
 #endregion // Namespaces
 
@@ -52,13 +54,40 @@ namespace Pact
             }
         }
 
+        private float _modalViewModelOpacity;
+        public float ModalViewModelOpacity
+        {
+            get => _modalViewModelOpacity;
+            set
+            {
+                _modalViewModelOpacity = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModalViewModelOpacity)));
+            }
+        }
+
         public void SetModalViewModel<TResult>(
             IModalViewModel<TResult> viewModel)
         {
-            viewModel.OnClosed +=
-                __ => ModalViewModel = null;
+            ModalViewModelOpacity = 1.0f;
 
             ModalViewModel = viewModel;
+
+            viewModel.OnClosed +=
+                __ =>
+                {
+                    Task.Run(
+                        () =>
+                        {
+                            long startTime = Stopwatch.GetTimestamp();
+
+                            long deltaTime;
+                            while ((deltaTime = Stopwatch.GetTimestamp() - startTime) < Stopwatch.Frequency)
+                                ModalViewModelOpacity = 1.0f - deltaTime * 2.0f / Stopwatch.Frequency;
+
+                            ModalViewModel = null;
+                        });
+                };
         }
 
         public ICommand ShowConfigurationSettings =>

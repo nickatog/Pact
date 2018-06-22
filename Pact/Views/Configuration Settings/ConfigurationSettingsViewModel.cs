@@ -65,7 +65,7 @@ namespace Pact
 
                             __notifyStatus?.Invoke("Settings saved!");
 
-                            await Task.Delay(2000);
+                            await Task.Delay(1000);
                         });
                 });
     }

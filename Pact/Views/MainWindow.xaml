@@ -31,7 +31,7 @@
     </Window.Resources>
 
     <Grid>
-        <Grid Background="#40000000" Panel.ZIndex="1" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
+        <Grid Background="#40000000" Panel.ZIndex="1" Opacity="{Binding ModalViewModelOpacity}" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="12.5*" />
                 <ColumnDefinition Width="75*" />
