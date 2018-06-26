@@ -54,8 +54,8 @@ namespace Pact
             }
         }
 
-        private float _modalViewModelOpacity;
-        public float ModalViewModelOpacity
+        private double _modalViewModelOpacity;
+        public double ModalViewModelOpacity
         {
             get => _modalViewModelOpacity;
             set
@@ -67,9 +67,10 @@ namespace Pact
         }
 
         public void SetModalViewModel<TResult>(
-            IModalViewModel<TResult> viewModel)
+            IModalViewModel<TResult> viewModel,
+            int fadeDuration)
         {
-            ModalViewModelOpacity = 1.0f;
+            ModalViewModelOpacity = 1.0d;
 
             ModalViewModel = viewModel;
 
@@ -79,11 +80,16 @@ namespace Pact
                     Task.Run(
                         () =>
                         {
-                            long startTime = Stopwatch.GetTimestamp();
+                            if (fadeDuration > 0)
+                            {
+                                long fadeTime = Stopwatch.Frequency * fadeDuration / 1000;
 
-                            long deltaTime;
-                            while ((deltaTime = Stopwatch.GetTimestamp() - startTime) < Stopwatch.Frequency)
-                                ModalViewModelOpacity = 1.0f - deltaTime * 2.0f / Stopwatch.Frequency;
+                                long startTime = Stopwatch.GetTimestamp();
+
+                                long deltaTime;
+                                while ((deltaTime = Stopwatch.GetTimestamp() - startTime) < fadeTime)
+                                    ModalViewModelOpacity = Math.Log((fadeTime - deltaTime) * 9.0d / fadeTime + 1.0d, 10.0d);
+                            }
 
                             ModalViewModel = null;
                         });

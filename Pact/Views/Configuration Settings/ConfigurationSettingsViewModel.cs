@@ -9,21 +9,21 @@ namespace Pact
     public sealed class ConfigurationSettingsViewModel
     {
         #region Dependencies
+        private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly IConfigurationSource _configurationSource;
         private readonly IConfigurationStorage _configurationStorage;
-        private readonly IBackgroundWorkInterface _waitInterface;
         #endregion // Dependencies
-
-        #region Fields
-        private readonly IConfigurationSettings _configurationSettings;
-        #endregion // Fields
 
         #region Constructors
         public ConfigurationSettingsViewModel(
+            IBackgroundWorkInterface backgroundWorkInterface,
             IConfigurationSource configurationSource,
-            IConfigurationStorage configurationStorage,
-            IBackgroundWorkInterface waitInterface)
+            IConfigurationStorage configurationStorage)
         {
+            _backgroundWorkInterface =
+                backgroundWorkInterface
+                ?? throw new ArgumentNullException(nameof(backgroundWorkInterface));
+
             _configurationSource =
                 configurationSource
                 ?? throw new ArgumentNullException(nameof(configurationSource));
@@ -32,14 +32,10 @@ namespace Pact
                 configurationStorage
                 ?? throw new ArgumentNullException(nameof(configurationStorage));
 
-            _waitInterface =
-                waitInterface
-                ?? throw new ArgumentNullException(nameof(waitInterface));
+            IConfigurationSettings configurationSettings = _configurationSource.GetSettings();
 
-            _configurationSettings = _configurationSource.GetSettings();
-
-            CardTextOffset = _configurationSettings.CardTextOffset;
-            FontSize = _configurationSettings.FontSize;
+            CardTextOffset = configurationSettings.CardTextOffset;
+            FontSize = configurationSettings.FontSize;
         }
         #endregion // Constructors
 
@@ -51,10 +47,10 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _waitInterface.Perform(
-                        async __notifyStatus =>
+                    _backgroundWorkInterface.Perform(
+                        async __setStatus =>
                         {
-                            __notifyStatus?.Invoke("Saving settings...");
+                            __setStatus?.Invoke("Saving settings...");
 
                             await _configurationStorage.SaveChanges(
                                 new ConfigurationData(_configurationSource.GetSettings())
@@ -63,9 +59,9 @@ namespace Pact
                                     FontSize = FontSize
                                 });
 
-                            __notifyStatus?.Invoke("Settings saved!");
+                            __setStatus?.Invoke("Settings saved!");
 
-                            await Task.Delay(1000);
+                            await Task.Delay(500);
                         });
                 });
     }

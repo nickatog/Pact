@@ -10,16 +10,16 @@ namespace Pact
         private readonly IModalDisplay _modalDisplay;
 
         public ModalBackgroundWorkInterface(
-            IModalDisplay modalDisplay,
-            IBackgroundWorkModalViewModelFactory backgroundWorkModalViewModelFactory)
+            IBackgroundWorkModalViewModelFactory backgroundWorkModalViewModelFactory,
+            IModalDisplay modalDisplay)
         {
-            _modalDisplay =
-                modalDisplay
-                ?? throw new ArgumentNullException(nameof(modalDisplay));
-
             _backgroundWorkModalViewModelFactory =
                 backgroundWorkModalViewModelFactory
                 ?? throw new ArgumentNullException(nameof(backgroundWorkModalViewModelFactory));
+
+            _modalDisplay =
+                modalDisplay
+                ?? throw new ArgumentNullException(nameof(modalDisplay));
         }
 
         Task IBackgroundWorkInterface.Perform(
@@ -29,7 +29,8 @@ namespace Pact
 
             _modalDisplay.Show(
                 _backgroundWorkModalViewModelFactory.Create(@delegate),
-                __ => result.SetResult(true));
+                __ => result.SetResult(true),
+                750);
 
             return result.Task;
         }

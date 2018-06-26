@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Autofac;
 
 namespace Pact
@@ -167,6 +168,7 @@ namespace Pact
                             __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
                             __context.Resolve<ILogger>(),
                             __context.Resolve<IBackgroundWorkInterface>(),
+                            __context.Resolve<Dispatcher>(),
                             __context.Resolve<IUserConfirmationInterface>(),
                             __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
                 })

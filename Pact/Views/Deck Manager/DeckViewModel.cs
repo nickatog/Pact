@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Pact.Extensions.Contract;
 #endregion // Namespaces
 
@@ -28,6 +29,7 @@ namespace Pact
         private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
         private readonly IBackgroundWorkInterface _notifyWaiter;
+        private readonly Dispatcher _uiThreadDispatcher;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
@@ -52,6 +54,7 @@ namespace Pact
             Valkyrie.IEventDispatcher gameEventDispatcher,
             ILogger logger,
             IBackgroundWorkInterface notifyWaiter,
+            Dispatcher uiThreadDispatcher,
             IUserConfirmationInterface userConfirmation,
             Valkyrie.IEventDispatcher viewEventDispatcher,
             Func<DeckViewModel, int> findPosition,
@@ -70,6 +73,11 @@ namespace Pact
             _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
             _logger = logger.Require(nameof(logger));
             _notifyWaiter = notifyWaiter.Require(nameof(notifyWaiter));
+
+            _uiThreadDispatcher =
+                uiThreadDispatcher
+                ?? throw new ArgumentNullException(nameof(uiThreadDispatcher));
+
             _userConfirmation = userConfirmation.Require(nameof(userConfirmation));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
@@ -100,21 +108,29 @@ namespace Pact
 
         public ICommand CopyDeck =>
             new DelegateCommand(
-                async () =>
+                () =>
                 {
-                    byte[] bytes = null;
+                    _notifyWaiter.Perform(
+                        async __setStatus =>
+                        {
+                            byte[] bytes = null;
 
-                    using (var stream = new MemoryStream())
-                    {
-                        await _decklistSerializer.Serialize(stream, Decklist);
+                            using (var stream = new MemoryStream())
+                            {
+                                await _decklistSerializer.Serialize(stream, Decklist);
 
-                        stream.Position = 0;
+                                stream.Position = 0;
 
-                        bytes = new byte[stream.Length];
-                        stream.Read(bytes, 0, (int)stream.Length);
-                    }
+                                bytes = new byte[stream.Length];
+                                stream.Read(bytes, 0, (int)stream.Length);
+                            }
 
-                    Clipboard.SetText(Encoding.Default.GetString(bytes));
+                            _uiThreadDispatcher.Invoke(() => Clipboard.SetText(Encoding.Default.GetString(bytes)));
+
+                            __setStatus?.Invoke("Deck copied to clipboard!");
+
+                            await Task.Delay(500);
+                        });
                 });
 
         public Guid DeckID { get; private set; }

@@ -6,6 +6,7 @@ namespace Pact
     {
         void Show<TResult>(
             IModalViewModel<TResult> viewModel,
-            Action<TResult> onClosed);
+            Action<TResult> onClosed,
+            int fadeDuration = 0);
     }
 }

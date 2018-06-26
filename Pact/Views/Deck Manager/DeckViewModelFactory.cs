@@ -1,6 +1,7 @@
 ﻿#region Namespaces
 using System;
 using System.Collections.Generic;
+using System.Windows.Threading;
 using Valkyrie;
 #endregion // Namespaces
 
@@ -20,6 +21,7 @@ namespace Pact
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly ILogger _logger;
         private readonly IBackgroundWorkInterface _notifyWaiter;
+        private readonly Dispatcher _uiThreadDispatcher;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Dependencies
@@ -36,6 +38,7 @@ namespace Pact
             IEventDispatcher gameEventDispatcher,
             ILogger logger,
             IBackgroundWorkInterface notifyWaiter,
+            Dispatcher uiThreadDispatcher,
             IUserConfirmationInterface userConfirmation,
             IEventDispatcher viewEventDispatcher)
         {
@@ -78,6 +81,10 @@ namespace Pact
                 notifyWaiter
                 ?? throw new ArgumentNullException(nameof(notifyWaiter));
 
+            _uiThreadDispatcher =
+                uiThreadDispatcher
+                ?? throw new ArgumentNullException(nameof(uiThreadDispatcher));
+
             _userConfirmation =
                 userConfirmation
                 ?? throw new ArgumentNullException(nameof(userConfirmation));
@@ -107,6 +114,7 @@ namespace Pact
                     _gameEventDispatcher,
                     _logger,
                     _notifyWaiter,
+                    _uiThreadDispatcher,
                     _userConfirmation,
                     _viewEventDispatcher,
                     findPosition,
