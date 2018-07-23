@@ -4,48 +4,40 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public sealed class BackgroundWorkModalViewModel
+    internal sealed class BackgroundWorkModalViewModel
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
-        private readonly Task _finished;
-        private string _status;
+        private readonly Task _backgroundWork;
+        private string _statusMessage;
 
         public BackgroundWorkModalViewModel(
-            Func<Action<string>, Task> @delegate)
+            Func<Action<string>, Task> backgroundWorker)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            if (backgroundWorker == null)
+                throw new ArgumentNullException(nameof(backgroundWorker));
 
-            _finished = taskCompletionSource.Task;
-
-            Task.Run(
-                async () =>
-                {
-                    await @delegate?.Invoke(__status => Status = __status);
-
-                    taskCompletionSource.SetResult(true);
-                });
+            _backgroundWork = backgroundWorker(__statusMessage => StatusMessage = __statusMessage);
         }
 
         event Action<bool> IModalViewModel<bool>.OnClosed
         {
             add
             {
-                _finished.ContinueWith(__ => value?.Invoke(true));
+                _backgroundWork.ContinueWith(__ => value?.Invoke(true));
             }
             remove
-            {
-            }
+            { }
         }
 
-        public string Status
+        public string StatusMessage
         {
-            get => _status;
+            get => _statusMessage;
             set
             {
-                _status = value;
+                _statusMessage = value;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
             }
         }
 

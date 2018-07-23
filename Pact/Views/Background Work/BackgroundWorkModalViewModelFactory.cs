@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public sealed class BackgroundWorkModalViewModelFactory
+    internal sealed class BackgroundWorkModalViewModelFactory
         : IBackgroundWorkModalViewModelFactory
     {
-        BackgroundWorkModalViewModel IBackgroundWorkModalViewModelFactory.Create(
+        IModalViewModel<bool> IBackgroundWorkModalViewModelFactory.Create(
             Func<Action<string>, Task> @delegate)
         {
             return new BackgroundWorkModalViewModel(@delegate);

@@ -5,7 +5,7 @@ namespace Pact
 {
     public interface IBackgroundWorkModalViewModelFactory
     {
-        BackgroundWorkModalViewModel Create(
+        IModalViewModel<bool> Create(
             Func<Action<string>, Task> @delegate);
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public sealed class ModalBackgroundWorkInterface
+    internal sealed class ModalBackgroundWorkInterface
         : IBackgroundWorkInterface
     {
         private readonly IBackgroundWorkModalViewModelFactory _backgroundWorkModalViewModelFactory;
