@@ -33,6 +33,24 @@
             Margin="4" />
 
         <Label
+            Content="Power log file path: "
+            FontSize="14"
+            Margin="4,0,0,0" />
+
+        <TextBox
+            Text="{Binding PowerLogFilePath, Mode=OneWay}" IsReadOnly="True"
+            FontSize="14" 
+            Template="{StaticResource TextBox}"
+            Margin="10,0,10,0" />
+
+        <Button
+            Content="Browse..."
+            Command="{Binding BrowseForPowerLogFilePath}"
+            HorizontalAlignment="Right"
+            Padding="10,0,10,0"
+            Margin="0,2,10,0" />
+
+        <Label
             Content="Player Deck Tracker"
             FontSize="20" FontWeight="Bold" />
 
@@ -49,6 +67,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
+                <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>

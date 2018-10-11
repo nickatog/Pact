@@ -34,33 +34,35 @@ namespace Pact
         {
             var allParsedEvents = new List<object>();
 
-            IEnumerator<string> lines = GetLines(text);
-
-            lines.MoveNext();
-            while (lines.Current != null)
+            using (IEnumerator<string> lines = GetLines(text))
             {
-                IEnumerable<string> linesConsumed = null;
+                lines.MoveNext();
 
-                foreach (IGameStateDebugEventParser gameStateDebugEventParser in _gameStateDebugEventParsers)
+                while (lines.Current != null)
                 {
-                    linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, _parseContext, out IEnumerable<object> parsedEvents);
-                    if (linesConsumed == null)
-                        continue;
+                    IEnumerable<string> linesConsumed = null;
 
-                    if (parsedEvents == null)
+                    foreach (IGameStateDebugEventParser gameStateDebugEventParser in _gameStateDebugEventParsers)
                     {
-                        text = string.Join(Environment.NewLine, linesConsumed.Select(__line => LINE_PREFIX + __line));
+                        linesConsumed = gameStateDebugEventParser.TryParseEvents(lines, _parseContext, out IEnumerable<object> parsedEvents);
+                        if (linesConsumed == null)
+                            continue;
 
-                        return allParsedEvents;
+                        if (parsedEvents == null)
+                        {
+                            text = string.Join(Environment.NewLine, linesConsumed.Select(__line => LINE_PREFIX + __line));
+
+                            return allParsedEvents;
+                        }
+
+                        allParsedEvents.AddRange(parsedEvents);
+
+                        break;
                     }
 
-                    allParsedEvents.AddRange(parsedEvents);
-
-                    break;
+                    if (linesConsumed == null)
+                        lines.MoveNext();
                 }
-
-                if (linesConsumed == null)
-                    lines.MoveNext();
             }
 
             text = null;

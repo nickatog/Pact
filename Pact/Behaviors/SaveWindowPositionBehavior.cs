@@ -18,7 +18,7 @@ namespace Pact.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-
+            
             AssociatedObject.LocationChanged += OnLocationChanged;
         }
 

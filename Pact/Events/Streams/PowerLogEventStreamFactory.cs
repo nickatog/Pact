@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Valkyrie;
 
 namespace Pact
 {
@@ -8,12 +9,12 @@ namespace Pact
     {
         private readonly IConfigurationSource _configurationSource;
         private readonly IEnumerable<IGameStateDebugEventParser> _eventParsers;
-
-        private string _powerLogFilePath;
+        private readonly IEventDispatcher _viewEventDispatcher;
 
         public PowerLogEventStreamFactory(
             IConfigurationSource configurationSource,
-            IEnumerable<IGameStateDebugEventParser> eventParsers)
+            IEnumerable<IGameStateDebugEventParser> eventParsers,
+            IEventDispatcher viewEventDispatcher)
         {
             _configurationSource =
                 configurationSource
@@ -23,15 +24,18 @@ namespace Pact
                 eventParsers
                 ?? throw new ArgumentNullException(nameof(eventParsers));
 
-            _powerLogFilePath = _configurationSource.GetSettings().PowerLogFilePath;
+            _viewEventDispatcher =
+                viewEventDispatcher
+                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
         }
 
         IEventStream IEventStreamFactory.Create()
         {
             return
                 new PowerLogEventStream(
-                    _powerLogFilePath,
-                    new GameStateDebugPowerLogEventParser(_eventParsers));
+                    _configurationSource,
+                    new GameStateDebugPowerLogEventParser(_eventParsers),
+                    _viewEventDispatcher);
         }
     }
 }

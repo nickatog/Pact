@@ -77,19 +77,23 @@ namespace Pact
             viewModel.OnClosed +=
                 __ =>
                 {
+                    if (fadeDuration <= 0)
+                    {
+                        ModalViewModel = null;
+
+                        return;
+                    }
+
                     Task.Run(
                         () =>
                         {
-                            if (fadeDuration > 0)
-                            {
-                                long fadeTime = Stopwatch.Frequency * fadeDuration / 1000;
+                            long fadeTime = Stopwatch.Frequency * fadeDuration / 1000;
 
-                                long startTime = Stopwatch.GetTimestamp();
+                            long startTime = Stopwatch.GetTimestamp();
 
-                                long deltaTime;
-                                while ((deltaTime = Stopwatch.GetTimestamp() - startTime) < fadeTime)
-                                    ModalViewModelOpacity = Math.Log((fadeTime - deltaTime) * 9.0d / fadeTime + 1.0d, 10.0d);
-                            }
+                            long deltaTime;
+                            while ((deltaTime = Stopwatch.GetTimestamp() - startTime) < fadeTime)
+                                ModalViewModelOpacity = Math.Log((fadeTime - deltaTime) * 9.0d / fadeTime + 1.0d, 10.0d);
 
                             ModalViewModel = null;
                         });

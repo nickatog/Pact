@@ -70,16 +70,17 @@ namespace Pact
             Task.Run(
                 async () =>
                 {
-                    IEventStream eventStream = _eventStreamFactory.Create();
-
-                    while (true)
+                    using (IEventStream eventStream = _eventStreamFactory.Create())
                     {
-                        object @event = await eventStream.ReadNext();
+                        while (true)
+                        {
+                            object @event = await eventStream.ReadNext();
 
-                        if (_cancellation.IsCancellationRequested)
-                            return;
+                            if (_cancellation.IsCancellationRequested)
+                                return;
 
-                        eventDispatcher.DispatchEvent(@event);
+                            eventDispatcher.DispatchEvent(@event);
+                        }
                     }
                 });
 

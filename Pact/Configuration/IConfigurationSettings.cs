@@ -8,6 +8,8 @@ namespace Pact
 
         int FontSize { get; }
 
+        bool HasLoaded { get; }
+
         string PowerLogFilePath { get; }
 
         Point? TrackerWindowLocation { get; }

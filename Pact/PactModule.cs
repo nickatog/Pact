@@ -206,7 +206,12 @@ namespace Pact
 
             // IEventStreamFactory
             builder
-            .RegisterType<PowerLogEventStreamFactory>()
+            .Register(
+                __context =>
+                    new PowerLogEventStreamFactory(
+                        __context.Resolve<IConfigurationSource>(),
+                        __context.Resolve<System.Collections.Generic.IEnumerable<IGameStateDebugEventParser>>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<IEventStreamFactory>()
             .SingleInstance();
 
@@ -244,6 +249,12 @@ namespace Pact
             builder
             .RegisterType<EventParsers.PowerLog.GameStateDebug.TagChange>()
             .As<IGameStateDebugEventParser>()
+            .SingleInstance();
+
+            // IHearthstoneConfiguration
+            builder
+            .RegisterType<HearthstoneConfiguration>()
+            .As<IHearthstoneConfiguration>()
             .SingleInstance();
 
             // Add compiler directive to only use debug logger in DEBUG, otherwise use file logger

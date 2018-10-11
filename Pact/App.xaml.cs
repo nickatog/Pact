@@ -23,12 +23,13 @@ namespace Pact
             GlobalConfigurationStorage.Instance = _container.Resolve<IConfigurationStorage>();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(
+            StartupEventArgs e)
         {
             var window = new MainWindow();
 
-            //if (_container.Resolve<IUserPrompt>().Display("This is a test!", "OK", "Cancel"))
-            //    ;
+            var hearthstoneConfiguration = _container.Resolve<IHearthstoneConfiguration>();
+            hearthstoneConfiguration.EnableLogging();
 
             window.Initialize(_container.Resolve<MainWindowViewModel>());
 

@@ -18,6 +18,7 @@ namespace Pact
 
             _cardTextOffset = configurationSettings.CardTextOffset;
             _fontSize = configurationSettings.FontSize;
+            _hasLoaded = configurationSettings.HasLoaded;
             _powerLogFilePath = configurationSettings.PowerLogFilePath;
             _trackerWindowLocation = configurationSettings.TrackerWindowLocation;
             _trackerWindowSize = configurationSettings.TrackerWindowSize;
@@ -35,6 +36,13 @@ namespace Pact
         {
             get => _fontSize;
             set { _fontSize = value; }
+        }
+
+        private bool _hasLoaded;
+        public bool HasLoaded
+        {
+            get => _hasLoaded;
+            set { _hasLoaded = value; }
         }
 
         private string _powerLogFilePath;

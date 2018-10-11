@@ -10,6 +10,7 @@ namespace Pact
         {
             CardTextOffset = configurationData.CardTextOffset;
             FontSize = configurationData.FontSize ?? 12;
+            HasLoaded = configurationData.HasLoaded;
             PowerLogFilePath = configurationData.PowerLogFilePath ?? @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
             TrackerWindowLocation = configurationData.TrackerWindowLocation;
             TrackerWindowSize = configurationData.TrackerWindowSize;
@@ -18,6 +19,8 @@ namespace Pact
         public int CardTextOffset { get; private set; }
 
         public int FontSize { get; private set; }
+
+        public bool HasLoaded { get; private set; }
 
         public string PowerLogFilePath { get; private set; }
 

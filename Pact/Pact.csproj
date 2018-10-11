@@ -102,6 +102,8 @@
     <Compile Include="Configuration\IConfigurationSource.cs" />
     <Compile Include="Configuration\IConfigurationStorage.cs" />
     <Compile Include="Events\View Events\ConfigurationSettingsSaved.cs" />
+    <Compile Include="Hearthstone Configuration\HearthstoneConfiguration.cs" />
+    <Compile Include="Hearthstone Configuration\IHearthstoneConfiguration.cs" />
     <Compile Include="Views\Deck Import\DeckImportDetails.cs" />
     <Compile Include="Views\Deck Import\DeckImportInterface.cs" />
     <Compile Include="Views\Deck Import\IDeckImportInterface.cs" />
@@ -147,6 +149,8 @@
     <Compile Include="Views\Background Work\BackgroundWorkView.xaml.cs">
       <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Setup\ISetupInterface.cs" />
+    <Compile Include="Views\Setup\SetupInterface.cs" />
     <Compile Include="Views\User Confirmation\IUserConfirmationInterface.cs" />
     <Compile Include="Views\User Confirmation\IUserConfirmationModalViewModelFactory.cs" />
     <Compile Include="Views\Modal Display\IModalDisplay.cs" />
@@ -231,6 +235,10 @@
     </Compile>
     <Compile Include="Views\Background Work\ModalBackgroundWorkInterface.cs" />
     <Compile Include="Views\Background Work\BackgroundWorkModalViewModelFactory.cs" />
+    <Compile Include="Views\Setup\WelcomeView.xaml.cs">
+      <DependentUpon>WelcomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setup\WelcomeViewModel.cs" />
     <Page Include="UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -282,6 +290,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\User Confirmation\UserConfirmationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Setup\WelcomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
