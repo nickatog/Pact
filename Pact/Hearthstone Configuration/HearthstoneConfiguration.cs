@@ -20,6 +20,10 @@ namespace Pact
 
             if (!File.Exists(filePath))
             {
+                string directoryPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
                 File.WriteAllText(filePath, $"[{SECTIONNAME_POWER}]\n{SETTINGNAME_FILEPRINTING}=True");
 
                 return;
@@ -41,13 +45,9 @@ namespace Pact
                 Match match = sectionHeaderRegex.Match(lines[linePosition]);
                 if (match.Success)
                 {
-                    inPowerSection = false;
-
-                    if (string.Equals(match.Groups["Name"].Value, SECTIONNAME_POWER, StringComparison.OrdinalIgnoreCase))
-                    {
+                    inPowerSection = string.Equals(match.Groups["Name"].Value, SECTIONNAME_POWER, StringComparison.OrdinalIgnoreCase);
+                    if (inPowerSection)
                         powerSectionPosition = linePosition;
-                        inPowerSection = true;
-                    }
                 }
                 else if (inPowerSection)
                 {
@@ -58,9 +58,7 @@ namespace Pact
                         if (filePrintingSettingValue)
                             return;
 
-                        lines.RemoveAt(linePosition);
-
-                        lines.Insert(linePosition, $"{SETTINGNAME_FILEPRINTING}=True");
+                        lines[linePosition] = $"{SETTINGNAME_FILEPRINTING}=True";
 
                         settingFound = true;
 
@@ -71,15 +69,20 @@ namespace Pact
 
             if (!settingFound)
             {
+                int settingPosition;
+
                 if (powerSectionPosition.HasValue)
                 {
-                    lines.Insert(powerSectionPosition.Value + 1, $"{SETTINGNAME_FILEPRINTING}=True");
+                    settingPosition = powerSectionPosition.Value + 1;
                 }
                 else
                 {
                     lines.Add($"[{SECTIONNAME_POWER}]");
-                    lines.Add($"{SETTINGNAME_FILEPRINTING}=True");
+
+                    settingPosition = lines.Count;
                 }
+
+                lines.Insert(settingPosition, $"{SETTINGNAME_FILEPRINTING}=True");
             }
 
             File.WriteAllLines(filePath, lines);

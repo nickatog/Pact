@@ -1,33 +1,25 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Pact.Extensions.Enumerable;
 using Valkyrie;
-#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class PowerLogEventStream
         : IEventStream
     {
-        #region Dependencies
         private readonly IConfigurationSource _configurationSource;
         private readonly IPowerLogEventParser _powerLogEventParser;
         private readonly IEventDispatcher _viewEventDispatcher;
-        #endregion // Dependencies
 
-        #region Fields
         private readonly IList<IEventHandler> _eventHandlers = new List<IEventHandler>();
         private string _filePath;
         private readonly Queue<object> _parsedEvents = new Queue<object>();
         private string _remainingText;
         private long _streamPosition;
-        #endregion // Fields
 
-        #region Constructors
         public PowerLogEventStream(
             IConfigurationSource configurationSource,
             IPowerLogEventParser powerLogEventParser,
@@ -48,26 +40,23 @@ namespace Pact
             // ---
 
             _filePath = _configurationSource.GetSettings().PowerLogFilePath;
-
+            
             _eventHandlers.Add(
                 new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
                     __event =>
                     {
-                        string originalFilePath =
-                            Interlocked.CompareExchange(
-                                ref _filePath,
-                                _configurationSource.GetSettings().PowerLogFilePath,
-                                _filePath);
-                        if (!string.Equals(_filePath, originalFilePath, StringComparison.OrdinalIgnoreCase))
+                        string newFilePath = _configurationSource.GetSettings().PowerLogFilePath;
+                        if (!string.Equals(newFilePath, _filePath, StringComparison.OrdinalIgnoreCase))
                         {
                             _remainingText = null;
                             _streamPosition = 0L;
+
+                            _filePath = newFilePath;
                         }
                     }));
 
             _eventHandlers.ForEach(__eventHandler => _viewEventDispatcher.RegisterHandler(__eventHandler));
         }
-        #endregion // Constructors
 
         async Task<object> IEventStream.ReadNext()
         {
@@ -115,7 +104,6 @@ namespace Pact
             }
         }
 
-        #region IDisposable support
         private bool _disposed;
 
         private void Dispose(
@@ -134,6 +122,5 @@ namespace Pact
         {
             Dispose(true);
         }
-        #endregion // IDisposable support
     }
 }
