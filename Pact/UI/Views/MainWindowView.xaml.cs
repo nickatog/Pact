@@ -2,12 +2,12 @@
 
 namespace Pact
 {
-    public partial class MainWindow
+    public partial class MainWindowView
         : Window
     {
-        public static MainWindow Window { get; private set; }
+        public static MainWindowView Window { get; private set; }
 
-        public MainWindow()
+        public MainWindowView()
         {
             InitializeComponent();
 

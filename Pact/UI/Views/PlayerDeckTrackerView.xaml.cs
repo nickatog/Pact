@@ -10,7 +10,7 @@ namespace Pact
         {
             InitializeComponent();
 
-            Owner = MainWindow.Window;
+            Owner = MainWindowView.Window;
 
             Point? windowLocation = GlobalConfigurationSource.Instance.GetSettings().TrackerWindowLocation;
             if (windowLocation.HasValue)

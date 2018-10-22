@@ -1,4 +1,4 @@
-﻿<Window x:Class="Pact.MainWindow"
+﻿<Window x:Class="Pact.MainWindowView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -27,6 +27,14 @@
                     <Setter TargetName="Text" Property="Foreground" Value="#AAAAAA" />
                 </Trigger>
             </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="CustomToolTip" TargetType="ToolTip">
+            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="3" Background="#DDDDDD">
+                <StackPanel>
+                    <Label Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
         </ControlTemplate>
     </Window.Resources>
 
@@ -70,6 +78,9 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Manage Decks" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                        </Button.ToolTip>
                     </Button>
 
                     <Button
@@ -86,12 +97,51 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Edit Settings" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                        </Button.ToolTip>
                     </Button>
 
-                    <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Background="Transparent" />
+                    <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDownloadUpdates}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DownloadUpdates}" Value="True">
+                                        <Setter Property="Background" Value="CornflowerBlue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Download Updates" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                        </Button.ToolTip>
+                    </Button>
+                    
+                    <Button Content="&#xf121;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDevTools}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DevTools}" Value="True">
+                                        <Setter Property="Background" Value="CornflowerBlue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Dev Tools" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                        </Button.ToolTip>
+                    </Button>
                 </StackPanel>
 
-                <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="Transparent" />
+                <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050">
+                    <Button.ToolTip>
+                        <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                    </Button.ToolTip>
+                </Button>
             </DockPanel>
 
             <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />

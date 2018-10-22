@@ -51,6 +51,16 @@ namespace Pact
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<DeckManagerViewModel>();
 
+            // DevToolsViewModel
+            builder
+            .RegisterType<DevToolsViewModel>()
+            .AsSelf();
+
+            // DownloadUpdatesViewModel
+            builder
+            .RegisterType<DownloadUpdatesViewModel>()
+            .AsSelf();
+
             // IBackgroundWorkInterface
             builder
             .RegisterType<ModalBackgroundWorkInterface>()

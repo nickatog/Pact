@@ -130,7 +130,8 @@ namespace Pact
                             __setStatus?.Invoke("Deck copied to clipboard!");
 
                             await Task.Delay(500);
-                        });
+                        },
+                        750);
                 });
 
         public Guid DeckID { get; private set; }

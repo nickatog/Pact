@@ -26,12 +26,21 @@ namespace Pact
         protected override void OnStartup(
             StartupEventArgs e)
         {
-            var window = new MainWindow();
+            var window = new MainWindowView();
 
             var hearthstoneConfiguration = _container.Resolve<IHearthstoneConfiguration>();
             hearthstoneConfiguration.EnableLogging();
 
             window.Initialize(_container.Resolve<MainWindowViewModel>());
+
+            var backgroundWorkInterface = _container.Resolve<IBackgroundWorkInterface>();
+            backgroundWorkInterface.Perform(
+                async __updateStatus =>
+                {
+                    __updateStatus?.Invoke("Hello! Hello! Hello!");
+
+                    await System.Threading.Tasks.Task.Delay(2000);
+                });
 
             window.Show();
         }

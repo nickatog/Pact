@@ -97,7 +97,8 @@ namespace Pact
                             __setStatus?.Invoke("Settings saved!");
 
                             await Task.Delay(500);
-                        });
+                        },
+                        750);
                 });
 
         public event PropertyChangedEventHandler PropertyChanged;

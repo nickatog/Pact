@@ -91,175 +91,185 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Commands\MoveDeck.cs" />
-    <Compile Include="Configuration\CachingConfigurationSource.cs" />
-    <Compile Include="Configuration\ConfigurationData.cs" />
-    <Compile Include="Configuration\ConfigurationSettings.cs" />
-    <Compile Include="Configuration\FileBasedConfigurationSource.cs" />
-    <Compile Include="Configuration\FileBasedConfigurationStorage.cs" />
-    <Compile Include="Configuration\GlobalConfigurationSource.cs" />
-    <Compile Include="Configuration\GlobalConfigurationStorage.cs" />
-    <Compile Include="Configuration\IConfigurationSource.cs" />
-    <Compile Include="Configuration\IConfigurationStorage.cs" />
-    <Compile Include="Events\View Events\ConfigurationSettingsSaved.cs" />
-    <Compile Include="Hearthstone Configuration\HearthstoneConfiguration.cs" />
-    <Compile Include="Hearthstone Configuration\IHearthstoneConfiguration.cs" />
-    <Compile Include="Views\Deck Import\DeckImportDetails.cs" />
-    <Compile Include="Views\Deck Import\DeckImportInterface.cs" />
-    <Compile Include="Views\Deck Import\IDeckImportInterface.cs" />
-    <Compile Include="Views\Player Deck Tracker\IPlayerDeckTrackerViewModelFactory.cs" />
-    <Compile Include="Views\Player Deck Tracker\ITrackedCardViewModelFactory.cs" />
-    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerViewModelFactory.cs" />
-    <Compile Include="Views\Player Deck Tracker\TrackedCardViewModelFactory.cs" />
-    <Compile Include="Views\Background Work\IBackgroundWorkInterface.cs" />
-    <Compile Include="Utility\AsyncSemaphore.cs" />
-    <Compile Include="Behaviors\AllowOnlyPositiveIntegers.cs" />
-    <Compile Include="Behaviors\DeckDragBehavior.cs" />
-    <Compile Include="Behaviors\SaveWindowPositionBehavior.cs" />
-    <Compile Include="Behaviors\TestBehavior.cs" />
-    <Compile Include="Configuration\EventDispatchingConfigurationStorage.cs" />
-    <Compile Include="Converters\CollapsedVisibilityWhenNullConverter.cs" />
-    <Compile Include="Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
-    <Compile Include="Converters\SelectedViewMatchesNameConverter.cs" />
-    <Compile Include="Converters\SingleValueToThicknessConverter.cs" />
-    <Compile Include="Decks\Base64VarintDecklistSerializer.cs" />
-    <Compile Include="Behaviors\WindowBehavior.cs" />
-    <Compile Include="Cards\CardInfo.cs" />
-    <Compile Include="Decks\DeckInfo.cs" />
-    <Compile Include="Decks\FileBasedDeckInfoRepository.cs" />
-    <Compile Include="Events\CardRemovedFromDeck.cs" />
-    <Compile Include="Events\GameEnded.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
-    <Compile Include="Commands\DeleteDeck.cs" />
+    <Compile Include="UI\Commands\MoveDeck.cs" />
+    <Compile Include="Abstractions\Configuration\CachingConfigurationSource.cs" />
+    <Compile Include="Abstractions\Configuration\ConfigurationData.cs" />
+    <Compile Include="Abstractions\Configuration\ConfigurationSettings.cs" />
+    <Compile Include="Abstractions\Configuration\FileBasedConfigurationSource.cs" />
+    <Compile Include="Abstractions\Configuration\FileBasedConfigurationStorage.cs" />
+    <Compile Include="Abstractions\Configuration\GlobalConfigurationSource.cs" />
+    <Compile Include="Abstractions\Configuration\GlobalConfigurationStorage.cs" />
+    <Compile Include="Abstractions\Configuration\IConfigurationSource.cs" />
+    <Compile Include="Abstractions\Configuration\IConfigurationStorage.cs" />
+    <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
+    <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
+    <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
+    <Compile Include="UI\Interfaces\DeckImportDetails.cs" />
+    <Compile Include="UI\Interfaces\DeckImportInterface.cs" />
+    <Compile Include="UI\Interfaces\IDeckImportInterface.cs" />
+    <Compile Include="UI\Views\DevToolsView.xaml.cs">
+      <DependentUpon>DevToolsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\View Models\DevToolsViewModel.cs" />
+    <Compile Include="UI\Views\DownloadUpdatesView.xaml.cs">
+      <DependentUpon>DownloadUpdatesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\View Models\DownloadUpdatesViewModel.cs" />
+    <Compile Include="UI\View Models\IPlayerDeckTrackerViewModelFactory.cs" />
+    <Compile Include="UI\View Models\ITrackedCardViewModelFactory.cs" />
+    <Compile Include="UI\View Models\PlayerDeckTrackerViewModelFactory.cs" />
+    <Compile Include="UI\View Models\TrackedCardViewModelFactory.cs" />
+    <Compile Include="UI\Interfaces\IBackgroundWorkInterface.cs" />
+    <Compile Include="Abstractions\Utility\AsyncSemaphore.cs" />
+    <Compile Include="UI\Behaviors\AllowOnlyPositiveIntegers.cs" />
+    <Compile Include="UI\Behaviors\DeckDragBehavior.cs" />
+    <Compile Include="UI\Behaviors\SaveWindowPositionBehavior.cs" />
+    <Compile Include="UI\Behaviors\TestBehavior.cs" />
+    <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
+    <Compile Include="UI\Converters\CollapsedVisibilityWhenNullConverter.cs" />
+    <Compile Include="UI\Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
+    <Compile Include="UI\Converters\SelectedViewMatchesNameConverter.cs" />
+    <Compile Include="UI\Converters\SingleValueToThicknessConverter.cs" />
+    <Compile Include="Abstractions\Decks\Base64VarintDecklistSerializer.cs" />
+    <Compile Include="UI\Behaviors\WindowBehavior.cs" />
+    <Compile Include="Abstractions\Cards\CardInfo.cs" />
+    <Compile Include="Abstractions\Decks\DeckInfo.cs" />
+    <Compile Include="Abstractions\Decks\FileBasedDeckInfoRepository.cs" />
+    <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />
+    <Compile Include="Abstractions\Events\GameEnded.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
+    <Compile Include="UI\Commands\DeleteDeck.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
-    <Compile Include="Converters\CardCountToOpacityConverter.cs" />
-    <Compile Include="Converters\ClassNameToBrushConverter.cs" />
-    <Compile Include="Converters\HiddenWhenZeroCountConverter.cs" />
-    <Compile Include="Converters\OpponentCoinStatusToBrushConverter.cs" />
-    <Compile Include="Converters\OpponentCoinStatusToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\CardCountToOpacityConverter.cs" />
+    <Compile Include="UI\Converters\ClassNameToBrushConverter.cs" />
+    <Compile Include="UI\Converters\HiddenWhenZeroCountConverter.cs" />
+    <Compile Include="UI\Converters\OpponentCoinStatusToBrushConverter.cs" />
+    <Compile Include="UI\Converters\OpponentCoinStatusToVisibilityConverter.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Views\Player Deck Tracker\IPlayerDeckTrackerInterface.cs" />
-    <Compile Include="Views\Player Deck Tracker\WindowedPlayerDeckTrackerInterface.cs" />
-    <Compile Include="Views\Deck Import\DeckImportViewModel.cs" />
-    <Compile Include="Views\Deck Import\DeckImportViewModelFactory.cs" />
-    <Compile Include="Views\Deck Import\DeckImportResult.cs" />
-    <Compile Include="Views\Deck Import\IDeckImportViewModelFactory.cs" />
-    <Compile Include="Views\Background Work\IBackgroundWorkModalViewModelFactory.cs" />
-    <Compile Include="Views\Background Work\BackgroundWorkModalViewModel.cs" />
-    <Compile Include="Views\Background Work\BackgroundWorkView.xaml.cs">
+    <Compile Include="UI\Interfaces\IPlayerDeckTrackerInterface.cs" />
+    <Compile Include="UI\Interfaces\WindowedPlayerDeckTrackerInterface.cs" />
+    <Compile Include="UI\View Models\DeckImportViewModel.cs" />
+    <Compile Include="UI\View Models\DeckImportViewModelFactory.cs" />
+    <Compile Include="UI\Interfaces\DeckImportResult.cs" />
+    <Compile Include="UI\View Models\IDeckImportViewModelFactory.cs" />
+    <Compile Include="UI\View Models\IBackgroundWorkModalViewModelFactory.cs" />
+    <Compile Include="UI\View Models\BackgroundWorkModalViewModel.cs" />
+    <Compile Include="UI\Views\BackgroundWorkView.xaml.cs">
       <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setup\ISetupInterface.cs" />
-    <Compile Include="Views\Setup\SetupInterface.cs" />
-    <Compile Include="Views\User Confirmation\IUserConfirmationInterface.cs" />
-    <Compile Include="Views\User Confirmation\IUserConfirmationModalViewModelFactory.cs" />
-    <Compile Include="Views\Modal Display\IModalDisplay.cs" />
-    <Compile Include="Views\Modal Display\IModalViewModel.cs" />
-    <Compile Include="IUserPrompt.cs" />
-    <Compile Include="Views\Modal Display\MainWindowModalDisplay.cs" />
-    <Compile Include="UserPrompt.cs" />
-    <Compile Include="UserPromptView.xaml.cs">
+    <Compile Include="UI\Interfaces\IUserConfirmationInterface.cs" />
+    <Compile Include="UI\View Models\IUserConfirmationModalViewModelFactory.cs" />
+    <Compile Include="UI\Interfaces\IModalDisplay.cs" />
+    <Compile Include="UI\View Models\IModalViewModel.cs" />
+    <Compile Include="_ Deprecated\IUserPrompt.cs" />
+    <Compile Include="UI\Interfaces\MainWindowModalDisplay.cs" />
+    <Compile Include="_ Deprecated\UserPrompt.cs" />
+    <Compile Include="_ Deprecated\UserPromptView.xaml.cs">
       <DependentUpon>UserPromptView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utility\MouseUtilities.cs" />
-    <Compile Include="Utility\Serialization\ICollectionSerializer.cs" />
-    <Compile Include="Utility\Serialization\ISerializable.cs" />
-    <Compile Include="Utility\Serialization\ISerializer.cs" />
-    <Compile Include="Utility\Serialization\Serializer.cs" />
-    <Compile Include="Utility\Serialization\VarintCollectionSerializer.cs" />
-    <Compile Include="Views\Configuration Settings\ConfigurationSettingsView.xaml.cs">
+    <Compile Include="Abstractions\Utility\MouseUtilities.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\ICollectionSerializer.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\ISerializable.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\ISerializer.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\Serializer.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\VarintCollectionSerializer.cs" />
+    <Compile Include="UI\Views\ConfigurationSettingsView.xaml.cs">
       <DependentUpon>ConfigurationSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Configuration Settings\ConfigurationSettingsViewModel.cs" />
-    <Compile Include="Views\Deck Import\DeckImportView.xaml.cs">
+    <Compile Include="UI\View Models\ConfigurationSettingsViewModel.cs" />
+    <Compile Include="UI\Views\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Decks\Decklist.cs" />
-    <Compile Include="Views\Deck Manager\DeckManagerView.xaml.cs">
+    <Compile Include="Abstractions\Decks\Decklist.cs" />
+    <Compile Include="UI\Views\DeckManagerView.xaml.cs">
       <DependentUpon>DeckManagerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Deck Manager\DeckManagerViewModel.cs" />
-    <Compile Include="Views\Deck Manager\DeckView.xaml.cs">
+    <Compile Include="UI\View Models\DeckManagerViewModel.cs" />
+    <Compile Include="UI\Views\DeckView.xaml.cs">
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Deck Manager\DeckViewModel.cs" />
-    <Compile Include="Views\Deck Manager\DeckViewModelFactory.cs" />
-    <Compile Include="Utility\DelegateCommand.cs" />
-    <Compile Include="Game Results\GameResult.cs" />
-    <Compile Include="Loggers\ILogger.cs" />
-    <Compile Include="Events\Streams\PowerLogEventStreamFactory.cs" />
-    <Compile Include="Events\CardAddedToDeck.cs" />
-    <Compile Include="Events\CardOverdrawnFromDeck.cs" />
-    <Compile Include="Events\CardReturnedToDeckFromHand.cs" />
-    <Compile Include="Events\GameStarted.cs" />
-    <Compile Include="Events\MulliganOptionPresented.cs" />
-    <Compile Include="Events\OpponentCoinLost.cs" />
-    <Compile Include="Events\OpponentReceivedCoin.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\BlockContext.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\FullEntity.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\HideEntity.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\ParseContext.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\TagChange.cs" />
-    <Compile Include="Cards\ICardInfoProvider.cs" />
-    <Compile Include="Events\CardDrawnFromDeck.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\Block.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\ShowEntity.cs" />
-    <Compile Include="Events\CardEnteredPlayFromDeck.cs" />
-    <Compile Include="Cards\JSONCardInfoProvider.cs" />
-    <Compile Include="Events\PlayerDetermined.cs" />
-    <Compile Include="Events\PlayerReceivedCoin.cs" />
-    <Compile Include="Configuration\IConfigurationSettings.cs" />
-    <Compile Include="Decks\IDeckInfoRepository.cs" />
-    <Compile Include="Decks\IDecklistSerializer.cs" />
-    <Compile Include="Views\Deck Manager\IDeckViewModelFactory.cs" />
-    <Compile Include="Events\Streams\IEventStreamFactory.cs" />
-    <Compile Include="Views\MainWindowViewModel.cs" />
-    <Compile Include="Utility\OutlinedText.cs" />
+    <Compile Include="UI\View Models\DeckViewModel.cs" />
+    <Compile Include="UI\View Models\DeckViewModelFactory.cs" />
+    <Compile Include="Abstractions\Utility\DelegateCommand.cs" />
+    <Compile Include="Abstractions\Game Results\GameResult.cs" />
+    <Compile Include="Abstractions\Loggers\ILogger.cs" />
+    <Compile Include="Abstractions\Events\Streams\PowerLogEventStreamFactory.cs" />
+    <Compile Include="Abstractions\Events\CardAddedToDeck.cs" />
+    <Compile Include="Abstractions\Events\CardOverdrawnFromDeck.cs" />
+    <Compile Include="Abstractions\Events\CardReturnedToDeckFromHand.cs" />
+    <Compile Include="Abstractions\Events\GameStarted.cs" />
+    <Compile Include="Abstractions\Events\MulliganOptionPresented.cs" />
+    <Compile Include="Abstractions\Events\OpponentCoinLost.cs" />
+    <Compile Include="Abstractions\Events\OpponentReceivedCoin.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\BlockContext.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\FullEntity.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\HideEntity.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\ParseContext.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\TagChange.cs" />
+    <Compile Include="Abstractions\Cards\ICardInfoProvider.cs" />
+    <Compile Include="Abstractions\Events\CardDrawnFromDeck.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\Block.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\ShowEntity.cs" />
+    <Compile Include="Abstractions\Events\CardEnteredPlayFromDeck.cs" />
+    <Compile Include="Abstractions\Cards\JSONCardInfoProvider.cs" />
+    <Compile Include="Abstractions\Events\PlayerDetermined.cs" />
+    <Compile Include="Abstractions\Events\PlayerReceivedCoin.cs" />
+    <Compile Include="Abstractions\Configuration\IConfigurationSettings.cs" />
+    <Compile Include="Abstractions\Decks\IDeckInfoRepository.cs" />
+    <Compile Include="Abstractions\Decks\IDecklistSerializer.cs" />
+    <Compile Include="UI\View Models\IDeckViewModelFactory.cs" />
+    <Compile Include="Abstractions\Events\Streams\IEventStreamFactory.cs" />
+    <Compile Include="UI\View Models\MainWindowViewModel.cs" />
+    <Compile Include="Abstractions\Utility\OutlinedText.cs" />
     <Compile Include="PactModule.cs" />
-    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerView.xaml.cs">
+    <Compile Include="UI\Views\PlayerDeckTrackerView.xaml.cs">
       <DependentUpon>PlayerDeckTrackerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Player Deck Tracker\PlayerDeckTrackerViewModel.cs" />
+    <Compile Include="UI\View Models\PlayerDeckTrackerViewModel.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Views\Player Deck Tracker\TrackedCardView.xaml.cs">
+    <Compile Include="UI\Views\TrackedCardView.xaml.cs">
       <DependentUpon>TrackedCardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Player Deck Tracker\TrackedCardViewModel.cs" />
-    <Compile Include="Decks\TextDecklistSerializer.cs" />
-    <Compile Include="Decks\Varint.cs" />
-    <Compile Include="Views\User Confirmation\ModalUserConfirmationInterface.cs" />
-    <Compile Include="Views\User Confirmation\UserConfirmationModalViewModel.cs" />
-    <Compile Include="Views\User Confirmation\UserConfirmationModalViewModelFactory.cs" />
-    <Compile Include="Views\User Confirmation\UserConfirmationView.xaml.cs">
+    <Compile Include="UI\View Models\TrackedCardViewModel.cs" />
+    <Compile Include="Abstractions\Decks\TextDecklistSerializer.cs" />
+    <Compile Include="Abstractions\Decks\Varint.cs" />
+    <Compile Include="UI\Interfaces\ModalUserConfirmationInterface.cs" />
+    <Compile Include="UI\View Models\UserConfirmationModalViewModel.cs" />
+    <Compile Include="UI\View Models\UserConfirmationModalViewModelFactory.cs" />
+    <Compile Include="UI\Views\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Background Work\ModalBackgroundWorkInterface.cs" />
-    <Compile Include="Views\Background Work\BackgroundWorkModalViewModelFactory.cs" />
-    <Compile Include="Views\Setup\WelcomeView.xaml.cs">
-      <DependentUpon>WelcomeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Setup\WelcomeViewModel.cs" />
-    <Page Include="UserPromptView.xaml">
+    <Compile Include="UI\Interfaces\ModalBackgroundWorkInterface.cs" />
+    <Compile Include="UI\View Models\BackgroundWorkModalViewModelFactory.cs" />
+    <Page Include="_ Deprecated\UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Configuration Settings\ConfigurationSettingsView.xaml">
+    <Page Include="UI\Views\ConfigurationSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Deck Import\DeckImportView.xaml">
+    <Page Include="UI\Views\DeckImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Deck Manager\DeckManagerView.xaml">
+    <Page Include="UI\Views\DeckManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Deck Manager\DeckView.xaml">
+    <Page Include="UI\Views\DeckView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MainWindow.xaml">
+    <Page Include="UI\Views\DevToolsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\DownloadUpdatesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\MainWindowView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -267,33 +277,29 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\CreateGame.cs" />
-    <Compile Include="Events\Parsers\Power Log\Game State Debug\IGameStateDebugEventParser.cs" />
-    <Compile Include="Events\Parsers\Power Log\GameStateDebugPowerLogParser.cs" />
-    <Compile Include="Events\Parsers\Power Log\IPowerLogEventParser.cs" />
-    <Compile Include="Events\Streams\IEventStream.cs" />
-    <Compile Include="Events\Streams\PowerLogEventStream.cs" />
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\CreateGame.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\IGameStateDebugEventParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\GameStateDebugPowerLogParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Power Log\IPowerLogEventParser.cs" />
+    <Compile Include="Abstractions\Events\Streams\IEventStream.cs" />
+    <Compile Include="Abstractions\Events\Streams\PowerLogEventStream.cs" />
+    <Compile Include="UI\Views\MainWindowView.xaml.cs">
+      <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Background Work\BackgroundWorkView.xaml">
+    <Page Include="UI\Views\BackgroundWorkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Player Deck Tracker\PlayerDeckTrackerView.xaml">
+    <Page Include="UI\Views\PlayerDeckTrackerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Player Deck Tracker\TrackedCardView.xaml">
+    <Page Include="UI\Views\TrackedCardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\User Confirmation\UserConfirmationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Setup\WelcomeView.xaml">
+    <Page Include="UI\Views\UserConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -316,7 +322,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="fonts\fontawesome-webfont.ttf" />
+    <Resource Include="Fonts\fontawesome-webfont.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -354,8 +360,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_ Deprecated\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

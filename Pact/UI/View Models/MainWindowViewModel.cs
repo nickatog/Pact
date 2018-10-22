@@ -1,10 +1,8 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
-#endregion // Namespaces
 
 namespace Pact
 {
@@ -14,6 +12,8 @@ namespace Pact
         #region Dependencies
         private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
+        private readonly DevToolsViewModel _devToolsViewModel;
+        private readonly DownloadUpdatesViewModel _downloadUpdatesViewModel;
         #endregion // Dependencies
 
         #region Fields
@@ -27,7 +27,9 @@ namespace Pact
         #region Constructors
         public MainWindowViewModel(
             ConfigurationSettingsViewModel configurationSettingsViewModel,
-            DeckManagerViewModel deckManagerViewModel)
+            DeckManagerViewModel deckManagerViewModel,
+            DevToolsViewModel devToolsViewModel,
+            DownloadUpdatesViewModel downloadUpdatesViewModel)
         {
             _configurationSettingsViewModel =
                 configurationSettingsViewModel
@@ -36,6 +38,14 @@ namespace Pact
             _deckManagerViewModel =
                 deckManagerViewModel
                 ?? throw new ArgumentNullException(nameof(deckManagerViewModel));
+
+            _devToolsViewModel =
+                devToolsViewModel
+                ?? throw new ArgumentNullException(nameof(devToolsViewModel));
+
+            _downloadUpdatesViewModel =
+                downloadUpdatesViewModel
+                ?? throw new ArgumentNullException(nameof(downloadUpdatesViewModel));
 
             _viewModel = _deckManagerViewModel;
 
@@ -100,13 +110,13 @@ namespace Pact
                 };
         }
 
-        public ICommand ShowConfigurationSettings =>
-            new DelegateCommand(
-                () => ViewModel = _configurationSettingsViewModel);
+        public ICommand ShowConfigurationSettings => new DelegateCommand(() => ViewModel = _configurationSettingsViewModel);
 
-        public ICommand ShowDeckManager =>
-            new DelegateCommand(
-                () => ViewModel = _deckManagerViewModel);
+        public ICommand ShowDeckManager => new DelegateCommand(() => ViewModel = _deckManagerViewModel);
+
+        public ICommand ShowDevTools => new DelegateCommand(() => ViewModel = _devToolsViewModel);
+
+        public ICommand ShowDownloadUpdates => new DelegateCommand(() => ViewModel = _downloadUpdatesViewModel);
 
         public object ViewModel
         {
