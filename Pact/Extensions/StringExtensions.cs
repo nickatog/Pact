@@ -34,7 +34,7 @@ namespace Pact.StringExtensions
             IEnumerable<(string Key, string Value)> EnumerateGroups(MatchCollection matchCollection)
             {
                 foreach (Match match in matchCollection)
-                    yield return (Key: match.Groups["Key"].Value, Value: match.Groups["Value"].Value);
+                    yield return (Key: match.Groups["Key"].Value, match.Groups["Value"].Value);
             }
         }
     }

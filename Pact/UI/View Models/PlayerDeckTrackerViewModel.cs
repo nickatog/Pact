@@ -1,27 +1,21 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Valkyrie;
 using Pact.Extensions.Enumerable;
 using Pact.StringExtensions;
-#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class PlayerDeckTrackerViewModel
         : INotifyPropertyChanged
     {
-        #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
-        private readonly ITrackedCardViewModelFactory _trackedCardViewModelFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
-        #endregion // Dependencies
 
-        #region Fields
         private readonly Decklist _decklist;
         private bool? _opponentCoinStatus;
         private int _playerID;
@@ -29,15 +23,12 @@ namespace Pact
 
         private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-        #endregion // Fields
 
-        #region Constructors
         public PlayerDeckTrackerViewModel(
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
             IConfigurationStorage configurationStorage,
             IEventDispatcher gameEventDispatcher,
-            ITrackedCardViewModelFactory trackedCardViewModelFactory,
             IEventDispatcher viewEventDispatcher,
             Decklist decklist)
         {
@@ -52,10 +43,6 @@ namespace Pact
             _gameEventDispatcher =
                 gameEventDispatcher
                 ?? throw new ArgumentNullException(nameof(gameEventDispatcher));
-
-            _trackedCardViewModelFactory =
-                trackedCardViewModelFactory
-                ?? throw new ArgumentNullException(nameof(trackedCardViewModelFactory));
 
             _viewEventDispatcher =
                 viewEventDispatcher
@@ -78,8 +65,7 @@ namespace Pact
                         int? playerID = _trackedCardViewModels.First()?.PlayerID;
 
                         TrackedCardViewModel trackedCardViewModel =
-                            _trackedCardViewModelFactory.Create(
-                                _gameEventDispatcher,
+                            CreateCardViewModel(
                                 __event.CardID,
                                 1,
                                 playerID);
@@ -129,7 +115,6 @@ namespace Pact
             foreach (IEventHandler handler in _viewEventHandlers)
                 _viewEventDispatcher.RegisterHandler(handler);
         }
-        #endregion // Constructors
 
         public IEnumerable<TrackedCardViewModel> Cards => _trackedCardViewModels;
 
@@ -142,6 +127,22 @@ namespace Pact
             _viewEventHandlers.Clear();
 
             _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
+        }
+
+        private TrackedCardViewModel CreateCardViewModel(
+            string cardID,
+            int count,
+            int? playerID = null)
+        {
+            return
+                new TrackedCardViewModel(
+                    _cardInfoProvider,
+                    _configurationSource,
+                    _gameEventDispatcher,
+                    _viewEventDispatcher,
+                    cardID,
+                    count,
+                    playerID);
         }
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
@@ -167,7 +168,7 @@ namespace Pact
 
             _trackedCardViewModels =
                 _decklist.Cards
-                .Select(__cardInfo => _trackedCardViewModelFactory.Create(_gameEventDispatcher, __cardInfo.CardID, __cardInfo.Count))
+                .Select(__cardInfo => CreateCardViewModel(__cardInfo.CardID, __cardInfo.Count))
                 .OrderBy(__trackedCardViewModel => __trackedCardViewModel.Cost)
                 .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                 .ToList();

@@ -3,9 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:local="clr-namespace:Pact"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Storyboard x:Key="Pulse">
+            <DoubleAnimation BeginTime="0:0:0" Duration="0:0:0.5" From="0" To="1" Storyboard.TargetName="Glow" Storyboard.TargetProperty="Opacity" />
+            <DoubleAnimation BeginTime="0:0:0" Duration="0:0:0.5" From="0" To="5" Storyboard.TargetName="Glow" Storyboard.TargetProperty="BlurRadius" />
+            <DoubleAnimation BeginTime="0:0:0.5" Duration="0:0:5" From="0.8" To="0" Storyboard.TargetName="Glow" Storyboard.TargetProperty="Opacity">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation BeginTime="0:0:0.5" Duration="0:0:5" From="5" To="3" Storyboard.TargetName="Glow" Storyboard.TargetProperty="BlurRadius">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <UserControl.Effect>
+        <DropShadowEffect x:Name="Glow" Color="White" ShadowDepth="0" BlurRadius="0" Opacity="0" />
+    </UserControl.Effect>
+
+    <i:Interaction.Triggers>
+        <ei:PropertyChangedTrigger Binding="{Binding Count}">
+            <ei:ControlStoryboardAction Storyboard="{StaticResource Pulse}" ControlStoryboardOption="Play" />
+        </ei:PropertyChangedTrigger>
+    </i:Interaction.Triggers>
+    
     <Border BorderBrush="#101010" BorderThickness="2" CornerRadius="2" Background="{Binding Class, Converter={StaticResource ClassNameToBrush}}">
         <Grid>
             <Grid Panel.ZIndex="1" Margin="{Binding CardTextOffset, Converter={StaticResource SingleValueToThickness}, ConverterParameter=Top}">

@@ -115,10 +115,6 @@
       <DependentUpon>DownloadUpdatesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View Models\DownloadUpdatesViewModel.cs" />
-    <Compile Include="UI\View Models\IPlayerDeckTrackerViewModelFactory.cs" />
-    <Compile Include="UI\View Models\ITrackedCardViewModelFactory.cs" />
-    <Compile Include="UI\View Models\PlayerDeckTrackerViewModelFactory.cs" />
-    <Compile Include="UI\View Models\TrackedCardViewModelFactory.cs" />
     <Compile Include="UI\Interfaces\IBackgroundWorkInterface.cs" />
     <Compile Include="Abstractions\Utility\AsyncSemaphore.cs" />
     <Compile Include="UI\Behaviors\AllowOnlyPositiveIntegers.cs" />
@@ -149,16 +145,12 @@
     <Compile Include="UI\Interfaces\IPlayerDeckTrackerInterface.cs" />
     <Compile Include="UI\Interfaces\WindowedPlayerDeckTrackerInterface.cs" />
     <Compile Include="UI\View Models\DeckImportViewModel.cs" />
-    <Compile Include="UI\View Models\DeckImportViewModelFactory.cs" />
     <Compile Include="UI\Interfaces\DeckImportResult.cs" />
-    <Compile Include="UI\View Models\IDeckImportViewModelFactory.cs" />
-    <Compile Include="UI\View Models\IBackgroundWorkModalViewModelFactory.cs" />
     <Compile Include="UI\View Models\BackgroundWorkModalViewModel.cs" />
     <Compile Include="UI\Views\BackgroundWorkView.xaml.cs">
       <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\IUserConfirmationInterface.cs" />
-    <Compile Include="UI\View Models\IUserConfirmationModalViewModelFactory.cs" />
     <Compile Include="UI\Interfaces\IModalDisplay.cs" />
     <Compile Include="UI\View Models\IModalViewModel.cs" />
     <Compile Include="_ Deprecated\IUserPrompt.cs" />
@@ -235,12 +227,10 @@
     <Compile Include="Abstractions\Decks\Varint.cs" />
     <Compile Include="UI\Interfaces\ModalUserConfirmationInterface.cs" />
     <Compile Include="UI\View Models\UserConfirmationModalViewModel.cs" />
-    <Compile Include="UI\View Models\UserConfirmationModalViewModelFactory.cs" />
     <Compile Include="UI\Views\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\ModalBackgroundWorkInterface.cs" />
-    <Compile Include="UI\View Models\BackgroundWorkModalViewModelFactory.cs" />
     <Page Include="_ Deprecated\UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,46 +1,50 @@
-﻿#region Namespaces
-using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Valkyrie;
-#endregion // Namespaces
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class WindowedPlayerDeckTrackerInterface
         : IPlayerDeckTrackerInterface
     {
-        #region Dependencies
+        private readonly ICardInfoProvider _cardInfoProvider;
+        private readonly IConfigurationSource _configurationSource;
+        private readonly IConfigurationStorage _configurationStorage;
         private readonly IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
-        private readonly IPlayerDeckTrackerViewModelFactory _playerDeckTrackerViewModelFactory;
-        #endregion // Dependencies
+        private readonly IEventDispatcher _viewEventDispatcher;
 
-        #region Fields
         private CancellationTokenSource _cancellation;
         private PlayerDeckTrackerView _view;
         private PlayerDeckTrackerViewModel _viewModel;
-        #endregion // Fields
 
-        #region Constructors
         public WindowedPlayerDeckTrackerInterface(
+            ICardInfoProvider cardInfoProvider,
+            IConfigurationSource configurationSource,
+            IConfigurationStorage configurationStorage,
             IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
-            IPlayerDeckTrackerViewModelFactory playerDeckTrackerViewModelFactory)
+            IEventDispatcher viewEventDispatcher)
         {
+            _cardInfoProvider =
+                cardInfoProvider.Require(nameof(cardInfoProvider));
+
+            _configurationSource =
+                configurationSource.Require(nameof(configurationSource));
+
+            _configurationStorage =
+                configurationStorage.Require(nameof(configurationStorage));
+
             _eventDispatcherFactory =
-                eventDispatcherFactory
-                ?? throw new ArgumentNullException(nameof(eventDispatcherFactory));
+                eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
 
             _eventStreamFactory =
-                eventStreamFactory
-                ?? throw new ArgumentNullException(nameof(eventStreamFactory));
+                eventStreamFactory.Require(nameof(eventStreamFactory));
 
-            _playerDeckTrackerViewModelFactory =
-                playerDeckTrackerViewModelFactory
-                ?? throw new ArgumentNullException(nameof(playerDeckTrackerViewModelFactory));
+            _viewEventDispatcher =
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
         }
-        #endregion // Constructors
 
         void IPlayerDeckTrackerInterface.Close()
         {
@@ -63,7 +67,14 @@ namespace Pact
 
             IEventDispatcher eventDispatcher = _eventDispatcherFactory.Create();
 
-            _viewModel = _playerDeckTrackerViewModelFactory.Create(eventDispatcher, decklist);
+            _viewModel =
+                new PlayerDeckTrackerViewModel(
+                    _cardInfoProvider,
+                    _configurationSource,
+                    _configurationStorage,
+                    eventDispatcher,
+                    _viewEventDispatcher,
+                    decklist);
             
             _cancellation = new CancellationTokenSource();
             

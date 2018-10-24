@@ -6,9 +6,15 @@
              xmlns:local="clr-namespace:Pact"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Label
+                Content="Loading decks..."
+                FontFamily="Segoe UI" FontSize="18"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Visibility="{Binding Decks, Converter={StaticResource CollapsedVisibilityWhenNull}, ConverterParameter=False}" />
+            
+            <StackPanel Visibility="{Binding Decks, Converter={StaticResource CollapsedVisibilityWhenNull}}">
                 <Button
                     Template="{StaticResource ButtonMajor}"
                     Content="Import New Deck"
@@ -29,6 +35,6 @@
                     </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

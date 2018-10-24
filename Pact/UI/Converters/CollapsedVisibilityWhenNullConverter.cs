@@ -14,7 +14,11 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            return value == null ? Visibility.Collapsed : Visibility.Visible;
+            bool expectingNullValue = true;
+            if (bool.TryParse(parameter?.ToString(), out bool boolParameter))
+                expectingNullValue = boolParameter;
+
+            return (value == null) == expectingNullValue ? Visibility.Collapsed : Visibility.Visible;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

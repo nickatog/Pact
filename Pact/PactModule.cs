@@ -39,7 +39,6 @@ namespace Pact
             .Register(
                 __context =>
                     new DeckManagerViewModel(
-                        __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<IDeckInfoRepository>(),
                         __context.Resolve<IDecklistSerializer>(),
@@ -65,12 +64,6 @@ namespace Pact
             builder
             .RegisterType<ModalBackgroundWorkInterface>()
             .As<IBackgroundWorkInterface>()
-            .SingleInstance();
-
-            // IBackgroundWorkModalViewModelFactory
-            builder
-            .RegisterType<BackgroundWorkModalViewModelFactory>()
-            .As<IBackgroundWorkModalViewModelFactory>()
             .SingleInstance();
 
             // ICardInfoProvider
@@ -125,12 +118,6 @@ namespace Pact
             builder
             .RegisterType<DeckImportInterface>()
             .As<IDeckImportInterface>()
-            .SingleInstance();
-
-            // IDeckImportModalViewModelFactory
-            builder
-            .RegisterType<DeckImportViewModelFactory>()
-            .As<IDeckImportViewModelFactory>()
             .SingleInstance();
 
             // IDeckInfoRepository
@@ -281,21 +268,16 @@ namespace Pact
 
             // IPlayerDeckTrackerInterface
             builder
-            .RegisterType<WindowedPlayerDeckTrackerInterface>()
-            .As<IPlayerDeckTrackerInterface>()
-            .SingleInstance();
-
-            // IPlayerDeckTrackerViewModelFactory
-            builder
             .Register(
                 __context =>
-                    new PlayerDeckTrackerViewModelFactory(
+                    new WindowedPlayerDeckTrackerInterface(
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<IConfigurationStorage>(),
-                        __context.Resolve<ITrackedCardViewModelFactory>(),
+                        __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
+                        __context.Resolve<IEventStreamFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<IPlayerDeckTrackerViewModelFactory>()
+            .As<IPlayerDeckTrackerInterface>()
             .SingleInstance();
             
             // ISerializers
@@ -313,27 +295,10 @@ namespace Pact
             .As<ISerializer<DeckInfo>>()
             .SingleInstance();
 
-            // ITrackedCardViewModelFactory
-            builder
-            .Register(
-                __context =>
-                    new TrackedCardViewModelFactory(
-                        __context.Resolve<ICardInfoProvider>(),
-                        __context.Resolve<IConfigurationSource>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<ITrackedCardViewModelFactory>()
-            .SingleInstance();
-
             // IUserConfirmation
             builder
             .RegisterType<ModalUserConfirmationInterface>()
             .As<IUserConfirmationInterface>()
-            .SingleInstance();
-
-            // IUserConfirmationModalViewModelFactory
-            builder
-            .RegisterType<UserConfirmationModalViewModelFactory>()
-            .As<IUserConfirmationModalViewModelFactory>()
             .SingleInstance();
 
             // IUserPromptService

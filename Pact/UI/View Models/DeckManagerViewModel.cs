@@ -1,36 +1,29 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Valkyrie;
-#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class DeckManagerViewModel
+        : INotifyPropertyChanged
     {
-        #region Dependencies
-        private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
         private readonly AsyncSemaphore _deckPersistenceMutex;
         private readonly IDeckViewModelFactory _deckViewModelFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
-        #endregion // Dependencies
 
-        #region Fields
-        private readonly IList<DeckViewModel> _deckViewModels;
-        #endregion // Fields
+        private IList<DeckViewModel> _deckViewModels;
 
-        #region Constructors
         public DeckManagerViewModel(
-            ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
             IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
@@ -41,10 +34,6 @@ namespace Pact
             ILogger logger,
             IEventDispatcher viewEventDispatcher)
         {
-            _cardInfoProvider =
-                cardInfoProvider
-                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
-
             _deckImportInterface =
                 deckImportInterface
                 ?? throw new ArgumentNullException(nameof(deckImportInterface));
@@ -78,6 +67,29 @@ namespace Pact
                 viewEventDispatcher
                 ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
 
+            Task.Run(
+                async () =>
+                {
+                    IEnumerable<DeckInfo> decks = await _deckInfoRepository.GetAll();
+
+                    await Task.Delay(1000);
+
+                    _deckViewModels =
+                        new ObservableCollection<DeckViewModel>(
+                            decks
+                            .OrderBy(__deckInfo => __deckInfo.Position)
+                            .Select(
+                                __deckInfo =>
+                                    _deckViewModelFactory.Create(
+                                        __deck => _deckViewModels.IndexOf(__deck),
+                                        __deckInfo.DeckID,
+                                        DeserializeDecklist(__deckInfo.DeckString),
+                                        __deckInfo.Title,
+                                        __deckInfo.GameResults)));
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Decks)));
+                });
+
             // This event stream should ideally skip all pre-existing events and then begin pumping new events
             // Needs new support added to IEventStream
             Task.Run(
@@ -89,19 +101,6 @@ namespace Pact
                         catch (Exception ex) { await logger.Write($"{ex.Message}{Environment.NewLine}{ex.StackTrace}"); }
                     }
                 });
-
-            _deckViewModels =
-                new ObservableCollection<DeckViewModel>(
-                    _deckInfoRepository.GetAll().Result
-                    .OrderBy(__deckInfo => __deckInfo.Position)
-                    .Select(
-                        __deckInfo =>
-                            _deckViewModelFactory.Create(
-                                __deck => _deckViewModels.IndexOf(__deck),
-                                __deckInfo.DeckID,
-                                DeserializeDecklist(__deckInfo.DeckString),
-                                __deckInfo.Title,
-                                __deckInfo.GameResults)));
 
             _viewEventDispatcher.RegisterHandler(
                 new DelegateEventHandler<Commands.DeleteDeck>(
@@ -138,7 +137,6 @@ namespace Pact
                     return _decklistSerializer.Deserialize(stream).Result;
             }
         }
-        #endregion // Constructors
 
         public IEnumerable<DeckViewModel> Decks => _deckViewModels;
 
@@ -193,5 +191,7 @@ namespace Pact
                 await _deckInfoRepository.ReplaceAll(deckInfos).ConfigureAwait(false);
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

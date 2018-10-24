@@ -1,43 +1,34 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Win32;
-#endregion // Namespaces
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class ConfigurationSettingsViewModel
         : INotifyPropertyChanged
     {
-        #region Dependencies
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly IConfigurationSource _configurationSource;
         private readonly IConfigurationStorage _configurationStorage;
-        #endregion // Dependencies
 
-        #region Fields
         private string _powerLogFilePath;
-        #endregion // Fields
 
-        #region Constructors
         public ConfigurationSettingsViewModel(
             IBackgroundWorkInterface backgroundWorkInterface,
             IConfigurationSource configurationSource,
             IConfigurationStorage configurationStorage)
         {
             _backgroundWorkInterface =
-                backgroundWorkInterface
-                ?? throw new ArgumentNullException(nameof(backgroundWorkInterface));
+                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
 
             _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
+                configurationSource.Require(nameof(configurationSource));
 
             _configurationStorage =
-                configurationStorage
-                ?? throw new ArgumentNullException(nameof(configurationStorage));
+                configurationStorage.Require(nameof(configurationStorage));
 
             IConfigurationSettings configurationSettings = _configurationSource.GetSettings();
 
@@ -45,7 +36,6 @@ namespace Pact
             FontSize = configurationSettings.FontSize;
             _powerLogFilePath = configurationSettings.PowerLogFilePath;
         }
-        #endregion // Constructors
 
         public ICommand BrowseForPowerLogFilePath =>
             new DelegateCommand(
@@ -58,7 +48,7 @@ namespace Pact
                         FileName = "Power.log",
                         ValidateNames = false
                     };
-                    if (openFileDialog.ShowDialog().Equals(true))
+                    if (openFileDialog.ShowDialog() ?? false)
                         PowerLogFilePath = openFileDialog.FileName;
                 });
 

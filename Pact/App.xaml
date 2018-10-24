@@ -13,7 +13,7 @@
         <local:OpponentCoinStatusToVisibilityConverter x:Key="OpponentCoinStatusToVisibility" />
         <local:SelectedViewMatchesNameConverter x:Key="SelectedViewMatchesName" />
         <local:SingleValueToThicknessConverter x:Key="SingleValueToThickness" />
-        
+
         <DataTemplate DataType="{x:Type local:BackgroundWorkModalViewModel}">
             <local:BackgroundWorkView />
         </DataTemplate>

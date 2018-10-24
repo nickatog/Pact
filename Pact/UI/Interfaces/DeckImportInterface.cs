@@ -6,32 +6,28 @@ namespace Pact
     public sealed class DeckImportInterface
         : IDeckImportInterface
     {
+        private readonly IDecklistSerializer _decklistSerializer;
         private readonly IModalDisplay _modalDisplay;
-        private readonly IDeckImportViewModelFactory _viewModelFactory;
 
         public DeckImportInterface(
-            IModalDisplay modalDisplay,
-            IDeckImportViewModelFactory viewModelFactory)
+            IDecklistSerializer decklistSerializer,
+            IModalDisplay modalDisplay)
         {
+            _decklistSerializer =
+                decklistSerializer
+                ?? throw new ArgumentNullException(nameof(decklistSerializer));
+
             _modalDisplay =
                 modalDisplay
                 ?? throw new ArgumentNullException(nameof(modalDisplay));
-
-            _viewModelFactory =
-                viewModelFactory
-                ?? throw new ArgumentNullException(nameof(viewModelFactory));
         }
 
         Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
         {
-            // create view model (via factory?)
-            // pass to modal display, along with result handler
-            // handler inspects result and creates deck import details object for task completion source
-
             var result = new TaskCompletionSource<DeckImportDetails?>();
 
             _modalDisplay.Show(
-                _viewModelFactory.Create(),
+                new DeckImportViewModel(_decklistSerializer),
                 __result =>
                 {
                     DeckImportDetails? res = null;
@@ -41,12 +37,6 @@ namespace Pact
 
                     result.SetResult(res);
                 });
-
-            //var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
-            //if (!(view.ShowDialog() ?? false))
-            //    return Task.FromResult<DeckImportDetails?>(default);
-
-            //return Task.FromResult<DeckImportDetails?>(new DeckImportDetails(view.DeckTitle, view.Deck));
 
             return result.Task;
         }
