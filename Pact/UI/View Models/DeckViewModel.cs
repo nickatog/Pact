@@ -1,24 +1,20 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Pact.Extensions.Contract;
-#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class DeckViewModel
         : INotifyPropertyChanged
     {
-        #region Dependencies
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDeckInfoRepository _deckInfoRepository;
@@ -32,17 +28,13 @@ namespace Pact
         private readonly Dispatcher _uiThreadDispatcher;
         private readonly IUserConfirmationInterface _userConfirmation;
         private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
-        #endregion // Dependencies
 
-        #region Fields
         private bool _canDelete = true;
         private Action _deleteCanExecuteChanged;
         private readonly Func<DeckViewModel, int> _findDeckPosition;
         private readonly IList<GameResult> _gameResults;
         private bool _isTracking = false;
-        #endregion // Fields
 
-        #region Constructors
         public DeckViewModel(
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
@@ -63,25 +55,47 @@ namespace Pact
             string title,
             IEnumerable<GameResult> gameResults = null)
         {
-            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
-            _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
-            _deckInfoRepository = deckInfoRepository.Require(nameof(deckInfoRepository));
-            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
-            _deckPersistenceMutex = deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
-            _deckTrackerInterface = deckTrackerInterface.Require(nameof(deckTrackerInterface));
-            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
-            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
-            _logger = logger.Require(nameof(logger));
-            _notifyWaiter = notifyWaiter.Require(nameof(notifyWaiter));
+            _cardInfoProvider =
+                cardInfoProvider.Require(nameof(cardInfoProvider));
+
+            _deckImportInterface =
+                deckImportInterface.Require(nameof(deckImportInterface));
+
+            _deckInfoRepository =
+                deckInfoRepository.Require(nameof(deckInfoRepository));
+
+            _decklistSerializer =
+                decklistSerializer.Require(nameof(decklistSerializer));
+
+            _deckPersistenceMutex =
+                deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
+
+            _deckTrackerInterface =
+                deckTrackerInterface.Require(nameof(deckTrackerInterface));
+
+            _eventDispatcherFactory =
+                eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+
+            _gameEventDispatcher =
+                gameEventDispatcher.Require(nameof(gameEventDispatcher));
+
+            _logger =
+                logger.Require(nameof(logger));
+
+            _notifyWaiter =
+                notifyWaiter.Require(nameof(notifyWaiter));
 
             _uiThreadDispatcher =
-                uiThreadDispatcher
-                ?? throw new ArgumentNullException(nameof(uiThreadDispatcher));
+                uiThreadDispatcher.Require(nameof(uiThreadDispatcher));
 
-            _userConfirmation = userConfirmation.Require(nameof(userConfirmation));
-            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _userConfirmation =
+                userConfirmation.Require(nameof(userConfirmation));
 
-            _findDeckPosition = findPosition.Require(nameof(findPosition));
+            _viewEventDispatcher =
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+
+            _findDeckPosition =
+                findPosition.Require(nameof(findPosition));
 
             DeckID = deckID;
             Decklist = decklist;
@@ -102,7 +116,6 @@ namespace Pact
                         _replaceCanExecuteChanged?.Invoke();
                     }));
         }
-        #endregion // Constructors
 
         public string Class => _cardInfoProvider.GetCardInfo(Decklist.HeroID)?.Class;
 

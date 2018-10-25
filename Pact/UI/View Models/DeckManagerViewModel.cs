@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Valkyrie;
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -35,24 +36,19 @@ namespace Pact
             IEventDispatcher viewEventDispatcher)
         {
             _deckImportInterface =
-                deckImportInterface
-                ?? throw new ArgumentNullException(nameof(deckImportInterface));
+                deckImportInterface.Require(nameof(deckImportInterface));
 
             _deckInfoRepository =
-                deckInfoRepository
-                ?? throw new ArgumentNullException(nameof(deckInfoRepository));
+                deckInfoRepository.Require(nameof(deckInfoRepository));
 
             _decklistSerializer =
-                decklistSerializer
-                ?? throw new ArgumentNullException(nameof(decklistSerializer));
+                decklistSerializer.Require(nameof(decklistSerializer));
 
             _deckPersistenceMutex =
-                deckPersistenceMutex
-                ?? throw new ArgumentNullException(nameof(deckPersistenceMutex));
+                deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
 
             _deckViewModelFactory =
-                deckViewModelFactory
-                ?? throw new ArgumentNullException(nameof(deckViewModelFactory));
+                deckViewModelFactory.Require(nameof(deckViewModelFactory));
 
             if (eventStream == null)
                 throw new ArgumentNullException(nameof(eventStream));
@@ -64,15 +60,12 @@ namespace Pact
                 throw new ArgumentNullException(nameof(logger));
 
             _viewEventDispatcher =
-                viewEventDispatcher
-                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             Task.Run(
                 async () =>
                 {
                     IEnumerable<DeckInfo> decks = await _deckInfoRepository.GetAll();
-
-                    await Task.Delay(1000);
 
                     _deckViewModels =
                         new ObservableCollection<DeckViewModel>(

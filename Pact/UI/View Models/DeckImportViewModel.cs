@@ -14,7 +14,8 @@ namespace Pact
         public DeckImportViewModel(
             IDecklistSerializer decklistSerializer)
         {
-            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _decklistSerializer =
+                decklistSerializer.Require(nameof(decklistSerializer));
         }
 
         public ICommand Cancel => new DelegateCommand(() => OnClosed?.Invoke(null));
