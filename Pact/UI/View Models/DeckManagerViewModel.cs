@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Valkyrie;
+
 using Pact.Extensions.Contract;
 
 namespace Pact
@@ -15,31 +17,44 @@ namespace Pact
     public sealed class DeckManagerViewModel
         : INotifyPropertyChanged
     {
+        private readonly IBackgroundWorkInterface _backgroundWorkInterface;
+        private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
-        private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
         private readonly AsyncSemaphore _deckPersistenceMutex;
-        private readonly IDeckViewModelFactory _deckViewModelFactory;
+        private readonly IDeckRepository _deckRepository;
+        private readonly IEventDispatcher _gameEventDispatcher;
+        private readonly IGameResultRepository _gameResultRepository;
+        private readonly ILogger _logger;
+        private readonly IPlayerDeckTrackerInterface _playerDeckTrackerInterface;
+        private readonly IUserConfirmationInterface _userConfirmationInterface;
         private readonly IEventDispatcher _viewEventDispatcher;
 
         private IList<DeckViewModel> _deckViewModels;
 
         public DeckManagerViewModel(
+            IBackgroundWorkInterface backgroundWorkInterface,
+            ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
-            IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
             AsyncSemaphore deckPersistenceMutex,
-            IDeckViewModelFactory deckViewModelFactory,
+            IDeckRepository deckRepository,
             IEventStream eventStream,
             IEventDispatcher gameEventDispatcher,
+            IGameResultRepository gameResultRepository,
             ILogger logger,
+            IPlayerDeckTrackerInterface playerDeckTrackerInterface,
+            IUserConfirmationInterface userConfirmationInterface,
             IEventDispatcher viewEventDispatcher)
         {
+            _backgroundWorkInterface =
+                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
+
+            _cardInfoProvider =
+                cardInfoProvider.Require(nameof(cardInfoProvider));
+
             _deckImportInterface =
                 deckImportInterface.Require(nameof(deckImportInterface));
-
-            _deckInfoRepository =
-                deckInfoRepository.Require(nameof(deckInfoRepository));
 
             _decklistSerializer =
                 decklistSerializer.Require(nameof(decklistSerializer));
@@ -47,36 +62,46 @@ namespace Pact
             _deckPersistenceMutex =
                 deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
 
-            _deckViewModelFactory =
-                deckViewModelFactory.Require(nameof(deckViewModelFactory));
+            _deckRepository =
+                deckRepository.Require(nameof(deckRepository));
 
             if (eventStream == null)
                 throw new ArgumentNullException(nameof(eventStream));
 
-            if (gameEventDispatcher == null)
-                throw new ArgumentNullException(nameof(gameEventDispatcher));
+            _gameEventDispatcher =
+                gameEventDispatcher.Require(nameof(gameEventDispatcher));
 
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
+            _gameResultRepository =
+                gameResultRepository.Require(nameof(gameResultRepository));
+
+            _logger =
+                logger.Require(nameof(logger));
+
+            _playerDeckTrackerInterface =
+                playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
+
+            _userConfirmationInterface =
+                userConfirmationInterface.Require(nameof(userConfirmationInterface));
 
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
+            // Start loading pre-existing decks
             Task.Run(
                 async () =>
                 {
-                    IEnumerable<DeckInfo> decks = await _deckInfoRepository.GetAll();
+                    IEnumerable<DeckInfo> deckInfos = await _deckRepository.GetAllDecksAndGameResults();
 
                     _deckViewModels =
                         new ObservableCollection<DeckViewModel>(
-                            decks
+                            deckInfos
                             .OrderBy(__deckInfo => __deckInfo.Position)
                             .Select(
                                 __deckInfo =>
-                                    _deckViewModelFactory.Create(
-                                        __deck => _deckViewModels.IndexOf(__deck),
+                                    CreateDeckViewModel(
                                         __deckInfo.DeckID,
                                         DeserializeDecklist(__deckInfo.DeckString),
+                                        __deckInfo.Position,
                                         __deckInfo.Title,
                                         __deckInfo.GameResults)));
 
@@ -105,6 +130,8 @@ namespace Pact
                         
                         _deckViewModels.Remove(deck);
 
+                        _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(deck));
+
                         await SaveDecks();
                     }));
 
@@ -119,7 +146,10 @@ namespace Pact
                         DeckViewModel sourceDeck = _deckViewModels[sourcePosition];
                         _deckViewModels.RemoveAt(sourcePosition);
 
-                        _deckViewModels.Insert(__event.TargetPosition, sourceDeck);
+                        int targetPosition = __event.TargetPosition;
+                        _deckViewModels.Insert(targetPosition, sourceDeck);
+
+                        _viewEventDispatcher.DispatchEvent(new Events.DeckMoved(sourcePosition, targetPosition));
 
                         await SaveDecks();
                     }));
@@ -129,6 +159,32 @@ namespace Pact
                 using (var stream = new MemoryStream(Encoding.Default.GetBytes(text)))
                     return _decklistSerializer.Deserialize(stream).Result;
             }
+        }
+
+        private DeckViewModel CreateDeckViewModel(
+            Guid deckID,
+            Decklist decklist,
+            int position,
+            string title,
+            IEnumerable<GameResult> gameResults = null)
+        {
+            return
+                new DeckViewModel(
+                    _backgroundWorkInterface,
+                    _cardInfoProvider,
+                    _deckImportInterface,
+                    _decklistSerializer,
+                    _deckRepository,
+                    _gameEventDispatcher,
+                    _gameResultRepository,
+                    _playerDeckTrackerInterface,
+                    _userConfirmationInterface,
+                    _viewEventDispatcher,
+                    deckID,
+                    decklist,
+                    position,
+                    title,
+                    gameResults);
         }
 
         public IEnumerable<DeckViewModel> Decks => _deckViewModels;
@@ -151,38 +207,42 @@ namespace Pact
                     var deckID = Guid.NewGuid();
 
                     DeckViewModel viewModel =
-                        _deckViewModelFactory.Create(
-                            __deck => _deckViewModels.IndexOf(__deck),
+                        CreateDeckViewModel(
                             deckID,
                             deck.Value.Decklist,
+                            0,
                             deck.Value.Title);
 
                     _deckViewModels.Insert(0, viewModel);
+
+                    _viewEventDispatcher.DispatchEvent(new Events.DeckAdded(viewModel));
 
                     await SaveDecks();
                 });
 
         private async Task SaveDecks()
         {
-            using (await _deckPersistenceMutex.WaitAsync().ConfigureAwait(false))
-            {
-                IEnumerable<DeckInfo> deckInfos =
-                    _deckViewModels.Select(
-                        __deck =>
+            IEnumerable<DeckDetails> deckDetails =
+                _deckViewModels.Select(
+                    __deckViewModel =>
+                    {
+                        using (var stream = new MemoryStream())
                         {
-                            using (var stream = new MemoryStream())
-                            {
-                                _decklistSerializer.Serialize(stream, __deck.Decklist);
+                            _decklistSerializer.Serialize(stream, __deckViewModel.Decklist).Wait();
 
-                                stream.Position = 0;
+                            stream.Position = 0;
 
-                                using (var reader = new StreamReader(stream))
-                                    return new DeckInfo(__deck.DeckID, reader.ReadToEnd(), __deck.Title, (UInt16)_deckViewModels.IndexOf(__deck), __deck.GameResults);
-                            }
-                        });
+                            using (var reader = new StreamReader(stream))
+                                return
+                                    new DeckDetails(
+                                        __deckViewModel.DeckID,
+                                        __deckViewModel.Title,
+                                        reader.ReadToEnd(),
+                                        (UInt16)__deckViewModel.Position);
+                        }
+                    });
 
-                await _deckInfoRepository.ReplaceAll(deckInfos).ConfigureAwait(false);
-            }
+            await _deckRepository.ReplaceDecks(deckDetails).ConfigureAwait(false);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

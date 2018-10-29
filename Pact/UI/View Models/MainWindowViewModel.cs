@@ -4,27 +4,24 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public sealed class MainWindowViewModel
         : INotifyPropertyChanged
     {
-        #region Dependencies
         private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
         private readonly DevToolsViewModel _devToolsViewModel;
         private readonly DownloadUpdatesViewModel _downloadUpdatesViewModel;
-        #endregion // Dependencies
 
-        #region Fields
-        private static MainWindowViewModel _instance;
-        public static MainWindowViewModel Instance => _instance;
+        private static MainWindowViewModel s_instance;
+        public static MainWindowViewModel Instance => s_instance;
 
         private object _modalViewModel;
         private object _viewModel;
-        #endregion // Fields
 
-        #region Constructors
         public MainWindowViewModel(
             ConfigurationSettingsViewModel configurationSettingsViewModel,
             DeckManagerViewModel deckManagerViewModel,
@@ -32,26 +29,21 @@ namespace Pact
             DownloadUpdatesViewModel downloadUpdatesViewModel)
         {
             _configurationSettingsViewModel =
-                configurationSettingsViewModel
-                ?? throw new ArgumentNullException(nameof(configurationSettingsViewModel));
+                configurationSettingsViewModel.Require(nameof(configurationSettingsViewModel));
 
             _deckManagerViewModel =
-                deckManagerViewModel
-                ?? throw new ArgumentNullException(nameof(deckManagerViewModel));
+                deckManagerViewModel.Require(nameof(deckManagerViewModel));
 
             _devToolsViewModel =
-                devToolsViewModel
-                ?? throw new ArgumentNullException(nameof(devToolsViewModel));
+                devToolsViewModel.Require(nameof(devToolsViewModel));
 
             _downloadUpdatesViewModel =
-                downloadUpdatesViewModel
-                ?? throw new ArgumentNullException(nameof(downloadUpdatesViewModel));
+                downloadUpdatesViewModel.Require(nameof(downloadUpdatesViewModel));
 
             _viewModel = _deckManagerViewModel;
 
-            _instance = this;
+            s_instance = this;
         }
-        #endregion // Constructors
 
         public object ModalViewModel
         {

@@ -39,14 +39,18 @@ namespace Pact
             .Register(
                 __context =>
                     new DeckManagerViewModel(
+                        __context.Resolve<IBackgroundWorkInterface>(),
+                        __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IDeckImportInterface>(),
-                        __context.Resolve<IDeckInfoRepository>(),
                         __context.Resolve<IDecklistSerializer>(),
                         __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
-                        __context.Resolve<IDeckViewModelFactory>(),
+                        __context.Resolve<IDeckRepository>(),
                         __context.Resolve<IEventStream>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
+                        __context.Resolve<IGameResultRepository>(),
                         __context.Resolve<ILogger>(),
+                        __context.Resolve<IPlayerDeckTrackerInterface>(),
+                        __context.Resolve<IUserConfirmationInterface>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<DeckManagerViewModel>();
 
@@ -120,21 +124,18 @@ namespace Pact
             .As<IDeckImportInterface>()
             .SingleInstance();
 
-            // IDeckInfoRepository
+            // IDeckInfoFileStorage
             builder
             .Register(
                 __context =>
-                {
-                    string filePath =
+                    new DeckInfoFileStorage(
+                        __context.Resolve<ICollectionSerializer<DeckInfo>>(),
                         Path.Combine(
                             Path.Combine(
                                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                                 "Pact"),
-                            ".decks");
-
-                    return new FileBasedDeckInfoRepository(__context.Resolve<ICollectionSerializer<DeckInfo>>(), filePath);
-                })
-            .As<IDeckInfoRepository>()
+                            ".decks")))
+            .As<IDeckInfoFileStorage>()
             .SingleInstance();
 
             // IDecklistSerializer
@@ -148,28 +149,14 @@ namespace Pact
                     new TextDecklistSerializer(__inner), "base")
             .SingleInstance();
 
-            // IDeckViewModelFactory
+            // IDeckRepository
             builder
             .Register(
                 __context =>
-                {
-                    return
-                        new DeckViewModelFactory(
-                            __context.Resolve<ICardInfoProvider>(),
-                            __context.Resolve<IDeckImportInterface>(),
-                            __context.Resolve<IDeckInfoRepository>(),
-                            __context.Resolve<IDecklistSerializer>(),
-                            __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
-                            __context.Resolve<IPlayerDeckTrackerInterface>(),
-                            __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
-                            __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
-                            __context.Resolve<ILogger>(),
-                            __context.Resolve<IBackgroundWorkInterface>(),
-                            __context.Resolve<Dispatcher>(),
-                            __context.Resolve<IUserConfirmationInterface>(),
-                            __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
-                })
-            .As<IDeckViewModelFactory>()
+                    new FileBasedDeckRepository(
+                        __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
+                        __context.Resolve<IDeckInfoFileStorage>()))
+            .As<IDeckRepository>()
             .SingleInstance();
 
             // IEventDispatchers
@@ -210,6 +197,16 @@ namespace Pact
                         __context.Resolve<System.Collections.Generic.IEnumerable<IGameStateDebugEventParser>>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<IEventStreamFactory>()
+            .SingleInstance();
+
+            // IGameResultRepository
+            builder
+            .Register(
+                __context =>
+                    new FileBasedGameResultRepository(
+                        __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
+                        __context.Resolve<IDeckInfoFileStorage>()))
+            .As<IGameResultRepository>()
             .SingleInstance();
 
             // IGameStateDebugEventParsers

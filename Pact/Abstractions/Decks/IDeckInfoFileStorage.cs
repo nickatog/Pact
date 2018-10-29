@@ -3,14 +3,11 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public interface IDeckInfoRepository
+    public interface IDeckInfoFileStorage
     {
         Task<IEnumerable<DeckInfo>> GetAll();
 
-        Task ReplaceAll(
+        Task SaveAll(
             IEnumerable<DeckInfo> deckInfos);
-
-        Task Save(
-            DeckInfo deckInfo);
     }
 }

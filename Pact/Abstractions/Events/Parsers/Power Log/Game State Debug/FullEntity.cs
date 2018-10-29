@@ -70,6 +70,14 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         }
                         else if (parentBlockType.Eq("TRIGGER") && zoneTag.Eq("DECK"))
                         {
+                            // Augmented Elekk
+                            if (parentBlockEntityCardID.Eq("BOT_559"))
+                            {
+                                // TODO:
+                                // The log file itself doesn't indicate what card was added to the deck
+                                // Keep track of most recent card(s) added to deck and replay the events?
+                                // Track cards added during the current main block and clear on new main block start
+                            }
                             // Kingsbane
                             if (parentBlockEntityCardID.Eq("LOOT_542"))
                                 events.Add(new Events.CardAddedToDeck(playerID, "LOOT_542"));

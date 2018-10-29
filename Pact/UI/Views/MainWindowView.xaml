@@ -30,9 +30,9 @@
         </ControlTemplate>
 
         <ControlTemplate x:Key="CustomToolTip" TargetType="ToolTip">
-            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="3" Background="#DDDDDD">
+            <Border CornerRadius="0,5,5,0" Background="{TemplateBinding Background}">
                 <StackPanel>
-                    <Label Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                    <Label Content="{TemplateBinding Content}" HorizontalAlignment="Center" Foreground="White" />
                 </StackPanel>
             </Border>
         </ControlTemplate>
@@ -79,7 +79,7 @@
                             </Style>
                         </Button.Style>
                         <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Manage Decks" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Manage Decks" Placement="Right" VerticalOffset="7" Background="#606060" />
                         </Button.ToolTip>
                     </Button>
 
@@ -98,7 +98,7 @@
                             </Style>
                         </Button.Style>
                         <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Edit Settings" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Edit Settings" Placement="Right" VerticalOffset="7" Background="#606060" />
                         </Button.ToolTip>
                     </Button>
 
@@ -115,7 +115,7 @@
                             </Style>
                         </Button.Style>
                         <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Download Updates" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Download Updates" Placement="Right" VerticalOffset="7" Background="#606060" />
                         </Button.ToolTip>
                     </Button>
                     
@@ -132,14 +132,14 @@
                             </Style>
                         </Button.Style>
                         <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Dev Tools" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Dev Tools" Placement="Right" VerticalOffset="7" Background="#606060" />
                         </Button.ToolTip>
                     </Button>
                 </StackPanel>
 
                 <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050">
                     <Button.ToolTip>
-                        <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" HorizontalOffset="-2" VerticalOffset="7" />
+                        <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" VerticalOffset="7" Background="#505050" />
                     </Button.ToolTip>
                 </Button>
             </DockPanel>

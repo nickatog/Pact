@@ -7,104 +7,131 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
+
+using Valkyrie;
+
 using Pact.Extensions.Contract;
+using Pact.Extensions.Enumerable;
 
 namespace Pact
 {
     public sealed class DeckViewModel
         : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
-        private readonly IDeckInfoRepository _deckInfoRepository;
         private readonly IDecklistSerializer _decklistSerializer;
-        private readonly AsyncSemaphore _deckPersistenceMutex;
-        private readonly IPlayerDeckTrackerInterface _deckTrackerInterface;
-        private readonly Valkyrie.IEventDispatcherFactory _eventDispatcherFactory;
-        private readonly Valkyrie.IEventDispatcher _gameEventDispatcher;
-        private readonly ILogger _logger;
-        private readonly IBackgroundWorkInterface _notifyWaiter;
-        private readonly Dispatcher _uiThreadDispatcher;
-        private readonly IUserConfirmationInterface _userConfirmation;
-        private readonly Valkyrie.IEventDispatcher _viewEventDispatcher;
+        private readonly IDeckRepository _deckRepository;
+        private readonly IEventDispatcher _gameEventDispatcher;
+        private readonly IGameResultRepository _gameResultRepository;
+        private readonly IPlayerDeckTrackerInterface _playerDeckTrackerInterface;
+        private readonly IUserConfirmationInterface _userConfirmationInterface;
+        private readonly IEventDispatcher _viewEventDispatcher;
 
         private bool _canDelete = true;
+        private bool _canReplace = true;
         private Action _deleteCanExecuteChanged;
-        private readonly Func<DeckViewModel, int> _findDeckPosition;
         private readonly IList<GameResult> _gameResults;
         private bool _isTracking = false;
+        private Action _replaceCanExecuteChanged;
+        private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
 
         public DeckViewModel(
+            IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
-            IDeckInfoRepository deckInfoRepository,
             IDecklistSerializer decklistSerializer,
-            AsyncSemaphore deckPersistenceMutex,
-            IPlayerDeckTrackerInterface deckTrackerInterface,
-            Valkyrie.IEventDispatcherFactory eventDispatcherFactory,
-            Valkyrie.IEventDispatcher gameEventDispatcher,
-            ILogger logger,
-            IBackgroundWorkInterface notifyWaiter,
-            Dispatcher uiThreadDispatcher,
-            IUserConfirmationInterface userConfirmation,
-            Valkyrie.IEventDispatcher viewEventDispatcher,
-            Func<DeckViewModel, int> findPosition,
+            IDeckRepository deckRepository,
+            IEventDispatcher gameEventDispatcher,
+            IGameResultRepository gameResultRepository,
+            IPlayerDeckTrackerInterface playerDeckTrackerInterface,
+            IUserConfirmationInterface userConfirmationInterface,
+            IEventDispatcher viewEventDispatcher,
             Guid deckID,
             Decklist decklist,
+            int position,
             string title,
             IEnumerable<GameResult> gameResults = null)
         {
+            _backgroundWorkInterface =
+                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
+
             _cardInfoProvider =
                 cardInfoProvider.Require(nameof(cardInfoProvider));
 
             _deckImportInterface =
                 deckImportInterface.Require(nameof(deckImportInterface));
 
-            _deckInfoRepository =
-                deckInfoRepository.Require(nameof(deckInfoRepository));
-
             _decklistSerializer =
                 decklistSerializer.Require(nameof(decklistSerializer));
 
-            _deckPersistenceMutex =
-                deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
-
-            _deckTrackerInterface =
-                deckTrackerInterface.Require(nameof(deckTrackerInterface));
-
-            _eventDispatcherFactory =
-                eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _deckRepository =
+                deckRepository.Require(nameof(deckRepository));
 
             _gameEventDispatcher =
                 gameEventDispatcher.Require(nameof(gameEventDispatcher));
 
-            _logger =
-                logger.Require(nameof(logger));
+            _gameResultRepository =
+                gameResultRepository.Require(nameof(gameResultRepository));
 
-            _notifyWaiter =
-                notifyWaiter.Require(nameof(notifyWaiter));
+            _playerDeckTrackerInterface =
+                playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
 
-            _uiThreadDispatcher =
-                uiThreadDispatcher.Require(nameof(uiThreadDispatcher));
-
-            _userConfirmation =
-                userConfirmation.Require(nameof(userConfirmation));
+            _userConfirmationInterface =
+                userConfirmationInterface.Require(nameof(userConfirmationInterface));
 
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
-            _findDeckPosition =
-                findPosition.Require(nameof(findPosition));
-
             DeckID = deckID;
             Decklist = decklist;
             _gameResults = (gameResults ?? Enumerable.Empty<GameResult>()).ToList();
+            Position = position;
             Title = title ?? string.Empty;
 
-            // Needs to get unregistered when deck is deleted so the view model can get garbage collected
-            _viewEventDispatcher.RegisterHandler(
-                new Valkyrie.DelegateEventHandler<DeckTrackingEvent>(
+            // Listen for decks to be added and adjust the current deck's position
+            _viewEventHandlers.Add(
+                new DelegateEventHandler<Events.DeckAdded>(
+                    __event =>
+                    {
+                        if (__event.DeckViewModel == this)
+                            return;
+
+                        if (__event.DeckViewModel.Position <= Position)
+                            Position++;
+                    }));
+
+            // Listen for decks to be deleted and adjust the current deck's position
+            _viewEventHandlers.Add(
+                new DelegateEventHandler<Events.DeckDeleted>(
+                    __event =>
+                    {
+                        if (__event.DeckViewModel.Position < Position)
+                            Position--;
+                    }));
+
+            // Listen for decks to move positions and adjust the current deck's position
+            _viewEventHandlers.Add(
+                new DelegateEventHandler<Events.DeckMoved>(
+                    __event =>
+                    {
+                        int sourcePosition = __event.SourcePosition;
+                        int targetPosition = __event.TargetPosition;
+
+                        if (sourcePosition == Position)
+                            Position = targetPosition;
+                        else if (targetPosition >= Position && sourcePosition < Position)
+                            Position--;
+                        else if (targetPosition <= Position && sourcePosition > Position)
+                            Position++;
+                    }));
+
+            // Listen for decks to start tracking and set the current deck's tracking status
+            _viewEventHandlers.Add(
+                new DelegateEventHandler<Events.DeckTracking>(
                     __event =>
                     {
                         IsTracking = __event.DeckViewModel == this;
@@ -115,6 +142,8 @@ namespace Pact
                         _canReplace = !IsTracking;
                         _replaceCanExecuteChanged?.Invoke();
                     }));
+
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
 
         public string Class => _cardInfoProvider.GetCardInfo(Decklist.HeroID)?.Class;
@@ -123,7 +152,7 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _notifyWaiter.Perform(
+                    _backgroundWorkInterface.Perform(
                         async __setStatus =>
                         {
                             byte[] bytes = null;
@@ -138,7 +167,7 @@ namespace Pact
                                 stream.Read(bytes, 0, (int)stream.Length);
                             }
 
-                            _uiThreadDispatcher.Invoke(() => Clipboard.SetText(Encoding.Default.GetString(bytes)));
+                            Clipboard.SetText(Encoding.Default.GetString(bytes));
 
                             __setStatus?.Invoke("Deck copied to clipboard!");
 
@@ -147,7 +176,7 @@ namespace Pact
                         750);
                 });
 
-        public Guid DeckID { get; private set; }
+        public Guid DeckID { get; }
 
         public Decklist Decklist { get; private set; }
 
@@ -155,9 +184,11 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    if (!await _userConfirmation.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
+                    if (!await _userConfirmationInterface.Confirm($"Are you sure you want to delete {Title}?", "Delete", "Cancel"))
                         return;
-                    
+
+                    _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
+
                     _viewEventDispatcher.DispatchEvent(new Commands.DeleteDeck(DeckID));
                 },
                 canExecute:
@@ -165,6 +196,7 @@ namespace Pact
                 canExecuteChangedClient:
                     __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
 
+        // This won't need to be public if the deck storage abstractions are separated into deck property and game results interfaces
         public IEnumerable<GameResult> GameResults => _gameResults;
 
         public bool IsTracking
@@ -174,16 +206,14 @@ namespace Pact
             {
                 _isTracking = value;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsTracking"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsTracking)));
             }
         }
 
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
-        public int Position => _findDeckPosition(this);
+        public int Position { get; private set; }
 
-        private bool _canReplace = true;
-        private Action _replaceCanExecuteChanged;
         public ICommand Replace =>
             new DelegateCommand(
                 async () =>
@@ -194,9 +224,9 @@ namespace Pact
 
                     Decklist = deckImportResult.Value.Decklist;
 
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Class"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Class)));
 
-                    await SaveDeckToRepository();
+                    await SaveDeck();
                 },
                 canExecute:
                     () => _canReplace,
@@ -207,10 +237,27 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Title"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Title)));
 
-                    await SaveDeckToRepository();
+                    await SaveDeck();
                 });
+
+        private async Task SaveDeck()
+        {
+            DeckDetails deckDetails;
+
+            using (var stream = new MemoryStream())
+            {
+                await _decklistSerializer.Serialize(stream, Decklist).ConfigureAwait(false);
+
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream))
+                    deckDetails = new DeckDetails(DeckID, Title, reader.ReadToEnd(), (ushort)Position);
+            }
+
+            await _deckRepository.UpdateDeck(deckDetails).ConfigureAwait(false);
+        }
 
         public string Title { get; set; }
 
@@ -218,13 +265,13 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _viewEventDispatcher.DispatchEvent(new DeckTrackingEvent(this));
+                    _viewEventDispatcher.DispatchEvent(new Events.DeckTracking(this));
 
-                    _deckTrackerInterface.TrackDeck(Decklist);
+                    _playerDeckTrackerInterface.TrackDeck(Decklist);
 
                     var recordGameResult =
-                        new Valkyrie.DelegateEventHandler<Events.GameEnded>(
-                            async __event =>
+                        new DelegateEventHandler<Events.GameEnded>(
+                            __event =>
                             {
                                 var timestamp = DateTime.UtcNow;
 
@@ -234,18 +281,17 @@ namespace Pact
 
                                 _gameResults.Add(gameResult);
 
-                                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Wins"));
-                                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Losses"));
+                                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Wins)));
+                                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Losses)));
 
-                                // Make a distinct "game result storage" interface again?
-                                await SaveDeckToRepository();
+                                _gameResultRepository.AddGameResult(DeckID, gameResult);
                             });
 
                     _gameEventDispatcher.RegisterHandler(recordGameResult);
 
-                    Valkyrie.IEventHandler unregisterHandlers = null;
+                    IEventHandler unregisterHandlers = null;
                     unregisterHandlers =
-                        new Valkyrie.DelegateEventHandler<DeckTrackingEvent>(
+                        new DelegateEventHandler<Events.DeckTracking>(
                             __event =>
                             {
                                 _gameEventDispatcher.UnregisterHandler(recordGameResult);
@@ -261,48 +307,13 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _deckTrackerInterface.Close();
+                    _playerDeckTrackerInterface.Close();
 
-                    _viewEventDispatcher.DispatchEvent(new DeckTrackingEvent(null));
+                    _viewEventDispatcher.DispatchEvent(new Events.DeckTracking(null));
                 });
 
-        public Valkyrie.IEventDispatcher ViewEventDispatcher => _viewEventDispatcher;
+        public IEventDispatcher ViewEventDispatcher => _viewEventDispatcher;
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private async Task SaveDeckToRepository()
-        {
-            using (await _deckPersistenceMutex.WaitAsync().ConfigureAwait(false))
-            {
-                DeckInfo deckInfo;
-
-                using (var stream = new MemoryStream())
-                {
-                    await _decklistSerializer.Serialize(stream, Decklist);
-
-                    stream.Position = 0;
-
-                    using (var reader = new StreamReader(stream))
-                        deckInfo = new DeckInfo(DeckID, reader.ReadToEnd(), Title, (ushort)_findDeckPosition(this), _gameResults);
-                }
-
-                await _deckInfoRepository.Save(deckInfo).ConfigureAwait(false);
-            }
-        }
-
-        private sealed class DeckTrackingEvent
-        {
-            private readonly DeckViewModel _deckViewModel;
-
-            public DeckTrackingEvent(
-                DeckViewModel deckViewModel)
-            {
-                _deckViewModel = deckViewModel;
-            }
-
-            public DeckViewModel DeckViewModel => _deckViewModel;
-        }
     }
 }

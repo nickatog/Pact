@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Win32;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Win32;
+
 using Pact.Extensions.Contract;
 
 namespace Pact

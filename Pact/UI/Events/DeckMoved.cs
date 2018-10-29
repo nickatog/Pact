@@ -1,8 +1,8 @@
-﻿namespace Pact.Commands
+﻿namespace Pact.Events
 {
-    public sealed class MoveDeck
+    public sealed class DeckMoved
     {
-        public MoveDeck(
+        public DeckMoved(
             int sourcePosition,
             int targetPosition)
         {

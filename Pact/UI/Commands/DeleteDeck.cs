@@ -10,6 +10,6 @@ namespace Pact.Commands
             DeckID = deckID;
         }
 
-        public Guid DeckID { get; private set; }
+        public Guid DeckID { get; }
     }
 }

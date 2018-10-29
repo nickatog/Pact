@@ -6,7 +6,8 @@ namespace Valkyrie
     internal sealed class InMemoryEventDispatcher
         : IEventDispatcher
     {
-        private readonly IDictionary<Type, IList<IEventHandler>> _handlersByType = new Dictionary<Type, IList<IEventHandler>>();
+        private readonly IDictionary<Type, HashSet<IEventHandler>> _handlersByType =
+            new Dictionary<Type, HashSet<IEventHandler>>();
 
         void IEventDispatcher.DispatchEvent(
             object @event)
@@ -14,8 +15,7 @@ namespace Valkyrie
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            IList<IEventHandler> handlersForType = null;
-            if (!_handlersByType.TryGetValue(@event.GetType(), out handlersForType))
+            if (!_handlersByType.TryGetValue(@event.GetType(), out HashSet<IEventHandler> handlersForType))
                 return;
 
             var handlersToInvoke = new IEventHandler[handlersForType.Count];
@@ -32,15 +32,14 @@ namespace Valkyrie
                 throw new ArgumentNullException(nameof(handler));
 
             Type eventType = handler.EventType;
-
-            IList<IEventHandler> handlersForType = null;
-            if (!_handlersByType.TryGetValue(eventType, out handlersForType))
+            
+            if (!_handlersByType.TryGetValue(eventType, out HashSet<IEventHandler> handlersForType))
             {
-                handlersForType = new List<IEventHandler>();
+                handlersForType = new HashSet<IEventHandler>();
 
                 _handlersByType.Add(eventType, handlersForType);
             }
-
+            
             handlersForType.Add(handler);
         }
 
@@ -50,8 +49,7 @@ namespace Valkyrie
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            IList<IEventHandler> handlersForType = null;
-            if (_handlersByType.TryGetValue(handler.EventType, out handlersForType))
+            if (_handlersByType.TryGetValue(handler.EventType, out HashSet<IEventHandler> handlersForType))
                 handlersForType.Remove(handler);
         }
     }

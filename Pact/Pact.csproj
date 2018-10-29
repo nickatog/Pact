@@ -91,6 +91,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Abstractions\Decks\DeckDetails.cs" />
+    <Compile Include="Abstractions\Decks\DeckInfoFileStorage.cs" />
+    <Compile Include="Abstractions\Decks\FileBasedDeckRepository.cs" />
+    <Compile Include="Abstractions\Decks\IDeckInfoFileStorage.cs" />
+    <Compile Include="Abstractions\Decks\IDeckRepository.cs" />
+    <Compile Include="Abstractions\Game Results\FileBasedGameResultRepository.cs" />
+    <Compile Include="Abstractions\Game Results\IGameResultRepository.cs" />
     <Compile Include="UI\Commands\MoveDeck.cs" />
     <Compile Include="Abstractions\Configuration\CachingConfigurationSource.cs" />
     <Compile Include="Abstractions\Configuration\ConfigurationData.cs" />
@@ -104,6 +111,10 @@
     <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
+    <Compile Include="UI\Events\DeckAdded.cs" />
+    <Compile Include="UI\Events\DeckDeleted.cs" />
+    <Compile Include="UI\Events\DeckMoved.cs" />
+    <Compile Include="UI\Events\DeckTracking.cs" />
     <Compile Include="UI\Interfaces\DeckImportDetails.cs" />
     <Compile Include="UI\Interfaces\DeckImportInterface.cs" />
     <Compile Include="UI\Interfaces\IDeckImportInterface.cs" />
@@ -130,7 +141,6 @@
     <Compile Include="UI\Behaviors\WindowBehavior.cs" />
     <Compile Include="Abstractions\Cards\CardInfo.cs" />
     <Compile Include="Abstractions\Decks\DeckInfo.cs" />
-    <Compile Include="Abstractions\Decks\FileBasedDeckInfoRepository.cs" />
     <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />
     <Compile Include="Abstractions\Events\GameEnded.cs" />
     <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
@@ -144,15 +154,15 @@
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="UI\Interfaces\IPlayerDeckTrackerInterface.cs" />
     <Compile Include="UI\Interfaces\WindowedPlayerDeckTrackerInterface.cs" />
-    <Compile Include="UI\View Models\DeckImportViewModel.cs" />
+    <Compile Include="UI\View Models\Modals\DeckImportViewModel.cs" />
     <Compile Include="UI\Interfaces\DeckImportResult.cs" />
-    <Compile Include="UI\View Models\BackgroundWorkModalViewModel.cs" />
-    <Compile Include="UI\Views\BackgroundWorkView.xaml.cs">
+    <Compile Include="UI\View Models\Modals\BackgroundWorkModalViewModel.cs" />
+    <Compile Include="UI\Views\Modals\BackgroundWorkView.xaml.cs">
       <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\IUserConfirmationInterface.cs" />
     <Compile Include="UI\Interfaces\IModalDisplay.cs" />
-    <Compile Include="UI\View Models\IModalViewModel.cs" />
+    <Compile Include="UI\View Models\Modals\IModalViewModel.cs" />
     <Compile Include="_ Deprecated\IUserPrompt.cs" />
     <Compile Include="UI\Interfaces\MainWindowModalDisplay.cs" />
     <Compile Include="_ Deprecated\UserPrompt.cs" />
@@ -169,7 +179,7 @@
       <DependentUpon>ConfigurationSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View Models\ConfigurationSettingsViewModel.cs" />
-    <Compile Include="UI\Views\DeckImportView.xaml.cs">
+    <Compile Include="UI\Views\Modals\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Abstractions\Decks\Decklist.cs" />
@@ -181,7 +191,6 @@
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View Models\DeckViewModel.cs" />
-    <Compile Include="UI\View Models\DeckViewModelFactory.cs" />
     <Compile Include="Abstractions\Utility\DelegateCommand.cs" />
     <Compile Include="Abstractions\Game Results\GameResult.cs" />
     <Compile Include="Abstractions\Loggers\ILogger.cs" />
@@ -207,9 +216,7 @@
     <Compile Include="Abstractions\Events\PlayerDetermined.cs" />
     <Compile Include="Abstractions\Events\PlayerReceivedCoin.cs" />
     <Compile Include="Abstractions\Configuration\IConfigurationSettings.cs" />
-    <Compile Include="Abstractions\Decks\IDeckInfoRepository.cs" />
     <Compile Include="Abstractions\Decks\IDecklistSerializer.cs" />
-    <Compile Include="UI\View Models\IDeckViewModelFactory.cs" />
     <Compile Include="Abstractions\Events\Streams\IEventStreamFactory.cs" />
     <Compile Include="UI\View Models\MainWindowViewModel.cs" />
     <Compile Include="Abstractions\Utility\OutlinedText.cs" />
@@ -226,8 +233,8 @@
     <Compile Include="Abstractions\Decks\TextDecklistSerializer.cs" />
     <Compile Include="Abstractions\Decks\Varint.cs" />
     <Compile Include="UI\Interfaces\ModalUserConfirmationInterface.cs" />
-    <Compile Include="UI\View Models\UserConfirmationModalViewModel.cs" />
-    <Compile Include="UI\Views\UserConfirmationView.xaml.cs">
+    <Compile Include="UI\View Models\Modals\UserConfirmationModalViewModel.cs" />
+    <Compile Include="UI\Views\Modals\UserConfirmationView.xaml.cs">
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\ModalBackgroundWorkInterface.cs" />
@@ -239,7 +246,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Views\DeckImportView.xaml">
+    <Page Include="UI\Views\Modals\DeckImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -277,7 +284,7 @@
       <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UI\Views\BackgroundWorkView.xaml">
+    <Page Include="UI\Views\Modals\BackgroundWorkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -289,7 +296,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Views\UserConfirmationView.xaml">
+    <Page Include="UI\Views\Modals\UserConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
