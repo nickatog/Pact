@@ -130,8 +130,6 @@ namespace Pact
                         
                         _deckViewModels.Remove(deck);
 
-                        _viewEventDispatcher.DispatchEvent(new Events.DeckDeleted(deck));
-
                         await SaveDecks();
                     }));
 
@@ -148,8 +146,6 @@ namespace Pact
 
                         int targetPosition = __event.TargetPosition;
                         _deckViewModels.Insert(targetPosition, sourceDeck);
-
-                        _viewEventDispatcher.DispatchEvent(new Events.DeckMoved(sourcePosition, targetPosition));
 
                         await SaveDecks();
                     }));
@@ -182,7 +178,7 @@ namespace Pact
                     _viewEventDispatcher,
                     deckID,
                     decklist,
-                    position,
+                    __deckViewModel => _deckViewModels.IndexOf(__deckViewModel),
                     title,
                     gameResults);
         }
@@ -214,8 +210,6 @@ namespace Pact
                             deck.Value.Title);
 
                     _deckViewModels.Insert(0, viewModel);
-
-                    _viewEventDispatcher.DispatchEvent(new Events.DeckAdded(viewModel));
 
                     await SaveDecks();
                 });

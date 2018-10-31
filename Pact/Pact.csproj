@@ -111,9 +111,6 @@
     <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
-    <Compile Include="UI\Events\DeckAdded.cs" />
-    <Compile Include="UI\Events\DeckDeleted.cs" />
-    <Compile Include="UI\Events\DeckMoved.cs" />
     <Compile Include="UI\Events\DeckTracking.cs" />
     <Compile Include="UI\Interfaces\DeckImportDetails.cs" />
     <Compile Include="UI\Interfaces\DeckImportInterface.cs" />

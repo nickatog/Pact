@@ -18,8 +18,6 @@ namespace Pact
     public sealed class DeckViewModel
         : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
@@ -35,6 +33,7 @@ namespace Pact
         private bool _canReplace = true;
         private Action _deleteCanExecuteChanged;
         private readonly IList<GameResult> _gameResults;
+        private readonly Func<DeckViewModel, int> _getPosition;
         private bool _isTracking = false;
         private Action _replaceCanExecuteChanged;
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
@@ -52,7 +51,7 @@ namespace Pact
             IEventDispatcher viewEventDispatcher,
             Guid deckID,
             Decklist decklist,
-            int position,
+            Func<DeckViewModel, int> getPosition,
             string title,
             IEnumerable<GameResult> gameResults = null)
         {
@@ -89,45 +88,11 @@ namespace Pact
             DeckID = deckID;
             Decklist = decklist;
             _gameResults = (gameResults ?? Enumerable.Empty<GameResult>()).ToList();
-            Position = position;
+
+            _getPosition =
+                getPosition ?? throw new ArgumentNullException(nameof(getPosition));
+
             Title = title ?? string.Empty;
-
-            // Listen for decks to be added and adjust the current deck's position
-            _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckAdded>(
-                    __event =>
-                    {
-                        if (__event.DeckViewModel == this)
-                            return;
-
-                        if (__event.DeckViewModel.Position <= Position)
-                            Position++;
-                    }));
-
-            // Listen for decks to be deleted and adjust the current deck's position
-            _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckDeleted>(
-                    __event =>
-                    {
-                        if (__event.DeckViewModel.Position < Position)
-                            Position--;
-                    }));
-
-            // Listen for decks to move positions and adjust the current deck's position
-            _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckMoved>(
-                    __event =>
-                    {
-                        int sourcePosition = __event.SourcePosition;
-                        int targetPosition = __event.TargetPosition;
-
-                        if (sourcePosition == Position)
-                            Position = targetPosition;
-                        else if (targetPosition >= Position && sourcePosition < Position)
-                            Position--;
-                        else if (targetPosition <= Position && sourcePosition > Position)
-                            Position++;
-                    }));
 
             // Listen for decks to start tracking and set the current deck's tracking status
             _viewEventHandlers.Add(
@@ -145,6 +110,8 @@ namespace Pact
 
             _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string Class => _cardInfoProvider.GetCardInfo(Decklist.HeroID)?.Class;
 
@@ -196,9 +163,6 @@ namespace Pact
                 canExecuteChangedClient:
                     __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
 
-        // This won't need to be public if the deck storage abstractions are separated into deck property and game results interfaces
-        public IEnumerable<GameResult> GameResults => _gameResults;
-
         public bool IsTracking
         {
             get => _isTracking;
@@ -212,7 +176,7 @@ namespace Pact
 
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
-        public int Position { get; private set; }
+        public int Position => _getPosition(this);
 
         public ICommand Replace =>
             new DelegateCommand(
@@ -242,13 +206,13 @@ namespace Pact
                     await SaveDeck();
                 });
 
-        private async Task SaveDeck()
+        private Task SaveDeck()
         {
             DeckDetails deckDetails;
 
             using (var stream = new MemoryStream())
             {
-                await _decklistSerializer.Serialize(stream, Decklist).ConfigureAwait(false);
+                _decklistSerializer.Serialize(stream, Decklist).Wait();
 
                 stream.Position = 0;
 
@@ -256,7 +220,7 @@ namespace Pact
                     deckDetails = new DeckDetails(DeckID, Title, reader.ReadToEnd(), (ushort)Position);
             }
 
-            await _deckRepository.UpdateDeck(deckDetails).ConfigureAwait(false);
+            return _deckRepository.UpdateDeck(deckDetails);
         }
 
         public string Title { get; set; }
