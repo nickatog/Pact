@@ -20,7 +20,7 @@
         <DataTemplate DataType="{x:Type local:ConfigurationSettingsViewModel}">
             <local:ConfigurationSettingsView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:DeckImportViewModel}">
+        <DataTemplate DataType="{x:Type local:DeckImportModalViewModel}">
             <local:DeckImportView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:DeckManagerViewModel}">

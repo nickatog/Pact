@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Pact.Extensions.Contract;
 
 namespace Pact
@@ -6,12 +7,17 @@ namespace Pact
     public sealed class ModalUserConfirmationInterface
         : IUserConfirmationInterface
     {
+        #region Private members
         private readonly IModalDisplay _modalDisplay;
+        #endregion // Private members
 
         public ModalUserConfirmationInterface(
+            #region Dependency assignments
             IModalDisplay modalDisplay)
         {
-            _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
+            _modalDisplay =
+                modalDisplay.Require(nameof(modalDisplay));
+            #endregion // Dependency assignments
         }
 
         Task<bool> IUserConfirmationInterface.Confirm(
@@ -19,13 +25,13 @@ namespace Pact
             string acceptText,
             string declineText)
         {
-            var result = new TaskCompletionSource<bool>();
+            var completionSource = new TaskCompletionSource<bool>();
 
             _modalDisplay.Show(
                 new UserConfirmationModalViewModel(messageText, acceptText, declineText),
-                __result => result.SetResult(__result));
+                __result => completionSource.SetResult(__result));
 
-            return result.Task;
+            return completionSource.Task;
         }
     }
 }

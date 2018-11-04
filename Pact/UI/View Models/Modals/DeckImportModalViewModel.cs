@@ -2,23 +2,32 @@
 using System.IO;
 using System.Text;
 using System.Windows.Input;
+
 using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class DeckImportViewModel
+    public sealed class DeckImportModalViewModel
         : IModalViewModel<DeckImportResult?>
     {
+        #region Private members
         private readonly IDecklistSerializer _decklistSerializer;
+        #endregion // Private members
 
-        public DeckImportViewModel(
+        public DeckImportModalViewModel(
+            #region Dependency assignments
             IDecklistSerializer decklistSerializer)
         {
             _decklistSerializer =
                 decklistSerializer.Require(nameof(decklistSerializer));
+            #endregion // Dependency assignments
         }
 
-        public ICommand Cancel => new DelegateCommand(() => OnClosed?.Invoke(null));
+        public event Action<DeckImportResult?> OnClosed;
+
+        public ICommand Cancel =>
+            new DelegateCommand(
+                () => OnClosed?.Invoke(null));
 
         public string DeckString { get; set; }
 
@@ -30,7 +39,7 @@ namespace Pact
                 {
                     try
                     {
-                        Decklist decklist = default;
+                        Decklist decklist;
 
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
@@ -39,10 +48,8 @@ namespace Pact
                     }
                     catch (Exception)
                     {
-                        // notify user that deserialization failed for some reason
+                        // [TODO]: Notify user that deckstring deserialization failed
                     }
                 });
-
-        public event Action<DeckImportResult?> OnClosed;
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -18,6 +17,7 @@ namespace Pact
     public sealed class DeckViewModel
         : INotifyPropertyChanged
     {
+        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
@@ -29,16 +29,16 @@ namespace Pact
         private readonly IUserConfirmationInterface _userConfirmationInterface;
         private readonly IEventDispatcher _viewEventDispatcher;
 
-        private bool _canDelete = true;
-        private bool _canReplace = true;
         private Action _deleteCanExecuteChanged;
         private readonly IList<GameResult> _gameResults;
-        private readonly Func<DeckViewModel, int> _getPosition;
+        private readonly Func<DeckViewModel, ushort> _getPosition;
         private bool _isTracking = false;
         private Action _replaceCanExecuteChanged;
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-
+        #endregion // Members
+        
         public DeckViewModel(
+            #region Dependency assignment
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
@@ -51,7 +51,7 @@ namespace Pact
             IEventDispatcher viewEventDispatcher,
             Guid deckID,
             Decklist decklist,
-            Func<DeckViewModel, int> getPosition,
+            Func<DeckViewModel, ushort> getPosition,
             string title,
             IEnumerable<GameResult> gameResults = null)
         {
@@ -94,17 +94,15 @@ namespace Pact
 
             Title = title ?? string.Empty;
 
-            // Listen for decks to start tracking and set the current deck's tracking status
+            #endregion // Dependencies
+            
             _viewEventHandlers.Add(
                 new DelegateEventHandler<Events.DeckTracking>(
                     __event =>
                     {
                         IsTracking = __event.DeckViewModel == this;
 
-                        _canDelete = !IsTracking;
                         _deleteCanExecuteChanged?.Invoke();
-
-                        _canReplace = !IsTracking;
                         _replaceCanExecuteChanged?.Invoke();
                     }));
 
@@ -122,19 +120,7 @@ namespace Pact
                     _backgroundWorkInterface.Perform(
                         async __setStatus =>
                         {
-                            byte[] bytes = null;
-
-                            using (var stream = new MemoryStream())
-                            {
-                                await _decklistSerializer.Serialize(stream, Decklist);
-
-                                stream.Position = 0;
-
-                                bytes = new byte[stream.Length];
-                                stream.Read(bytes, 0, (int)stream.Length);
-                            }
-
-                            Clipboard.SetText(Encoding.Default.GetString(bytes));
+                            Clipboard.SetText(GetDeckstring());
 
                             __setStatus?.Invoke("Deck copied to clipboard!");
 
@@ -159,9 +145,22 @@ namespace Pact
                     _viewEventDispatcher.DispatchEvent(new Commands.DeleteDeck(DeckID));
                 },
                 canExecute:
-                    () => _canDelete,
+                    () => !IsTracking,
                 canExecuteChangedClient:
                     __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
+
+        private string GetDeckstring()
+        {
+            using (var stream = new MemoryStream())
+            {
+                _decklistSerializer.Serialize(stream, Decklist).Wait();
+
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream))
+                    return reader.ReadToEnd();
+            }
+        }
 
         public bool IsTracking
         {
@@ -176,26 +175,37 @@ namespace Pact
 
         public int Losses => _gameResults.Count(__gameResult => !__gameResult.GameWon);
 
-        public int Position => _getPosition(this);
+        public ushort Position => _getPosition(this);
 
         public ICommand Replace =>
             new DelegateCommand(
                 async () =>
                 {
-                    DeckImportDetails? deckImportResult = await _deckImportInterface.GetDecklist();
-                    if (!deckImportResult.HasValue)
+                    DeckImportDetails? deckImportDetails = await _deckImportInterface.GetDecklist();
+                    if (!deckImportDetails.HasValue)
                         return;
 
-                    Decklist = deckImportResult.Value.Decklist;
+                    Decklist = deckImportDetails.Value.Decklist;
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Class)));
 
                     await SaveDeck();
                 },
                 canExecute:
-                    () => _canReplace,
+                    () => !IsTracking,
                 canExecuteChangedClient:
                     __canExecuteChanged => _replaceCanExecuteChanged = __canExecuteChanged);
+
+        private Task SaveDeck()
+        {
+            return
+                _deckRepository.UpdateDeck(
+                    new DeckDetails(
+                        DeckID,
+                        Title,
+                        GetDeckstring(),
+                        Position));
+        }
 
         public ICommand SaveDeckTitle =>
             new DelegateCommand(
@@ -205,23 +215,6 @@ namespace Pact
 
                     await SaveDeck();
                 });
-
-        private Task SaveDeck()
-        {
-            DeckDetails deckDetails;
-
-            using (var stream = new MemoryStream())
-            {
-                _decklistSerializer.Serialize(stream, Decklist).Wait();
-
-                stream.Position = 0;
-
-                using (var reader = new StreamReader(stream))
-                    deckDetails = new DeckDetails(DeckID, Title, reader.ReadToEnd(), (ushort)Position);
-            }
-
-            return _deckRepository.UpdateDeck(deckDetails);
-        }
 
         public string Title { get; set; }
 
@@ -275,8 +268,6 @@ namespace Pact
 
                     _viewEventDispatcher.DispatchEvent(new Events.DeckTracking(null));
                 });
-
-        public IEventDispatcher ViewEventDispatcher => _viewEventDispatcher;
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);
     }

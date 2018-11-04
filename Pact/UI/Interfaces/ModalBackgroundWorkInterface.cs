@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
-    internal sealed class ModalBackgroundWorkInterface
+    public sealed class ModalBackgroundWorkInterface
         : IBackgroundWorkInterface
     {
+        #region Private members
         private readonly IModalDisplay _modalDisplay;
+        #endregion // Private members
 
         public ModalBackgroundWorkInterface(
+            #region Dependency assignments
             IModalDisplay modalDisplay)
         {
             _modalDisplay =
-                modalDisplay
-                ?? throw new ArgumentNullException(nameof(modalDisplay));
+                modalDisplay.Require(nameof(modalDisplay));
+            #endregion // Dependency assignments
         }
 
         Task IBackgroundWorkInterface.Perform(
-            Func<Action<string>, Task> @delegate,
+            Func<Action<string>, Task> backgroundWorker,
             int fadeDuration)
         {
-            var result = new TaskCompletionSource<bool>();
+            var competionSource = new TaskCompletionSource<bool>();
 
             _modalDisplay.Show(
-                new BackgroundWorkModalViewModel(@delegate),
-                __ => result.SetResult(true),
+                new BackgroundWorkModalViewModel(backgroundWorker),
+                __ => competionSource.SetResult(true),
                 fadeDuration);
 
-            return result.Task;
+            return competionSource.Task;
         }
     }
 }

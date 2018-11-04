@@ -98,7 +98,7 @@
     <Compile Include="Abstractions\Decks\IDeckRepository.cs" />
     <Compile Include="Abstractions\Game Results\FileBasedGameResultRepository.cs" />
     <Compile Include="Abstractions\Game Results\IGameResultRepository.cs" />
-    <Compile Include="UI\Commands\MoveDeck.cs" />
+    <Compile Include="UI\Messages\Commands\MoveDeck.cs" />
     <Compile Include="Abstractions\Configuration\CachingConfigurationSource.cs" />
     <Compile Include="Abstractions\Configuration\ConfigurationData.cs" />
     <Compile Include="Abstractions\Configuration\ConfigurationSettings.cs" />
@@ -111,7 +111,8 @@
     <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
-    <Compile Include="UI\Events\DeckTracking.cs" />
+    <Compile Include="UI\Messages\Events\DeckTracking.cs" />
+    <Compile Include="UI\Messages\GlobalViewEventDispatcher.cs" />
     <Compile Include="UI\Interfaces\DeckImportDetails.cs" />
     <Compile Include="UI\Interfaces\DeckImportInterface.cs" />
     <Compile Include="UI\Interfaces\IDeckImportInterface.cs" />
@@ -141,7 +142,7 @@
     <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />
     <Compile Include="Abstractions\Events\GameEnded.cs" />
     <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
-    <Compile Include="UI\Commands\DeleteDeck.cs" />
+    <Compile Include="UI\Messages\Commands\DeleteDeck.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="UI\Converters\CardCountToOpacityConverter.cs" />
     <Compile Include="UI\Converters\ClassNameToBrushConverter.cs" />
@@ -151,7 +152,7 @@
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="UI\Interfaces\IPlayerDeckTrackerInterface.cs" />
     <Compile Include="UI\Interfaces\WindowedPlayerDeckTrackerInterface.cs" />
-    <Compile Include="UI\View Models\Modals\DeckImportViewModel.cs" />
+    <Compile Include="UI\View Models\Modals\DeckImportModalViewModel.cs" />
     <Compile Include="UI\Interfaces\DeckImportResult.cs" />
     <Compile Include="UI\View Models\Modals\BackgroundWorkModalViewModel.cs" />
     <Compile Include="UI\Views\Modals\BackgroundWorkView.xaml.cs">

@@ -18,7 +18,7 @@
 
     <StackPanel>
         <Grid Margin="1,0,1,0">
-            <ItemsControl ItemsSource="{Binding Cards}">
+            <ItemsControl ItemsSource="{Binding TrackedCardViewModels}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel />

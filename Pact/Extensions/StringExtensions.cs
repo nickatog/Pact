@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Pact.StringExtensions
+namespace Pact.Extensions.String
 {
     public static class StringExtensions
     {
@@ -31,7 +31,8 @@ namespace Pact.StringExtensions
                     __kvp => __kvp.Key,
                     __kvp => __kvp.Value);
 
-            IEnumerable<(string Key, string Value)> EnumerateGroups(MatchCollection matchCollection)
+            IEnumerable<(string Key, string Value)> EnumerateGroups(
+                MatchCollection matchCollection)
             {
                 foreach (Match match in matchCollection)
                     yield return (Key: match.Groups["Key"].Value, match.Groups["Value"].Value);

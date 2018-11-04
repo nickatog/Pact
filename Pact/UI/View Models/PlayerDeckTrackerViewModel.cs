@@ -1,57 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+
 using Valkyrie;
+
+using Pact.Extensions.Contract;
 using Pact.Extensions.Enumerable;
-using Pact.StringExtensions;
+using Pact.Extensions.String;
 
 namespace Pact
 {
     public sealed class PlayerDeckTrackerViewModel
         : INotifyPropertyChanged
     {
+        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IEventDispatcher _viewEventDispatcher;
 
         private readonly Decklist _decklist;
+        private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private bool? _opponentCoinStatus;
         private int _playerID;
         private IList<TrackedCardViewModel> _trackedCardViewModels;
-
-        private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
+        #endregion // Private members
 
         public PlayerDeckTrackerViewModel(
+            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
-            IConfigurationStorage configurationStorage,
             IEventDispatcher gameEventDispatcher,
             IEventDispatcher viewEventDispatcher,
             Decklist decklist)
         {
             _cardInfoProvider =
-                cardInfoProvider
-                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
+                cardInfoProvider.Require(nameof(cardInfoProvider));
 
             _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
+                configurationSource.Require(nameof(configurationSource));
 
             _gameEventDispatcher =
-                gameEventDispatcher
-                ?? throw new ArgumentNullException(nameof(gameEventDispatcher));
+                gameEventDispatcher.Require(nameof(gameEventDispatcher));
 
             _viewEventDispatcher =
-                viewEventDispatcher
-                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _decklist = decklist;
+            #endregion // Dependency assignments
 
             Reset();
-
+            
             _gameEventHandlers.Add(
                 new DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
@@ -64,20 +64,11 @@ namespace Pact
 
                         int? playerID = _trackedCardViewModels.First()?.PlayerID;
 
-                        TrackedCardViewModel trackedCardViewModel =
+                        _trackedCardViewModels.Add(
                             CreateCardViewModel(
                                 __event.CardID,
                                 1,
-                                playerID);
-
-                        trackedCardViewModel.PropertyChanged +=
-                            (__sender, __args) =>
-                            {
-                                if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
-                                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
-                            };
-
-                        _trackedCardViewModels.Add(trackedCardViewModel);
+                                playerID));
 
                         _trackedCardViewModels =
                             _trackedCardViewModels
@@ -85,7 +76,7 @@ namespace Pact
                             .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                             .ToList();
 
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Cards)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TrackedCardViewModels)));
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
                     }));
 
@@ -105,18 +96,16 @@ namespace Pact
                 new DelegateEventHandler<Events.PlayerDetermined>(
                     __event => _playerID = __event.PlayerID));
 
-            foreach (IEventHandler handler in _gameEventHandlers)
-                _gameEventDispatcher.RegisterHandler(handler);
+            _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
             _viewEventHandlers.Add(
                 new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
                     __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
 
-            foreach (IEventHandler handler in _viewEventHandlers)
-                _viewEventDispatcher.RegisterHandler(handler);
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
 
-        public IEnumerable<TrackedCardViewModel> Cards => _trackedCardViewModels;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void Cleanup()
         {
@@ -129,12 +118,14 @@ namespace Pact
             _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
         }
 
+        public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
+
         private TrackedCardViewModel CreateCardViewModel(
             string cardID,
             int count,
             int? playerID = null)
         {
-            return
+            var viewModel =
                 new TrackedCardViewModel(
                     _cardInfoProvider,
                     _configurationSource,
@@ -143,9 +134,16 @@ namespace Pact
                     cardID,
                     count,
                     playerID);
-        }
 
-        public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
+            viewModel.PropertyChanged +=
+                (__, __args) =>
+                {
+                    if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
+                };
+
+            return viewModel;
+        }
 
         public int FontSize => _configurationSource.GetSettings().FontSize;
 
@@ -173,18 +171,10 @@ namespace Pact
                 .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                 .ToList();
 
-            foreach (TrackedCardViewModel trackedCardViewModel in _trackedCardViewModels)
-                trackedCardViewModel.PropertyChanged +=
-                    (__, __args) =>
-                    {
-                        if (__args.PropertyName == nameof(TrackedCardViewModel.Count))
-                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
-                    };
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Cards)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TrackedCardViewModels)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public IEnumerable<TrackedCardViewModel> TrackedCardViewModels => _trackedCardViewModels;
     }
 }

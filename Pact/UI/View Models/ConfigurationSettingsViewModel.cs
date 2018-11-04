@@ -10,13 +10,16 @@ namespace Pact
     public sealed class ConfigurationSettingsViewModel
         : INotifyPropertyChanged
     {
+        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly IConfigurationSource _configurationSource;
         private readonly IConfigurationStorage _configurationStorage;
 
         private string _powerLogFilePath;
+        #endregion // Private members
 
         public ConfigurationSettingsViewModel(
+            #region Dependency assignments
             IBackgroundWorkInterface backgroundWorkInterface,
             IConfigurationSource configurationSource,
             IConfigurationStorage configurationStorage)
@@ -35,7 +38,10 @@ namespace Pact
             CardTextOffset = configurationSettings.CardTextOffset;
             FontSize = configurationSettings.FontSize;
             _powerLogFilePath = configurationSettings.PowerLogFilePath;
+            #endregion // Dependency assignments
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand BrowseForPowerLogFilePath =>
             new DelegateCommand(
@@ -90,7 +96,5 @@ namespace Pact
                         },
                         750);
                 });
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

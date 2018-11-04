@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+
 using Valkyrie;
+
 using Pact.Extensions.Contract;
 
 namespace Pact
@@ -8,9 +10,9 @@ namespace Pact
     public sealed class WindowedPlayerDeckTrackerInterface
         : IPlayerDeckTrackerInterface
     {
+        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
-        private readonly IConfigurationStorage _configurationStorage;
         private readonly IEventDispatcherFactory _eventDispatcherFactory;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IEventDispatcher _viewEventDispatcher;
@@ -18,11 +20,12 @@ namespace Pact
         private CancellationTokenSource _cancellation;
         private PlayerDeckTrackerView _view;
         private PlayerDeckTrackerViewModel _viewModel;
+        #endregion // Private members
 
         public WindowedPlayerDeckTrackerInterface(
+            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
-            IConfigurationStorage configurationStorage,
             IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             IEventDispatcher viewEventDispatcher)
@@ -33,9 +36,6 @@ namespace Pact
             _configurationSource =
                 configurationSource.Require(nameof(configurationSource));
 
-            _configurationStorage =
-                configurationStorage.Require(nameof(configurationStorage));
-
             _eventDispatcherFactory =
                 eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
 
@@ -44,20 +44,12 @@ namespace Pact
 
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            #endregion // Dependency assignments
         }
 
         void IPlayerDeckTrackerInterface.Close()
         {
             Reset();
-        }
-
-        private void Reset()
-        {
-            _cancellation?.Cancel();
-
-            _viewModel?.Cleanup();
-
-            _view?.Close();
         }
 
         void IPlayerDeckTrackerInterface.TrackDeck(
@@ -71,7 +63,6 @@ namespace Pact
                 new PlayerDeckTrackerViewModel(
                     _cardInfoProvider,
                     _configurationSource,
-                    _configurationStorage,
                     eventDispatcher,
                     _viewEventDispatcher,
                     decklist);
@@ -98,6 +89,15 @@ namespace Pact
             _view = new PlayerDeckTrackerView(_viewModel);
 
             _view.Show();
+        }
+
+        private void Reset()
+        {
+            _cancellation?.Cancel();
+
+            _viewModel?.Cleanup();
+
+            _view?.Close();
         }
     }
 }

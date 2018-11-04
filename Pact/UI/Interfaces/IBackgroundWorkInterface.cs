@@ -6,7 +6,7 @@ namespace Pact
     public interface IBackgroundWorkInterface
     {
         Task Perform(
-            Func<Action<string>, Task> @delegate,
+            Func<Action<string>, Task> backgroundWorker,
             int fadeDuration = 0);
     }
 }

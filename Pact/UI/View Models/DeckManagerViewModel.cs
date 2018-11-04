@@ -17,12 +17,13 @@ namespace Pact
     public sealed class DeckManagerViewModel
         : INotifyPropertyChanged
     {
+        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
         private readonly IDecklistSerializer _decklistSerializer;
-        private readonly AsyncSemaphore _deckPersistenceMutex;
         private readonly IDeckRepository _deckRepository;
+        private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultRepository _gameResultRepository;
         private readonly ILogger _logger;
@@ -31,15 +32,16 @@ namespace Pact
         private readonly IEventDispatcher _viewEventDispatcher;
 
         private IList<DeckViewModel> _deckViewModels;
+        #endregion // Private members
 
         public DeckManagerViewModel(
+            #region Dependency assignment
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
             IDecklistSerializer decklistSerializer,
-            AsyncSemaphore deckPersistenceMutex,
             IDeckRepository deckRepository,
-            IEventStream eventStream,
+            IEventStreamFactory eventStreamFactory,
             IEventDispatcher gameEventDispatcher,
             IGameResultRepository gameResultRepository,
             ILogger logger,
@@ -59,14 +61,11 @@ namespace Pact
             _decklistSerializer =
                 decklistSerializer.Require(nameof(decklistSerializer));
 
-            _deckPersistenceMutex =
-                deckPersistenceMutex.Require(nameof(deckPersistenceMutex));
-
             _deckRepository =
                 deckRepository.Require(nameof(deckRepository));
 
-            if (eventStream == null)
-                throw new ArgumentNullException(nameof(eventStream));
+            _eventStreamFactory =
+                eventStreamFactory.Require(nameof(eventStreamFactory));
 
             _gameEventDispatcher =
                 gameEventDispatcher.Require(nameof(gameEventDispatcher));
@@ -85,6 +84,7 @@ namespace Pact
 
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            #endregion // Dependency assignment
 
             // Start loading pre-existing decks
             Task.Run(
@@ -105,7 +105,7 @@ namespace Pact
                                         __deckInfo.Title,
                                         __deckInfo.GameResults)));
 
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Decks)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DeckViewModels)));
                 });
 
             // This event stream should ideally skip all pre-existing events and then begin pumping new events
@@ -113,10 +113,13 @@ namespace Pact
             Task.Run(
                 async () =>
                 {
-                    while (true)
+                    using (IEventStream eventStream = _eventStreamFactory.Create())
                     {
-                        try { gameEventDispatcher.DispatchEvent(await eventStream.ReadNext()); }
-                        catch (Exception ex) { await logger.Write($"{ex.Message}{Environment.NewLine}{ex.StackTrace}"); }
+                        while (true)
+                        {
+                            try { _gameEventDispatcher.DispatchEvent(await eventStream.ReadNext()); }
+                            catch (Exception ex) { await _logger.Write($"{ex.Message}{Environment.NewLine}{ex.StackTrace}"); }
+                        }
                     }
                 });
 
@@ -137,25 +140,28 @@ namespace Pact
                 new DelegateEventHandler<Commands.MoveDeck>(
                     async __event =>
                     {
-                        int sourcePosition = __event.SourcePosition;
+                        ushort sourcePosition = __event.SourcePosition;
                         if (sourcePosition > _deckViewModels.Count)
                             return;
 
                         DeckViewModel sourceDeck = _deckViewModels[sourcePosition];
                         _deckViewModels.RemoveAt(sourcePosition);
 
-                        int targetPosition = __event.TargetPosition;
+                        ushort targetPosition = __event.TargetPosition;
                         _deckViewModels.Insert(targetPosition, sourceDeck);
 
                         await SaveDecks();
                     }));
 
-            Decklist DeserializeDecklist(string text)
+            Decklist DeserializeDecklist(
+                string deckstring)
             {
-                using (var stream = new MemoryStream(Encoding.Default.GetBytes(text)))
+                using (var stream = new MemoryStream(Encoding.Default.GetBytes(deckstring)))
                     return _decklistSerializer.Deserialize(stream).Result;
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private DeckViewModel CreateDeckViewModel(
             Guid deckID,
@@ -178,43 +184,33 @@ namespace Pact
                     _viewEventDispatcher,
                     deckID,
                     decklist,
-                    __deckViewModel => _deckViewModels.IndexOf(__deckViewModel),
+                    __deckViewModel => (ushort)_deckViewModels.IndexOf(__deckViewModel),
                     title,
                     gameResults);
         }
 
-        public IEnumerable<DeckViewModel> Decks => _deckViewModels;
+        public IEnumerable<DeckViewModel> DeckViewModels => _deckViewModels;
 
         public ICommand ImportDeck =>
             new DelegateCommand(
                 async () =>
                 {
-                    // go back to using a view model here? or is it just jumping through hoops at that point to get to an "appropriate" way of doing things
-                    // it seems that this would need to know about the view either way
-                    // unless this didn't create the view itself, and set a view model property on some top-level object?
-                    // then the actual handling of the deck import would happen elsewhere inside the view model itself
-                    //var view = new DeckImportView(_decklistSerializer) { Owner = MainWindow.Window };
-                    //if (view.ShowDialog() ?? false)
-
                     DeckImportDetails? deck = await _deckImportInterface.GetDecklist();
-                    if (deck == null)
+                    if (!deck.HasValue)
                         return;
 
-                    var deckID = Guid.NewGuid();
-
-                    DeckViewModel viewModel =
+                    _deckViewModels.Insert(
+                        0,
                         CreateDeckViewModel(
-                            deckID,
+                            Guid.NewGuid(),
                             deck.Value.Decklist,
                             0,
-                            deck.Value.Title);
-
-                    _deckViewModels.Insert(0, viewModel);
+                            deck.Value.Title));
 
                     await SaveDecks();
                 });
 
-        private async Task SaveDecks()
+        private Task SaveDecks()
         {
             IEnumerable<DeckDetails> deckDetails =
                 _deckViewModels.Select(
@@ -232,13 +228,11 @@ namespace Pact
                                         __deckViewModel.DeckID,
                                         __deckViewModel.Title,
                                         reader.ReadToEnd(),
-                                        (UInt16)__deckViewModel.Position);
+                                        __deckViewModel.Position);
                         }
                     });
 
-            await _deckRepository.ReplaceDecks(deckDetails).ConfigureAwait(false);
+            return _deckRepository.ReplaceDecks(deckDetails);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

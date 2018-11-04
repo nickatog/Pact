@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+
 using Autofac;
 
 namespace Pact
@@ -10,7 +10,8 @@ namespace Pact
     public sealed class PactModule
         : Autofac.Module
     {
-        protected override void Load(ContainerBuilder builder)
+        protected override void Load(
+            ContainerBuilder builder)
         {
             string configurationFilePath =
                 Path.Combine(
@@ -23,9 +24,7 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                {
-                    return new AsyncSemaphore();
-                })
+                    new AsyncSemaphore())
             .Named<AsyncSemaphore>("DeckPersistence")
             .SingleInstance();
 
@@ -43,9 +42,8 @@ namespace Pact
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<IDecklistSerializer>(),
-                        __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
                         __context.Resolve<IDeckRepository>(),
-                        __context.Resolve<IEventStream>(),
+                        __context.Resolve<IEventStreamFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
                         __context.Resolve<IGameResultRepository>(),
                         __context.Resolve<ILogger>(),
@@ -180,14 +178,6 @@ namespace Pact
             .As<Valkyrie.IEventDispatcherFactory>()
             .SingleInstance();
 
-            // IEventStream
-            builder
-            .Register(
-                __context =>
-                    __context.Resolve<IEventStreamFactory>().Create())
-            .As<IEventStream>()
-            .SingleInstance();
-
             // IEventStreamFactory
             builder
             .Register(
@@ -270,7 +260,6 @@ namespace Pact
                     new WindowedPlayerDeckTrackerInterface(
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IConfigurationSource>(),
-                        __context.Resolve<IConfigurationStorage>(),
                         __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                         __context.Resolve<IEventStreamFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))

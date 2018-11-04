@@ -4,21 +4,27 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    internal sealed class BackgroundWorkModalViewModel
+    public sealed class BackgroundWorkModalViewModel
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
+        #region Private members
         private readonly Task _backgroundWork;
         private string _statusMessage;
+        #endregion // Private members
 
         public BackgroundWorkModalViewModel(
+            #region Dependency assignments
             Func<Action<string>, Task> backgroundWorker)
         {
             if (backgroundWorker == null)
                 throw new ArgumentNullException(nameof(backgroundWorker));
+            #endregion // Dependency assignments
 
             _backgroundWork = backgroundWorker(__statusMessage => StatusMessage = __statusMessage);
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         event Action<bool> IModalViewModel<bool>.OnClosed
         {
@@ -40,7 +46,5 @@ namespace Pact
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

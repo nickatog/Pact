@@ -9,8 +9,7 @@ namespace Pact.Behaviors
     {
         private UIElement DropHighlightBottom => ((UIElement)AssociatedObject.FindName("DropHighlightBottom"));
         private UIElement DropHighlightTop => ((UIElement)AssociatedObject.FindName("DropHighlightTop"));
-        private int DeckPosition => ((DeckViewModel)AssociatedObject.DataContext).Position;
-        private Valkyrie.IEventDispatcher ViewEventDispatcher => ((DeckViewModel)AssociatedObject.DataContext).ViewEventDispatcher;
+        private ushort DeckPosition => ((DeckViewModel)AssociatedObject.DataContext).Position;
 
         protected override void OnAttached()
         {
@@ -30,8 +29,8 @@ namespace Pact.Behaviors
 
         private void AssociatedObject_DragEnter(object sender, DragEventArgs e)
         {
-            int targetPosition = DeckPosition;
-            int.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out int sourcePosition);
+            ushort targetPosition = DeckPosition;
+            ushort.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out ushort sourcePosition);
 
             if (sourcePosition > targetPosition)
                 DropHighlightTop.Visibility = Visibility.Visible;
@@ -47,13 +46,13 @@ namespace Pact.Behaviors
 
         private void AssociatedObject_Drop(object sender, DragEventArgs e)
         {
-            int targetPosition = DeckPosition;
-            if (int.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out int sourcePosition) && sourcePosition != targetPosition)
+            ushort targetPosition = DeckPosition;
+            if (ushort.TryParse((string)e.Data.GetData(DataFormats.StringFormat), out ushort sourcePosition) && sourcePosition != targetPosition)
             {
                 DropHighlightTop.Visibility = Visibility.Hidden;
                 DropHighlightBottom.Visibility = Visibility.Hidden;
 
-                ViewEventDispatcher.DispatchEvent(new Commands.MoveDeck(sourcePosition, targetPosition));
+                GlobalViewEventDispatcher.Instance.DispatchEvent(new Commands.MoveDeck(sourcePosition, targetPosition));
             }
         }
 

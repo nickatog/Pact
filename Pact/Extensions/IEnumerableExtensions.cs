@@ -5,7 +5,9 @@ namespace Pact.Extensions.Enumerable
 {
     public static class IEnumerableExtensions
     {
-        public static void ForEach<T>(this IEnumerable<T> items, Action<T> @delegate)
+        public static void ForEach<T>(
+            this IEnumerable<T> items,
+            Action<T> @delegate)
         {
             if (@delegate == null)
                 throw new ArgumentNullException(nameof(@delegate));

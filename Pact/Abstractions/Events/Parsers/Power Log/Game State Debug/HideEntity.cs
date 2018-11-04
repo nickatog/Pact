@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pact.StringExtensions;
+
+using Pact.Extensions.String;
 
 namespace Pact.EventParsers.PowerLog.GameStateDebug
 {

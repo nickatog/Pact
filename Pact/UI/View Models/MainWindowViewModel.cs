@@ -11,18 +11,20 @@ namespace Pact
     public sealed class MainWindowViewModel
         : INotifyPropertyChanged
     {
+        public static MainWindowViewModel Instance { get; private set; }
+
+        #region Private members
         private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
         private readonly DevToolsViewModel _devToolsViewModel;
         private readonly DownloadUpdatesViewModel _downloadUpdatesViewModel;
 
-        private static MainWindowViewModel s_instance;
-        public static MainWindowViewModel Instance => s_instance;
-
         private object _modalViewModel;
         private object _viewModel;
+        #endregion // Private members
 
         public MainWindowViewModel(
+            #region Dependency assignments
             ConfigurationSettingsViewModel configurationSettingsViewModel,
             DeckManagerViewModel deckManagerViewModel,
             DevToolsViewModel devToolsViewModel,
@@ -41,9 +43,12 @@ namespace Pact
                 downloadUpdatesViewModel.Require(nameof(downloadUpdatesViewModel));
 
             _viewModel = _deckManagerViewModel;
+            #endregion // Dependency assignments
 
-            s_instance = this;
+            Instance = this;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public object ModalViewModel
         {
@@ -120,7 +125,5 @@ namespace Pact
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ViewModel)));
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

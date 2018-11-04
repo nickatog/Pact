@@ -2,11 +2,11 @@
 {
     public struct CardInfo
     {
-        public string Class { get; private set; }
-        public int Cost { get; private set; }
-        public int DatabaseID { get; private set; }
-        public string ID { get; private set; }
-        public string Name { get; private set; }
+        public string Class { get; }
+        public int Cost { get; }
+        public int DatabaseID { get; }
+        public string ID { get; }
+        public string Name { get; }
 
         public CardInfo(
             string name,

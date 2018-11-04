@@ -1,33 +1,29 @@
-﻿#region Namespaces
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+
 using Valkyrie;
+
+using Pact.Extensions.Contract;
 using Pact.Extensions.Enumerable;
-#endregion // Namespaces
 
 namespace Pact
 {
     public sealed class TrackedCardViewModel
         : INotifyPropertyChanged
     {
-        #region Dependencies
+        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IEventDispatcher _viewEventDispatcher;
-        #endregion // Dependencies
 
-        #region Fields
         private int _count;
-        private int? _playerID;
-
         private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-        #endregion // Fields
+        #endregion // Private members
 
-        #region Constructors
         public TrackedCardViewModel(
+            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
             IEventDispatcher gameEventDispatcher,
@@ -37,30 +33,27 @@ namespace Pact
             int? playerID = null)
         {
             _cardInfoProvider =
-                cardInfoProvider
-                ?? throw new ArgumentNullException(nameof(cardInfoProvider));
+                cardInfoProvider.Require(nameof(cardInfoProvider));
 
             _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
+                configurationSource.Require(nameof(configurationSource));
 
             _gameEventDispatcher =
-                gameEventDispatcher
-                ?? throw new ArgumentNullException(nameof(gameEventDispatcher));
+                gameEventDispatcher.Require(nameof(gameEventDispatcher));
 
             _viewEventDispatcher =
-                viewEventDispatcher
-                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             CardID = cardID;
             _count = count;
-            _playerID = playerID;
+            PlayerID = playerID;
+            #endregion // Dependency assignments
 
             _gameEventHandlers.Add(
                 new DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count++;
                     }));
 
@@ -68,7 +61,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardDrawnFromDeck>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count--;
                     }));
 
@@ -76,7 +69,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardEnteredPlayFromDeck>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count--;
                     }));
 
@@ -84,7 +77,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardOverdrawnFromDeck>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count--;
                     }));
 
@@ -92,7 +85,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardRemovedFromDeck>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count--;
                     }));
 
@@ -100,7 +93,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
                     __event =>
                     {
-                        if (_playerID.Equals(__event.PlayerID) && __event.CardID == CardID)
+                        if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
                             Count++;
                     }));
 
@@ -114,7 +107,7 @@ namespace Pact
 
             _gameEventHandlers.Add(
                 new DelegateEventHandler<Events.PlayerDetermined>(
-                    __event => _playerID = __event.PlayerID));
+                    __event => PlayerID = __event.PlayerID));
 
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
@@ -128,9 +121,10 @@ namespace Pact
 
             _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
-        #endregion // Constructors
 
-        public string CardID { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string CardID { get; }
 
         public int CardTextOffset => _configurationSource.GetSettings().CardTextOffset;
 
@@ -162,8 +156,6 @@ namespace Pact
 
         public string Name => _cardInfoProvider.GetCardInfo(CardID)?.Name ?? "<UNKNOWN>";
 
-        public int? PlayerID => _playerID;
-
-        public event PropertyChangedEventHandler PropertyChanged;
+        public int? PlayerID { get; private set; }
     }
 }

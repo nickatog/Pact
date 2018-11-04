@@ -3,15 +3,15 @@
     public sealed class MoveDeck
     {
         public MoveDeck(
-            int sourcePosition,
-            int targetPosition)
+            ushort sourcePosition,
+            ushort targetPosition)
         {
             SourcePosition = sourcePosition;
             TargetPosition = targetPosition;
         }
 
-        public int SourcePosition { get; }
+        public ushort SourcePosition { get; }
 
-        public int TargetPosition { get; }
+        public ushort TargetPosition { get; }
     }
 }

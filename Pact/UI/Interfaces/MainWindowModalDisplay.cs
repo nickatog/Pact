@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public sealed class MainWindowModalDisplay
@@ -10,8 +12,7 @@ namespace Pact
             Action<TResult> onClosed,
             int fadeDuration)
         {
-            if (viewModel == null)
-                throw new ArgumentNullException(nameof(viewModel));
+            viewModel.Require(nameof(viewModel));
 
             MainWindowViewModel.Instance.SetModalViewModel(viewModel, fadeDuration);
 
