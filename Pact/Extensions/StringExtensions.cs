@@ -16,7 +16,7 @@ namespace Pact.Extensions.String
             this string left,
             string right)
         {
-            return string.Equals(left, right, StringComparison.Ordinal);
+            return string.Equals(left, right, StringComparison.OrdinalIgnoreCase);
         }
 
         public static IDictionary<string, string> ParseKeyValuePairs(

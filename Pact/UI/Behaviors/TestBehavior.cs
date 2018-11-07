@@ -3,6 +3,8 @@ using System.Windows.Controls;
 
 namespace Pact.Behaviors
 {
+    // TODO: Split these classes into their own files
+    // (What are these called? They aren't true "behaviors" of Behavior<T>... "Attached properties"?)
     public static class CollapseOnClickBehavior
     {
         public static readonly DependencyProperty ToggleButton =

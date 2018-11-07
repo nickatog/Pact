@@ -13,9 +13,10 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is bool boolValue && bool.TryParse(parameter?.ToString(), out bool boolParameter))
-                if (boolValue == boolParameter)
-                    return -1;
+            if (value is bool boolValue
+                && bool.TryParse(parameter?.ToString(), out bool boolParameter)
+                && boolValue == boolParameter)
+                return -1;
 
             return 1;
         }

@@ -1,44 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Pact
 {
     public sealed class ClassNameToBrushConverter
-        : System.Windows.Data.IValueConverter
+        : IValueConverter
     {
+        private readonly static IDictionary<string, Brush> s_classColors =
+            new Dictionary<string, Brush>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "druid", new SolidColorBrush(Color.FromRgb(255, 125, 10)) },
+                { "hunter", new SolidColorBrush(Color.FromRgb(171, 212, 115)) },
+                { "mage", new SolidColorBrush(Color.FromRgb(105, 204, 240)) },
+                { "paladin", new SolidColorBrush(Color.FromRgb(245, 140, 186)) },
+                { "priest", new SolidColorBrush(Color.FromRgb(255, 255, 255)) },
+                { "rogue", new SolidColorBrush(Color.FromRgb(255, 245, 105)) },
+                { "shaman", new SolidColorBrush(Color.FromRgb(0, 112, 222)) },
+                { "warlock", new SolidColorBrush(Color.FromRgb(148, 130, 201)) },
+                { "warrior", new SolidColorBrush(Color.FromRgb(199, 156, 110)) }
+            };
+
         public object Convert(
-         object value,
-         Type targetType,
-         object parameter,
-         System.Globalization.CultureInfo culture)
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture)
         {
-            string text;
-            if ((text = value as string) == null)
+            if (!(value is string text))
                 return null;
 
-            if (string.Equals(text, "druid", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(255, 125, 10));
-            else if (string.Equals(text, "hunter", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(171, 212, 115));
-            else if (string.Equals(text, "mage", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(105, 204, 240));
-            else if (string.Equals(text, "paladin", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(245, 140, 186));
-            else if (string.Equals(text, "priest", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(255, 255, 255));
-            else if (string.Equals(text, "rogue", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(255, 245, 105));
-            else if (string.Equals(text, "shaman", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(0, 112, 222));
-            else if (string.Equals(text, "warlock", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(148, 130, 201));
-            else if (string.Equals(text, "warrior", StringComparison.OrdinalIgnoreCase))
-                return new SolidColorBrush(Color.FromRgb(199, 156, 110));
+            if (text != null && s_classColors.TryGetValue(text, out Brush classColor))
+                return classColor;
 
             return new SolidColorBrush(Color.FromRgb(80, 80, 80));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }

@@ -126,7 +126,6 @@
     <Compile Include="UI\View Models\DownloadUpdatesViewModel.cs" />
     <Compile Include="UI\Interfaces\IBackgroundWorkInterface.cs" />
     <Compile Include="Abstractions\Utility\AsyncSemaphore.cs" />
-    <Compile Include="UI\Behaviors\AllowOnlyPositiveIntegers.cs" />
     <Compile Include="UI\Behaviors\DeckDragBehavior.cs" />
     <Compile Include="UI\Behaviors\SaveWindowPositionBehavior.cs" />
     <Compile Include="UI\Behaviors\TestBehavior.cs" />
@@ -136,7 +135,6 @@
     <Compile Include="UI\Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="UI\Converters\SingleValueToThicknessConverter.cs" />
     <Compile Include="Abstractions\Decks\Base64VarintDecklistSerializer.cs" />
-    <Compile Include="UI\Behaviors\WindowBehavior.cs" />
     <Compile Include="Abstractions\Cards\CardInfo.cs" />
     <Compile Include="Abstractions\Decks\DeckInfo.cs" />
     <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />

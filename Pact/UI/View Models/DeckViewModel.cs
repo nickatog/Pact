@@ -181,7 +181,7 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    DeckImportDetails? deckImportDetails = await _deckImportInterface.GetDecklist();
+                    DeckImportDetails? deckImportDetails = await _deckImportInterface.GetDeckImportDetails();
                     if (!deckImportDetails.HasValue)
                         return;
 

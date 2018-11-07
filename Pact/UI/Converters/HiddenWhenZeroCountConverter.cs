@@ -14,9 +14,8 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is int count)
-                if (count == 0)
-                    return Visibility.Hidden;
+            if (value is int count && count == 0)
+                return Visibility.Hidden;
 
             return Visibility.Visible;
         }

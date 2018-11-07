@@ -25,7 +25,7 @@ namespace Pact
             #endregion // Dependency assignments
         }
 
-        Task<DeckImportDetails?> IDeckImportInterface.GetDecklist()
+        Task<DeckImportDetails?> IDeckImportInterface.GetDeckImportDetails()
         {
             var completionSource = new TaskCompletionSource<DeckImportDetails?>();
 
