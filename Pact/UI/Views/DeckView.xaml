@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Pact"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Pact.Behaviors"
+             xmlns:properties="clr-namespace:Pact.Properties"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -82,8 +83,8 @@
                             Margin="-2,-2,0,0">
                             <Label.Style>
                                 <Style>
-                                    <Setter Property="behaviors:SetCollapsedOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
-                                    <Setter Property="behaviors:SetVisibleOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="properties:VisibilityToggle.CollapseButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="properties:VisibilityToggle.ShowButton" Value="{Binding ElementName=SaveDeckTitle}" />
                                 </Style>
                             </Label.Style>
                         </Label>
@@ -97,9 +98,9 @@
                             Visibility="Collapsed">
                             <TextBox.Style>
                                 <Style>
-                                    <Setter Property="behaviors:SetCollapsedOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
-                                    <Setter Property="behaviors:SetVisibleOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
-                                    <Setter Property="behaviors:SelectAllOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="properties:VisibilityToggle.CollapseButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="properties:VisibilityToggle.ShowButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="properties:TextSelector.Button" Value="{Binding ElementName=EditDeckTitle}" />
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
@@ -121,8 +122,8 @@
 
                             <Button.Style>
                                 <Style>
-                                    <Setter Property="behaviors:CollapseOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
-                                    <Setter Property="behaviors:ShowOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="properties:DepthToggle.CollapseButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="properties:DepthToggle.ShowButton" Value="{Binding ElementName=SaveDeckTitle}" />
                                 </Style>
                             </Button.Style>
                         </Button>
@@ -147,8 +148,8 @@
 
                             <Button.Style>
                                 <Style>
-                                    <Setter Property="behaviors:CollapseOnClickBehavior.ToggleButton" Value="{Binding ElementName=SaveDeckTitle}" />
-                                    <Setter Property="behaviors:ShowOnClickBehavior.ToggleButton" Value="{Binding ElementName=EditDeckTitle}" />
+                                    <Setter Property="properties:DepthToggle.CollapseButton" Value="{Binding ElementName=SaveDeckTitle}" />
+                                    <Setter Property="properties:DepthToggle.ShowButton" Value="{Binding ElementName=EditDeckTitle}" />
                                 </Style>
                             </Button.Style>
                         </Button>

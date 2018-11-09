@@ -116,6 +116,9 @@
     <Compile Include="UI\Interfaces\DeckImportDetails.cs" />
     <Compile Include="UI\Interfaces\DeckImportInterface.cs" />
     <Compile Include="UI\Interfaces\IDeckImportInterface.cs" />
+    <Compile Include="UI\Properties\DepthToggle.cs" />
+    <Compile Include="UI\Properties\TextSelector.cs" />
+    <Compile Include="UI\Properties\VisibilityToggle.cs" />
     <Compile Include="UI\Views\DevToolsView.xaml.cs">
       <DependentUpon>DevToolsView.xaml</DependentUpon>
     </Compile>
@@ -128,7 +131,6 @@
     <Compile Include="Abstractions\Utility\AsyncSemaphore.cs" />
     <Compile Include="UI\Behaviors\DeckDragBehavior.cs" />
     <Compile Include="UI\Behaviors\SaveWindowPositionBehavior.cs" />
-    <Compile Include="UI\Behaviors\TestBehavior.cs" />
     <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
     <Compile Include="UI\Converters\CollapsedVisibilityWhenNullConverter.cs" />
     <Compile Include="UI\Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
