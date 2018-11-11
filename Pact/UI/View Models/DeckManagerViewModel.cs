@@ -28,6 +28,7 @@ namespace Pact
         private readonly IGameResultRepository _gameResultRepository;
         private readonly ILogger _logger;
         private readonly IPlayerDeckTrackerInterface _playerDeckTrackerInterface;
+        private readonly IReplaceDeckInterface _replaceDeckInterface;
         private readonly IUserConfirmationInterface _userConfirmationInterface;
         private readonly IEventDispatcher _viewEventDispatcher;
 
@@ -46,6 +47,7 @@ namespace Pact
             IGameResultRepository gameResultRepository,
             ILogger logger,
             IPlayerDeckTrackerInterface playerDeckTrackerInterface,
+            IReplaceDeckInterface replaceDeckInterface,
             IUserConfirmationInterface userConfirmationInterface,
             IEventDispatcher viewEventDispatcher)
         {
@@ -78,6 +80,9 @@ namespace Pact
 
             _playerDeckTrackerInterface =
                 playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
+
+            _replaceDeckInterface =
+                replaceDeckInterface.Require(nameof(replaceDeckInterface));
 
             _userConfirmationInterface =
                 userConfirmationInterface.Require(nameof(userConfirmationInterface));
@@ -180,6 +185,7 @@ namespace Pact
                     _gameEventDispatcher,
                     _gameResultRepository,
                     _playerDeckTrackerInterface,
+                    _replaceDeckInterface,
                     _userConfirmationInterface,
                     _viewEventDispatcher,
                     deckID,

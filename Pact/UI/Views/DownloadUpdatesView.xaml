@@ -6,6 +6,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label Content="[Download Updates]" />
+        <StackPanel>
+            <Button
+                Template="{StaticResource ButtonMajor}"
+                Content="Update Card Database"
+                Command="{Binding CheckForUpdates}"
+                Margin="4" />
+        </StackPanel>
     </Grid>
 </UserControl>

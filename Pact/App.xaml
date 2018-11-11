@@ -17,6 +17,9 @@
         <DataTemplate DataType="{x:Type local:BackgroundWorkModalViewModel}">
             <local:BackgroundWorkView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type local:CardInfoDatabaseUpdateModalViewModel}">
+            <local:CardInfoDatabaseUpdateView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:ConfigurationSettingsViewModel}">
             <local:ConfigurationSettingsView />
         </DataTemplate>
@@ -34,6 +37,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:DownloadUpdatesViewModel}">
             <local:DownloadUpdatesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:ReplaceDeckModalViewModel}">
+            <local:ReplaceDeckView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:TrackedCardViewModel}">
             <local:TrackedCardView />

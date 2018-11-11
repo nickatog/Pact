@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Pact"
-             xmlns:behaviors="clr-namespace:Pact.Behaviors"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d"
              Height="400" Width="200" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True" ShowInTaskbar="False">
@@ -13,7 +12,7 @@
     </WindowChrome.WindowChrome>
 
     <i:Interaction.Behaviors>
-        <behaviors:SaveWindowPositionBehavior />
+        <local:SaveWindowPositionBehavior />
     </i:Interaction.Behaviors>
 
     <StackPanel>

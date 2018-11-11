@@ -91,6 +91,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Abstractions\Cards\HearthstoneJSONCardInfoDatabaseUpdateService.cs" />
+    <Compile Include="Abstractions\Cards\ICardInfoDatabaseManager.cs" />
+    <Compile Include="Abstractions\Cards\ICardInfoDatabaseUpdateService.cs" />
     <Compile Include="Abstractions\Decks\DeckDetails.cs" />
     <Compile Include="Abstractions\Decks\DeckInfoFileStorage.cs" />
     <Compile Include="Abstractions\Decks\FileBasedDeckRepository.cs" />
@@ -98,6 +101,8 @@
     <Compile Include="Abstractions\Decks\IDeckRepository.cs" />
     <Compile Include="Abstractions\Game Results\FileBasedGameResultRepository.cs" />
     <Compile Include="Abstractions\Game Results\IGameResultRepository.cs" />
+    <Compile Include="UI\Interfaces\IReplaceDeckInterface.cs" />
+    <Compile Include="UI\Interfaces\ModalReplaceDeckInterface.cs" />
     <Compile Include="UI\Messages\Commands\MoveDeck.cs" />
     <Compile Include="Abstractions\Configuration\CachingConfigurationSource.cs" />
     <Compile Include="Abstractions\Configuration\ConfigurationData.cs" />
@@ -119,6 +124,7 @@
     <Compile Include="UI\Properties\DepthToggle.cs" />
     <Compile Include="UI\Properties\TextSelector.cs" />
     <Compile Include="UI\Properties\VisibilityToggle.cs" />
+    <Compile Include="UI\View Models\Modals\ReplaceDeckModalViewModel.cs" />
     <Compile Include="UI\Views\DevToolsView.xaml.cs">
       <DependentUpon>DevToolsView.xaml</DependentUpon>
     </Compile>
@@ -161,6 +167,12 @@
     <Compile Include="UI\Interfaces\IUserConfirmationInterface.cs" />
     <Compile Include="UI\Interfaces\IModalDisplay.cs" />
     <Compile Include="UI\View Models\Modals\IModalViewModel.cs" />
+    <Compile Include="UI\Views\Modals\CardInfoDatabaseUpdateView.xaml.cs">
+      <DependentUpon>CardInfoDatabaseUpdateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\Modals\ReplaceDeckView.xaml.cs">
+      <DependentUpon>ReplaceDeckView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="_ Deprecated\IUserPrompt.cs" />
     <Compile Include="UI\Interfaces\MainWindowModalDisplay.cs" />
     <Compile Include="_ Deprecated\UserPrompt.cs" />
@@ -236,6 +248,14 @@
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\ModalBackgroundWorkInterface.cs" />
+    <Page Include="UI\Views\Modals\CardInfoDatabaseUpdateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\Modals\ReplaceDeckView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="_ Deprecated\UserPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

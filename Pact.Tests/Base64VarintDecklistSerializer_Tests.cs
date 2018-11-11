@@ -33,5 +33,13 @@ namespace Pact.Tests
                 }
             }
         }
+
+        [Fact]
+        public async void LatestVersion_Test()
+        {
+            ICardInfoDatabaseUpdateService test = new HearthstoneJSONCardInfoDatabaseUpdateService();
+
+            Console.WriteLine(await test.GetLatestVersion());
+        }
     }
 }

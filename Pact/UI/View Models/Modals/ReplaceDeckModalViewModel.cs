@@ -8,8 +8,8 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class DeckImportModalViewModel
-        : IModalViewModel<DeckImportResult?>
+    public sealed class ReplaceDeckModalViewModel
+        : IModalViewModel<Decklist?>
         , INotifyPropertyChanged
     {
         #region Private members
@@ -17,8 +17,8 @@ namespace Pact
         private string _importErrorMessage;
         #endregion // Private members
 
-        public DeckImportModalViewModel(
-            #region Dependency assignments
+        public ReplaceDeckModalViewModel(
+        #region Dependency assignments
             IDecklistSerializer decklistSerializer)
         {
             _decklistSerializer =
@@ -28,15 +28,13 @@ namespace Pact
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public event Action<DeckImportResult?> OnClosed;
+        public event Action<Decklist?> OnClosed;
 
         public ICommand Cancel =>
             new DelegateCommand(
                 () => OnClosed?.Invoke(null));
 
         public string DeckString { get; set; }
-
-        public string DeckTitle { get; set; }
 
         public ICommand ImportDeck =>
             new DelegateCommand(
@@ -51,7 +49,7 @@ namespace Pact
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
 
-                        OnClosed?.Invoke(new DeckImportResult(DeckTitle, decklist));
+                        OnClosed?.Invoke(decklist);
                     }
                     catch (Exception)
                     {

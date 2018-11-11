@@ -3,7 +3,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interactivity;
 
-namespace Pact.Behaviors
+namespace Pact
 {
     public sealed class SaveWindowPositionBehavior
         : Behavior<Window>
@@ -22,12 +22,15 @@ namespace Pact.Behaviors
             AssociatedObject.LocationChanged += OnLocationChanged;
         }
 
-        private void OnLocationChanged(object sender, EventArgs args)
+        private void OnLocationChanged(
+            object sender,
+            EventArgs args)
         {
             _timer.Change(1000, Timeout.Infinite);
         }
 
-        private void SaveWindowPosition(object state)
+        private void SaveWindowPosition(
+            object state)
         {
             double left = default;
             double top = default;

@@ -48,6 +48,7 @@ namespace Pact
                         __context.Resolve<IGameResultRepository>(),
                         __context.Resolve<ILogger>(),
                         __context.Resolve<IPlayerDeckTrackerInterface>(),
+                        __context.Resolve<IReplaceDeckInterface>(),
                         __context.Resolve<IUserConfirmationInterface>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<DeckManagerViewModel>();
@@ -67,6 +68,21 @@ namespace Pact
             .RegisterType<ModalBackgroundWorkInterface>()
             .As<IBackgroundWorkInterface>()
             .SingleInstance();
+
+            // ICardInfoDatabaseManager
+            builder
+            .RegisterType<DummyCardInfoDatabaseManager>()
+            .As<ICardInfoDatabaseManager>();
+
+            // ICardInfoDatabaseUpdateInterface
+            builder
+            .RegisterType<ModalCardInfoDatabaseUpdateInterface>()
+            .As<ICardInfoDatabaseUpdateInterface>();
+
+            // ICardInfoDatabaseUpdateService
+            builder
+            .RegisterType<HearthstoneJSONCardInfoDatabaseUpdateService>()
+            .As<ICardInfoDatabaseUpdateService>();
 
             // ICardInfoProvider
             builder
@@ -265,7 +281,12 @@ namespace Pact
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<IPlayerDeckTrackerInterface>()
             .SingleInstance();
-            
+
+            // IReplaceDeckInterface
+            builder
+            .RegisterType<ModalReplaceDeckInterface>()
+            .As<IReplaceDeckInterface>();
+
             // ISerializers
             builder
             .Register(

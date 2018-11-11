@@ -26,6 +26,7 @@ namespace Pact
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultRepository _gameResultRepository;
         private readonly IPlayerDeckTrackerInterface _playerDeckTrackerInterface;
+        private readonly IReplaceDeckInterface _replaceDeckInterface;
         private readonly IUserConfirmationInterface _userConfirmationInterface;
         private readonly IEventDispatcher _viewEventDispatcher;
 
@@ -47,6 +48,7 @@ namespace Pact
             IEventDispatcher gameEventDispatcher,
             IGameResultRepository gameResultRepository,
             IPlayerDeckTrackerInterface playerDeckTrackerInterface,
+            IReplaceDeckInterface replaceDeckInterface,
             IUserConfirmationInterface userConfirmationInterface,
             IEventDispatcher viewEventDispatcher,
             Guid deckID,
@@ -78,6 +80,9 @@ namespace Pact
 
             _playerDeckTrackerInterface =
                 playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
+
+            _replaceDeckInterface =
+                replaceDeckInterface.Require(nameof(replaceDeckInterface));
 
             _userConfirmationInterface =
                 userConfirmationInterface.Require(nameof(userConfirmationInterface));
@@ -181,11 +186,11 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    DeckImportDetails? deckImportDetails = await _deckImportInterface.GetDeckImportDetails();
-                    if (!deckImportDetails.HasValue)
+                    Decklist? replacementDecklist = await _replaceDeckInterface.GetReplacementDecklist();
+                    if (!replacementDecklist.HasValue)
                         return;
 
-                    Decklist = deckImportDetails.Value.Decklist;
+                    Decklist = replacementDecklist.Value;
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Class)));
 

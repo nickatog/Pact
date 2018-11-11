@@ -12,6 +12,7 @@ namespace Pact
         private readonly IDictionary<int, Card> _cardByDatabaseID;
         private readonly IDictionary<string, Card> _cardByID;
 
+        // take view event dispatcher, refresh dictionaries when card info database is updated
         public JSONCardInfoProvider(
             string filePath)
         {
