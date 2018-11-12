@@ -7,6 +7,7 @@ namespace Pact
     {
         Task<int?> GetLatestVersion();
 
-        Task<Stream> GetLatestVersionStream();
+        Task<Stream> GetVersionStream(
+            int version);
     }
 }

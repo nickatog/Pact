@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-
-using Valkyrie;
 
 using Pact.Extensions.Contract;
 
@@ -168,11 +167,23 @@ namespace Pact
 
         public string CurrentVersion => _currentVersion?.ToString() ?? "unknown";
 
-        public ICommand DownloadNewestCardInfoDatabase =>
+        public ICommand DownloadLatestCardInfoDatabase =>
             new DelegateCommand(
-                () =>
+                async () =>
                 {
-                    // download latest and close
+                    // lock down/setup UI elements for download?
+
+                    string tempFilePath =
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                            "Pact",
+                            "~cards.json");
+
+                    using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
+                        using (Stream downloadStream = await _cardInfoDatabaseUpdateService.GetVersionStream(_latestVersion.Value))
+                            await downloadStream.CopyToAsync(tempFileStream);
+
+                    OnClosed?.Invoke(true);
                 },
                 () =>
                     _latestVersion.HasValue
