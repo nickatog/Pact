@@ -73,33 +73,29 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new JSONCardInfoDatabaseManager(
+                    new JSONCardDatabaseManager(
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<ICardInfoDatabaseManager>();
+            .As<ICardDatabaseManager>();
 
             // ICardInfoDatabaseUpdateInterface
             builder
-            .RegisterType<ModalCardInfoDatabaseUpdateInterface>()
-            .As<ICardInfoDatabaseUpdateInterface>();
+            .RegisterType<ModalCardDatabaseUpdateInterface>()
+            .As<ICardDatabaseUpdateInterface>();
 
             // ICardInfoDatabaseUpdateService
             builder
-            .RegisterType<HearthstoneJSONCardInfoDatabaseUpdateService>()
-            .As<ICardInfoDatabaseUpdateService>();
+            .RegisterType<HearthstoneJSONCardDatabaseUpdateService>()
+            .As<ICardDatabaseUpdateService>();
 
             // ICardInfoProvider
             builder
             .Register(
                 __context =>
-                {
-                    // Update this to AppData, if we're going to check for file updates on load?
-                    string pathToFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-#if DEBUG
-                    pathToFile = Path.Combine(pathToFile, @"..\..\..");
-#endif
-
-                    return new JSONCardInfoProvider(Path.Combine(pathToFile, "cards.json"));
-                })
+                    new JSONCardInfoProvider(
+                        Path.Combine(
+                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                            "cards.json"),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<ICardInfoProvider>()
             .SingleInstance();
 

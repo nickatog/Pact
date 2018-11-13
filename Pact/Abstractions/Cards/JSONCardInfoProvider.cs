@@ -2,27 +2,51 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Newtonsoft.Json;
+using Valkyrie;
+
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class JSONCardInfoProvider
         : ICardInfoProvider
     {
-        private readonly IDictionary<int, Card> _cardByDatabaseID;
-        private readonly IDictionary<string, Card> _cardByID;
+        #region Private members
+        private IDictionary<int, Card> _cardByDatabaseID;
+        private IDictionary<string, Card> _cardByID;
+        private readonly string _filePath;
+        private readonly IEventDispatcher _viewEventDispatcher;
+        #endregion // Private members
 
-        // take view event dispatcher, refresh dictionaries when card info database is updated
         public JSONCardInfoProvider(
-            string filePath)
+            #region Dependency assignments
+            string filePath,
+            IEventDispatcher viewEventDispatcher)
         {
             if (filePath == null || !File.Exists(filePath))
                 throw new ArgumentException("Path must not be null and the card file must exist!", nameof(filePath));
 
-            Card[] cards = JsonConvert.DeserializeObject<Card[]>(File.ReadAllText(filePath));
+            _filePath = filePath;
 
-            _cardByDatabaseID = cards.ToDictionary(__card => __card.dbfId, __card => __card);
-            _cardByID = cards.ToDictionary(__card => __card.id, __card => __card);
+            _viewEventDispatcher =
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            #endregion // Dependency assignments
+
+            LoadCards();
+
+            _viewEventDispatcher.RegisterHandler(
+                new DelegateEventHandler<Events.CardDatabaseUpdated>(
+                    __ => LoadCards()));
+
+            void LoadCards()
+            {
+                Card[] cards = JsonConvert.DeserializeObject<Card[]>(File.ReadAllText(_filePath));
+
+                _cardByDatabaseID = cards.ToDictionary(__card => __card.dbfId, __card => __card);
+                _cardByID = cards.ToDictionary(__card => __card.id, __card => __card);
+            }
         }
 
         CardInfo? ICardInfoProvider.GetCardInfo(

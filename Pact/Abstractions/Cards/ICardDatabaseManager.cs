@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public interface ICardInfoDatabaseManager
+    public interface ICardDatabaseManager
     {
         int? GetCurrentVersion();
 
-        Task UpdateCardInfoDatabase(
+        Task UpdateCardDatabase(
             int version,
             Stream updateStream);
     }

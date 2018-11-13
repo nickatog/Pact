@@ -17,8 +17,8 @@
         <DataTemplate DataType="{x:Type local:BackgroundWorkModalViewModel}">
             <local:BackgroundWorkView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:CardInfoDatabaseUpdateModalViewModel}">
-            <local:CardInfoDatabaseUpdateView />
+        <DataTemplate DataType="{x:Type local:CardDatabaseUpdateModalViewModel}">
+            <local:CardDatabaseUpdateView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:ConfigurationSettingsViewModel}">
             <local:ConfigurationSettingsView />

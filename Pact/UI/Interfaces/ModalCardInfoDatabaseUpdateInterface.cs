@@ -5,28 +5,28 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class ModalCardInfoDatabaseUpdateInterface
-        : ICardInfoDatabaseUpdateInterface
+    public sealed class ModalCardDatabaseUpdateInterface
+        : ICardDatabaseUpdateInterface
     {
         #region Private members
-        private readonly ICardInfoDatabaseManager _cardInfoDatabaseManager;
-        private readonly ICardInfoDatabaseUpdateService _cardInfoDatabaseUpdateService;
+        private readonly ICardDatabaseManager _cardDatabaseManager;
+        private readonly ICardDatabaseUpdateService _cardDatabaseUpdateService;
         private readonly IModalDisplay _modalDisplay;
         private readonly Dispatcher _uiDispatcher;
         #endregion // Private members
 
-        public ModalCardInfoDatabaseUpdateInterface(
+        public ModalCardDatabaseUpdateInterface(
         #region Dependency assignments
-            ICardInfoDatabaseManager cardInfoDatabaseManager,
-            ICardInfoDatabaseUpdateService cardInfoDatabaseUpdateService,
+            ICardDatabaseManager cardDatabaseManager,
+            ICardDatabaseUpdateService cardDatabaseUpdateService,
             IModalDisplay modalDisplay,
             Dispatcher uiDispatcher)
         {
-            _cardInfoDatabaseManager =
-                cardInfoDatabaseManager.Require(nameof(cardInfoDatabaseManager));
+            _cardDatabaseManager =
+                cardDatabaseManager.Require(nameof(cardDatabaseManager));
 
-            _cardInfoDatabaseUpdateService =
-                cardInfoDatabaseUpdateService.Require(nameof(cardInfoDatabaseUpdateService));
+            _cardDatabaseUpdateService =
+                cardDatabaseUpdateService.Require(nameof(cardDatabaseUpdateService));
 
             _modalDisplay =
                 modalDisplay.Require(nameof(modalDisplay));
@@ -36,14 +36,14 @@ namespace Pact
             #endregion // Dependency assignments
         }
 
-        Task ICardInfoDatabaseUpdateInterface.CheckForUpdates()
+        Task ICardDatabaseUpdateInterface.CheckForUpdates()
         {
             var completionSource = new TaskCompletionSource<bool>();
 
             _modalDisplay.Show(
-                new CardInfoDatabaseUpdateModalViewModel(
-                    _cardInfoDatabaseManager,
-                    _cardInfoDatabaseUpdateService,
+                new CardDatabaseUpdateModalViewModel(
+                    _cardDatabaseManager,
+                    _cardDatabaseUpdateService,
                     _uiDispatcher),
                 __ => completionSource.SetResult(true));
 

@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public sealed class HearthstoneJSONCardInfoDatabaseUpdateService
-        : ICardInfoDatabaseUpdateService
+    public sealed class HearthstoneJSONCardDatabaseUpdateService
+        : ICardDatabaseUpdateService
     {
         private static readonly HttpClient s_httpClient = new HttpClient();
         private static readonly Regex s_versionPattern = new Regex(@"(?<Version>\d+).*", RegexOptions.Compiled);
 
         private const string BASE_PATH = "https://api.hearthstonejson.com/v1/";
 
-        async Task<int?> ICardInfoDatabaseUpdateService.GetLatestVersion()
+        async Task<int?> ICardDatabaseUpdateService.GetLatestVersion()
         {
 #if DEBUG
             ServicePointManager.SecurityProtocol |=
@@ -40,7 +40,7 @@ namespace Pact
             return version;
         }
 
-        async Task<Stream> ICardInfoDatabaseUpdateService.GetVersionStream(
+        async Task<Stream> ICardDatabaseUpdateService.GetVersionStream(
             int version)
         {
 #if DEBUG

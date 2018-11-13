@@ -11,14 +11,14 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class CardInfoDatabaseUpdateModalViewModel
+    public sealed class CardDatabaseUpdateModalViewModel
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
         #region Private members
         private Action _canExecuteDownloadChanged;
-        private readonly ICardInfoDatabaseManager _cardInfoDatabaseManager;
-        private readonly ICardInfoDatabaseUpdateService _cardInfoDatabaseUpdateService;
+        private readonly ICardDatabaseManager _cardDatabaseManager;
+        private readonly ICardDatabaseUpdateService _cardDatabaseUpdateService;
         private readonly int? _currentVersion;
         private string _errorMessage;
         private bool _isUpdating;
@@ -27,23 +27,23 @@ namespace Pact
         private readonly Dispatcher _uiDispatcher;
         #endregion // Private members
 
-        public CardInfoDatabaseUpdateModalViewModel(
+        public CardDatabaseUpdateModalViewModel(
         #region Dependency assignments
-            ICardInfoDatabaseManager cardInfoDatabaseManager,
-            ICardInfoDatabaseUpdateService cardInfoDatabaseUpdateService,
+            ICardDatabaseManager cardDatabaseManager,
+            ICardDatabaseUpdateService cardDatabaseUpdateService,
             Dispatcher uiDispatcher)
         {
-            _cardInfoDatabaseManager =
-                cardInfoDatabaseManager.Require(nameof(cardInfoDatabaseManager));
+            _cardDatabaseManager =
+                cardDatabaseManager.Require(nameof(cardDatabaseManager));
 
-            _cardInfoDatabaseUpdateService =
-                cardInfoDatabaseUpdateService.Require(nameof(cardInfoDatabaseUpdateService));
+            _cardDatabaseUpdateService =
+                cardDatabaseUpdateService.Require(nameof(cardDatabaseUpdateService));
 
             _uiDispatcher =
                 uiDispatcher.Require(nameof(uiDispatcher));
             #endregion // Dependency assignments
 
-            _currentVersion = _cardInfoDatabaseManager.GetCurrentVersion();
+            _currentVersion = _cardDatabaseManager.GetCurrentVersion();
 
             var cancellation = new CancellationTokenSource();
 
@@ -62,7 +62,7 @@ namespace Pact
                     }
                 });
 
-            Task<int?> getLatestVersion = _cardInfoDatabaseUpdateService.GetLatestVersion();
+            Task<int?> getLatestVersion = _cardDatabaseUpdateService.GetLatestVersion();
             getLatestVersion.ContinueWith(__result => cancellation.Cancel());
             getLatestVersion.ContinueWith(
                 __result =>
@@ -104,8 +104,8 @@ namespace Pact
 
                     try
                     {
-                        using (Stream downloadStream = await _cardInfoDatabaseUpdateService.GetVersionStream(_latestVersion.Value))
-                            await _cardInfoDatabaseManager.UpdateCardInfoDatabase(_latestVersion.Value, downloadStream);
+                        using (Stream downloadStream = await _cardDatabaseUpdateService.GetVersionStream(_latestVersion.Value))
+                            await _cardDatabaseManager.UpdateCardDatabase(_latestVersion.Value, downloadStream);
 
                         OnClosed?.Invoke(true);
                     }

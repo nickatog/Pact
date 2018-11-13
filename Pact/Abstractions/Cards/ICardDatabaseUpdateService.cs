@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Pact
 {
-    public interface ICardInfoDatabaseUpdateService
+    public interface ICardDatabaseUpdateService
     {
         Task<int?> GetLatestVersion();
 

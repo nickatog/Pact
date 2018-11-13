@@ -2,7 +2,7 @@
 
 namespace Pact
 {
-    public interface ICardInfoDatabaseUpdateInterface
+    public interface ICardDatabaseUpdateInterface
     {
         Task CheckForUpdates();
     }

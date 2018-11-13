@@ -9,8 +9,8 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class JSONCardInfoDatabaseManager
-        : ICardInfoDatabaseManager
+    public sealed class JSONCardDatabaseManager
+        : ICardDatabaseManager
     {
         #region Private members
         private static readonly string s_appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -21,7 +21,7 @@ namespace Pact
         private readonly IEventDispatcher _viewEventDispatcher;
         #endregion // Private members
 
-        public JSONCardInfoDatabaseManager(
+        public JSONCardDatabaseManager(
             #region Dependency assignments
             IEventDispatcher viewEventDispatcher)
         {
@@ -30,7 +30,7 @@ namespace Pact
             #endregion // Dependency assignments
         }
 
-        int? ICardInfoDatabaseManager.GetCurrentVersion()
+        int? ICardDatabaseManager.GetCurrentVersion()
         {
             string text = null;
 
@@ -48,7 +48,7 @@ namespace Pact
             return null;
         }
 
-        async Task ICardInfoDatabaseManager.UpdateCardInfoDatabase(
+        async Task ICardDatabaseManager.UpdateCardDatabase(
             int version,
             Stream updateStream)
         {

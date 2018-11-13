@@ -7,20 +7,20 @@ namespace Pact
     public sealed class DownloadUpdatesViewModel
     {
         #region Private members
-        private readonly ICardInfoDatabaseUpdateInterface _cardInfoDatabaseUpdateInterface;
+        private readonly ICardDatabaseUpdateInterface _cardDatabaseUpdateInterface;
         #endregion // Private members
 
         public DownloadUpdatesViewModel(
             #region Dependency assignments
-            ICardInfoDatabaseUpdateInterface cardInfoDatabaseUpdateInterface)
+            ICardDatabaseUpdateInterface cardDatabaseUpdateInterface)
         {
-            _cardInfoDatabaseUpdateInterface =
-                cardInfoDatabaseUpdateInterface.Require(nameof(cardInfoDatabaseUpdateInterface));
+            _cardDatabaseUpdateInterface =
+                cardDatabaseUpdateInterface.Require(nameof(cardDatabaseUpdateInterface));
             #endregion // Dependency assignments
         }
 
         public ICommand CheckForUpdates =>
             new DelegateCommand(
-                () => _cardInfoDatabaseUpdateInterface.CheckForUpdates());
+                () => _cardDatabaseUpdateInterface.CheckForUpdates());
     }
 }

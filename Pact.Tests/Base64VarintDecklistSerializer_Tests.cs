@@ -16,7 +16,9 @@ namespace Pact.Tests
             IDecklistSerializer serializer =
                 new TextDecklistSerializer(
                     new VarintDecklistSerializer(
-                        new JSONCardInfoProvider(@"C:\Users\Nicholas Anderson\Documents\Visual Studio 2017\Projects\Pact\cards.json")));
+                        new JSONCardInfoProvider(
+                            @"C:\Users\Nicholas Anderson\Documents\Visual Studio 2017\Projects\Pact\cards.json",
+                            ((Valkyrie.IEventDispatcherFactory)new Valkyrie.InMemoryEventDispatcherFactory()).Create())));
 
             using (var inputStream = new MemoryStream(Encoding.Default.GetBytes(deckstring)))
             {
@@ -37,7 +39,7 @@ namespace Pact.Tests
         [Fact]
         public async void LatestVersion_Test()
         {
-            ICardInfoDatabaseUpdateService test = new HearthstoneJSONCardInfoDatabaseUpdateService();
+            ICardDatabaseUpdateService test = new HearthstoneJSONCardDatabaseUpdateService();
 
             Console.WriteLine(await test.GetLatestVersion());
         }
