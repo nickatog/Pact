@@ -2,10 +2,13 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+
+using Valkyrie;
 
 using Pact.Extensions.Contract;
 
@@ -92,6 +95,7 @@ namespace Pact
         private readonly ICardInfoDatabaseUpdateService _cardInfoDatabaseUpdateService;
         private readonly int? _currentVersion;
         private string _errorMessage;
+        private bool _isUpdating;
         private int? _latestVersion;
         private string _latestVersionText;
         private readonly Dispatcher _uiDispatcher;
@@ -171,22 +175,25 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    // lock down/setup UI elements for download?
+                    _isUpdating = true;
 
-                    string tempFilePath =
-                        Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                            "Pact",
-                            "~cards.json");
+                    _uiDispatcher.Invoke(() => _canExecuteDownloadChanged?.Invoke());
 
-                    using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
+                    try
+                    {
                         using (Stream downloadStream = await _cardInfoDatabaseUpdateService.GetVersionStream(_latestVersion.Value))
-                            await downloadStream.CopyToAsync(tempFileStream);
+                            await _cardInfoDatabaseManager.UpdateCardInfoDatabase(_latestVersion.Value, downloadStream);
 
-                    OnClosed?.Invoke(true);
+                        OnClosed?.Invoke(true);
+                    }
+                    catch (Exception)
+                    {
+                        ErrorMessage = "Failed to update card database!";
+                    }
                 },
                 () =>
-                    _latestVersion.HasValue
+                    !_isUpdating
+                    && _latestVersion.HasValue
                     && (!_currentVersion.HasValue || _latestVersion.Value > _currentVersion.Value),
                 __canExecuteChanged => _canExecuteDownloadChanged = __canExecuteChanged);
 

@@ -94,6 +94,7 @@
     <Compile Include="Abstractions\Cards\HearthstoneJSONCardInfoDatabaseUpdateService.cs" />
     <Compile Include="Abstractions\Cards\ICardInfoDatabaseManager.cs" />
     <Compile Include="Abstractions\Cards\ICardInfoDatabaseUpdateService.cs" />
+    <Compile Include="Abstractions\Cards\JSONCardInfoDatabaseManager.cs" />
     <Compile Include="Abstractions\Decks\DeckDetails.cs" />
     <Compile Include="Abstractions\Decks\DeckInfoFileStorage.cs" />
     <Compile Include="Abstractions\Decks\FileBasedDeckRepository.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
+    <Compile Include="UI\Messages\Events\CardDatabaseUpdated.cs" />
     <Compile Include="UI\Messages\Events\DeckTracking.cs" />
     <Compile Include="UI\Messages\GlobalViewEventDispatcher.cs" />
     <Compile Include="UI\Interfaces\DeckImportDetails.cs" />

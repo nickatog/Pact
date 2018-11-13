@@ -71,7 +71,10 @@ namespace Pact
 
             // ICardInfoDatabaseManager
             builder
-            .RegisterType<DummyCardInfoDatabaseManager>()
+            .Register(
+                __context =>
+                    new JSONCardInfoDatabaseManager(
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<ICardInfoDatabaseManager>();
 
             // ICardInfoDatabaseUpdateInterface
