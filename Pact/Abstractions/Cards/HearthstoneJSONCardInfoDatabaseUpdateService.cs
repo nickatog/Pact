@@ -22,8 +22,6 @@ namespace Pact
                 SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
 
-            await Task.Delay(2000);
-
             string versionSegment = null;
 
             using (HttpResponseMessage response = (await s_httpClient.GetAsync(BASE_PATH + "latest/")).EnsureSuccessStatusCode())
@@ -49,8 +47,6 @@ namespace Pact
             ServicePointManager.SecurityProtocol |=
                 SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
-
-            await Task.Delay(2000);
 
             HttpResponseMessage response = (await s_httpClient.GetAsync($"{BASE_PATH}{version}/enUS/cards.json")).EnsureSuccessStatusCode();
 
