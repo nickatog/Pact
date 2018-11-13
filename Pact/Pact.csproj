@@ -102,7 +102,9 @@
     <Compile Include="Abstractions\Decks\IDeckRepository.cs" />
     <Compile Include="Abstractions\Game Results\FileBasedGameResultRepository.cs" />
     <Compile Include="Abstractions\Game Results\IGameResultRepository.cs" />
+    <Compile Include="UI\Interfaces\ICardInfoDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\IReplaceDeckInterface.cs" />
+    <Compile Include="UI\Interfaces\ModalCardInfoDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\ModalReplaceDeckInterface.cs" />
     <Compile Include="UI\Messages\Commands\MoveDeck.cs" />
     <Compile Include="Abstractions\Configuration\CachingConfigurationSource.cs" />
@@ -126,6 +128,7 @@
     <Compile Include="UI\Properties\DepthToggle.cs" />
     <Compile Include="UI\Properties\TextSelector.cs" />
     <Compile Include="UI\Properties\VisibilityToggle.cs" />
+    <Compile Include="UI\View Models\Modals\CardInfoDatabaseUpdateModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\ReplaceDeckModalViewModel.cs" />
     <Compile Include="UI\Views\DevToolsView.xaml.cs">
       <DependentUpon>DevToolsView.xaml</DependentUpon>
