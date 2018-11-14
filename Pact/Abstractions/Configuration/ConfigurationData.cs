@@ -1,14 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Pact
 {
     [Serializable]
     public struct ConfigurationData
-        : ISerializable<ConfigurationData>
     {
         public ConfigurationData(
             IConfigurationSettings configurationSettings)
@@ -64,24 +60,6 @@ namespace Pact
         {
             get => _trackerWindowSize;
             set { _trackerWindowSize = value; }
-        }
-
-        public static Task<ConfigurationData> Deserialize(
-            Stream stream)
-        {
-            var serializer = new BinaryFormatter();
-
-            return Task.FromResult((ConfigurationData)serializer.Deserialize(stream));
-        }
-
-        Task ISerializable<ConfigurationData>.Serialize(
-            Stream stream)
-        {
-            var serializer = new BinaryFormatter();
-
-            serializer.Serialize(stream, this);
-
-            return Task.CompletedTask;
         }
     }
 }

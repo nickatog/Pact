@@ -6,7 +6,11 @@ namespace Pact
 {
     public interface ICollectionSerializer<T>
     {
-        Task<IEnumerable<T>> Deserialize(Stream stream);
-        Task Serialize(Stream stream, IEnumerable<T> items);
+        Task<IEnumerable<T>> Deserialize(
+            Stream stream);
+
+        Task Serialize(
+            Stream stream,
+            IEnumerable<T> items);
     }
 }

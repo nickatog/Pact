@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
 using Autofac;
@@ -290,14 +291,42 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new Serializer<ConfigurationData>(ConfigurationData.Deserialize))
+                    new DelegateSerializer<ConfigurationData>(
+                        __stream =>
+                        {
+                            var serializer = new BinaryFormatter();
+
+                            return Task.FromResult((ConfigurationData)serializer.Deserialize(__stream));
+                        },
+                        (__stream, __item) =>
+                        {
+                            var serializer = new BinaryFormatter();
+
+                            serializer.Serialize(__stream, __item);
+
+                            return Task.CompletedTask;
+                        }))
             .As<ISerializer<ConfigurationData>>()
             .SingleInstance();
 
             builder
             .Register(
                 __context =>
-                    new Serializer<DeckInfo>(DeckInfo.Deserialize))
+                    new DelegateSerializer<DeckInfo>(
+                        __stream =>
+                        {
+                            var serializer = new BinaryFormatter();
+
+                            return Task.FromResult((DeckInfo)serializer.Deserialize(__stream));
+                        },
+                        (__stream, __deckInfo) =>
+                        {
+                            var serializer = new BinaryFormatter();
+
+                            serializer.Serialize(__stream, __deckInfo);
+
+                            return Task.CompletedTask;
+                        }))
             .As<ISerializer<DeckInfo>>()
             .SingleInstance();
 

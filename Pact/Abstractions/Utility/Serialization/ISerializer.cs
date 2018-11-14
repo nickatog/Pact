@@ -5,7 +5,11 @@ namespace Pact
 {
     public interface ISerializer<T>
     {
-        Task<T> Deserialize(Stream stream);
-        Task Serialize(Stream stream, T item);
+        Task<T> Deserialize(
+            Stream stream);
+
+        Task Serialize(
+            Stream stream,
+            T item);
     }
 }

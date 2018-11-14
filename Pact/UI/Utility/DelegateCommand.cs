@@ -1,22 +1,29 @@
 ﻿using System;
 using System.Windows.Input;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public sealed class DelegateCommand
         : ICommand
     {
+        #region Private members
         private readonly Func<bool> _canExecute;
         private readonly Action<object> _delegate;
+        #endregion // Private members
 
         public DelegateCommand(
+            #region Dependency assignments
             Action<object> @delegate,
             Func<bool> canExecute = null,
             Action<Action> canExecuteChangedClient = null)
         {
-            _delegate = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
+            _delegate =
+                @delegate.Require(nameof(@delegate));
 
             _canExecute = canExecute;
+            #endregion // Dependency assignments
 
             canExecuteChangedClient?.Invoke(() => CanExecuteChanged?.Invoke(this, null));
         }
@@ -26,12 +33,21 @@ namespace Pact
             Func<bool> canExecute = null,
             Action<Action> canExecuteChangedClient = null)
             : this(__ => @delegate(), canExecute, canExecuteChangedClient)
-        { }
+        {
+        }
 
-        void ICommand.Execute(object parameter) => _delegate(parameter);
-
-        bool ICommand.CanExecute(object parameter) => _canExecute?.Invoke() ?? true;
+        bool ICommand.CanExecute(
+            object parameter)
+        {
+            return _canExecute?.Invoke() ?? true;
+        }
 
         public event EventHandler CanExecuteChanged;
+
+        void ICommand.Execute(
+            object parameter)
+        {
+            _delegate(parameter);
+        }
     }
 }

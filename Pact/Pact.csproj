@@ -184,11 +184,9 @@
     <Compile Include="_ Deprecated\UserPromptView.xaml.cs">
       <DependentUpon>UserPromptView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Abstractions\Utility\MouseUtilities.cs" />
     <Compile Include="Abstractions\Utility\Serialization\ICollectionSerializer.cs" />
-    <Compile Include="Abstractions\Utility\Serialization\ISerializable.cs" />
     <Compile Include="Abstractions\Utility\Serialization\ISerializer.cs" />
-    <Compile Include="Abstractions\Utility\Serialization\Serializer.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\DelegateSerializer.cs" />
     <Compile Include="Abstractions\Utility\Serialization\VarintCollectionSerializer.cs" />
     <Compile Include="UI\Views\ConfigurationSettingsView.xaml.cs">
       <DependentUpon>ConfigurationSettingsView.xaml</DependentUpon>
@@ -206,7 +204,7 @@
       <DependentUpon>DeckView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View Models\DeckViewModel.cs" />
-    <Compile Include="Abstractions\Utility\DelegateCommand.cs" />
+    <Compile Include="UI\Utility\DelegateCommand.cs" />
     <Compile Include="Abstractions\Game Results\GameResult.cs" />
     <Compile Include="Abstractions\Loggers\ILogger.cs" />
     <Compile Include="Abstractions\Events\Streams\PowerLogEventStreamFactory.cs" />
@@ -234,7 +232,7 @@
     <Compile Include="Abstractions\Decks\IDecklistSerializer.cs" />
     <Compile Include="Abstractions\Events\Streams\IEventStreamFactory.cs" />
     <Compile Include="UI\View Models\MainWindowViewModel.cs" />
-    <Compile Include="Abstractions\Utility\OutlinedText.cs" />
+    <Compile Include="UI\Utility\OutlinedText.cs" />
     <Compile Include="PactModule.cs" />
     <Compile Include="UI\Views\PlayerDeckTrackerView.xaml.cs">
       <DependentUpon>PlayerDeckTrackerView.xaml</DependentUpon>
