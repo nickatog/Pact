@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     [Serializable]
@@ -9,8 +11,7 @@ namespace Pact
         public ConfigurationData(
             IConfigurationSettings configurationSettings)
         {
-            if (configurationSettings == null)
-                throw new ArgumentNullException(nameof(configurationSettings));
+            configurationSettings.Require(nameof(configurationSettings));
 
             _cardTextOffset = configurationSettings.CardTextOffset;
             _fontSize = configurationSettings.FontSize;

@@ -1,48 +1,45 @@
-﻿using System;
-using Valkyrie;
+﻿using Valkyrie;
+
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
     public sealed class CachingConfigurationSource
         : IConfigurationSource
     {
-        private readonly IConfigurationSource _configurationSource;
-        private readonly IEventDispatcher _eventDispatcher;
-
         private IConfigurationSettings _cachedConfigurationSettings;
+        private readonly IConfigurationSource _configurationSource;
+        private readonly IEventDispatcher _viewEventDispatcher;
         private readonly object _lock = new object();
 
         public CachingConfigurationSource(
             IConfigurationSource configurationSource,
-            IEventDispatcher eventDispatcher)
+            IEventDispatcher viewEventDispatcher)
         {
             _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
+                configurationSource.Require(nameof(configurationSource));
 
-            _eventDispatcher =
-                eventDispatcher
-                ?? throw new ArgumentNullException(nameof(eventDispatcher));
+            _viewEventDispatcher =
+                viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
-            _eventDispatcher.RegisterHandler(
+            _viewEventDispatcher.RegisterHandler(
                 new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
                     __ => _cachedConfigurationSettings = null));
         }
 
         IConfigurationSettings IConfigurationSource.GetSettings()
         {
-            if (_cachedConfigurationSettings != null)
-                return _cachedConfigurationSettings;
+            IConfigurationSettings configurationSettings = _cachedConfigurationSettings;
+            if (configurationSettings != null)
+                return configurationSettings;
 
             lock (_lock)
             {
-                if (_cachedConfigurationSettings != null)
-                    return _cachedConfigurationSettings;
+                if (_cachedConfigurationSettings == null)
+                    _cachedConfigurationSettings = _configurationSource.GetSettings();
 
-                _cachedConfigurationSettings = _configurationSource.GetSettings();
+                return _cachedConfigurationSettings;
             }
-
-            return _cachedConfigurationSettings;
         }
     }
 }

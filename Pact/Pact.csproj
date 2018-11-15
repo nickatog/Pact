@@ -139,10 +139,9 @@
     </Compile>
     <Compile Include="UI\View Models\DownloadUpdatesViewModel.cs" />
     <Compile Include="UI\Interfaces\IBackgroundWorkInterface.cs" />
-    <Compile Include="Abstractions\Utility\AsyncSemaphore.cs" />
+    <Compile Include="Abstractions\Utility\Locking\AsyncSemaphore.cs" />
     <Compile Include="UI\Behaviors\DeckDragBehavior.cs" />
     <Compile Include="UI\Behaviors\SaveWindowPositionBehavior.cs" />
-    <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
     <Compile Include="UI\Converters\CollapsedVisibilityWhenNullConverter.cs" />
     <Compile Include="UI\Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
     <Compile Include="UI\Converters\SelectedViewMatchesNameConverter.cs" />

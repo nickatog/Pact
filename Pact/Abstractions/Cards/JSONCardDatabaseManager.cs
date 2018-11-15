@@ -48,30 +48,35 @@ namespace Pact
             return null;
         }
 
-        async Task ICardDatabaseManager.UpdateCardDatabase(
+        Task ICardDatabaseManager.UpdateCardDatabase(
             int version,
             Stream updateStream)
         {
             updateStream.Require(nameof(updateStream));
 
-            string tempFilePath =
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Pact",
-                    $"~{CARD_DATABASE_FILENAME}");
+            return __UpdateCardDatabase();
 
-            using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
-                await updateStream.CopyToAsync(tempFileStream);
+            async Task __UpdateCardDatabase()
+            {
+                string tempFilePath =
+                    Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "Pact",
+                        $"~{CARD_DATABASE_FILENAME}");
 
-            string targetFilePath = Path.Combine(s_appDirectory, CARD_DATABASE_FILENAME);
+                using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
+                    await updateStream.CopyToAsync(tempFileStream);
 
-            File.Copy(tempFilePath, targetFilePath, true);
+                string targetFilePath = Path.Combine(s_appDirectory, CARD_DATABASE_FILENAME);
 
-            File.Delete(tempFilePath);
+                File.Copy(tempFilePath, targetFilePath, true);
 
-            File.WriteAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME), version.ToString());
+                File.Delete(tempFilePath);
 
-            _viewEventDispatcher.DispatchEvent(new Events.CardDatabaseUpdated());
+                File.WriteAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME), version.ToString());
+
+                _viewEventDispatcher.DispatchEvent(new Events.CardDatabaseUpdated());
+            }
         }
     }
 }

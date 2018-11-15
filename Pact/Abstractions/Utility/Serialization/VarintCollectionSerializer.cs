@@ -24,9 +24,9 @@ namespace Pact
         {
             stream.Require(nameof(stream));
 
-            return Deserialize();
+            return __Deserialize();
 
-            async Task<IEnumerable<T>> Deserialize()
+            async Task<IEnumerable<T>> __Deserialize()
             {
                 var items = new List<T>();
 
@@ -44,9 +44,9 @@ namespace Pact
         {
             items.Require(nameof(items));
 
-            return Serialize();
+            return __Serialize();
 
-            async Task Serialize()
+            async Task __Serialize()
             {
                 items = items.ToList();
 

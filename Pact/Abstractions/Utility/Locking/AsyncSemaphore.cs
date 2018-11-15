@@ -7,8 +7,7 @@ namespace Pact
     public sealed class AsyncSemaphore
     {
         private int _count;
-
-        private readonly Queue<TaskCompletionSource<WaitHandle>> _waiters = new Queue<TaskCompletionSource<WaitHandle>>();
+        private readonly Queue<TaskCompletionSource<IDisposable>> _waiters = new Queue<TaskCompletionSource<IDisposable>>();
 
         public AsyncSemaphore(
             int count = 1)
@@ -34,7 +33,7 @@ namespace Pact
             }
         }
 
-        public Task<WaitHandle> WaitAsync()
+        public Task<IDisposable> WaitAsync()
         {
             lock (_waiters)
             {
@@ -42,19 +41,21 @@ namespace Pact
                 {
                     _count--;
 
-                    return Task.FromResult(new WaitHandle(this));
+                    return Task.FromResult<IDisposable>(new WaitHandle(this));
                 }
 
-                var waiter = new TaskCompletionSource<WaitHandle>();
+                var waiter = new TaskCompletionSource<IDisposable>();
+
                 _waiters.Enqueue(waiter);
 
                 return waiter.Task;
             }
         }
 
-        public sealed class WaitHandle
+        private sealed class WaitHandle
             : IDisposable
         {
+            private bool _disposed = false;
             private readonly AsyncSemaphore _semaphore;
 
             public WaitHandle(
@@ -68,13 +69,12 @@ namespace Pact
                 Dispose(false);
             }
 
-            private bool _disposed = false;
-
-            void Dispose(bool disposing)
+            void Dispose(
+                bool disposing)
             {
                 if (!_disposed)
                 {
-                    _semaphore.Release();
+                    _semaphore?.Release();
 
                     _disposed = true;
                 }

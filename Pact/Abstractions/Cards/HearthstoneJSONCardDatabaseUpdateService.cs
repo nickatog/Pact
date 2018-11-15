@@ -18,13 +18,13 @@ namespace Pact
         async Task<int?> ICardDatabaseUpdateService.GetLatestVersion()
         {
 #if DEBUG
-            ServicePointManager.SecurityProtocol |=
-                SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
 
             string versionSegment = null;
 
-            using (HttpResponseMessage response = (await s_httpClient.GetAsync(BASE_PATH + "latest/")).EnsureSuccessStatusCode())
+            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync(BASE_PATH + "latest/");
+            using (HttpResponseMessage response = (await requestTask.ConfigureAwait(false)).EnsureSuccessStatusCode())
                 versionSegment = response.RequestMessage.RequestUri.Segments.LastOrDefault();
 
             if (versionSegment == null)
@@ -44,13 +44,13 @@ namespace Pact
             int version)
         {
 #if DEBUG
-            ServicePointManager.SecurityProtocol |=
-                SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
 
-            HttpResponseMessage response = (await s_httpClient.GetAsync($"{BASE_PATH}{version}/enUS/cards.json")).EnsureSuccessStatusCode();
+            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{BASE_PATH}{version}/enUS/cards.json");
+            HttpResponseMessage response = (await requestTask.ConfigureAwait(false)).EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsStreamAsync();
+            return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         }
     }
 }

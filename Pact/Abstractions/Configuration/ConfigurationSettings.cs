@@ -16,16 +16,16 @@ namespace Pact
             TrackerWindowSize = configurationData.TrackerWindowSize;
         }
 
-        public int CardTextOffset { get; private set; }
+        public int CardTextOffset { get; }
 
-        public int FontSize { get; private set; }
+        public int FontSize { get; }
 
-        public bool HasLoaded { get; private set; }
+        public bool HasLoaded { get; }
 
-        public string PowerLogFilePath { get; private set; }
+        public string PowerLogFilePath { get; }
 
-        public Point? TrackerWindowLocation { get; private set; }
+        public Point? TrackerWindowLocation { get; }
 
-        public Size? TrackerWindowSize { get; private set; }
+        public Size? TrackerWindowSize { get; }
     }
 }

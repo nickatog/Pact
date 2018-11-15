@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public sealed class FileBasedConfigurationSource
         : IConfigurationSource
     {
         private readonly ISerializer<ConfigurationData> _configurationSerializer;
-
         private readonly string _filePath;
 
         public FileBasedConfigurationSource(
@@ -15,21 +16,24 @@ namespace Pact
             string filePath)
         {
             _configurationSerializer =
-                configurationSerializer
-                ?? throw new ArgumentNullException(nameof(configurationSerializer));
+                configurationSerializer.Require(nameof(configurationSerializer));
 
             _filePath =
-                filePath
-                ?? throw new ArgumentNullException(nameof(filePath));
+                filePath.Require(nameof(filePath));
         }
 
         IConfigurationSettings IConfigurationSource.GetSettings()
         {
-            if (!File.Exists(_filePath))
-                return new ConfigurationSettings(default);
+            try
+            {
+                using (var stream = new FileStream(_filePath, FileMode.Open))
+                    return new ConfigurationSettings(_configurationSerializer.Deserialize(stream).Result);
+            }
+            catch (Exception)
+            {
+            }
 
-            using (var stream = new FileStream(_filePath, FileMode.Open))
-                return new ConfigurationSettings(_configurationSerializer.Deserialize(stream).Result);
+            return new ConfigurationSettings(default);
         }
     }
 }

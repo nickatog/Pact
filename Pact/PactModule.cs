@@ -52,7 +52,7 @@ namespace Pact
                         __context.Resolve<IReplaceDeckInterface>(),
                         __context.Resolve<IUserConfirmationInterface>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<DeckManagerViewModel>();
+            .AsSelf();
 
             // DevToolsViewModel
             builder
@@ -76,17 +76,20 @@ namespace Pact
                 __context =>
                     new JSONCardDatabaseManager(
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<ICardDatabaseManager>();
+            .As<ICardDatabaseManager>()
+            .SingleInstance();
 
             // ICardInfoDatabaseUpdateInterface
             builder
             .RegisterType<ModalCardDatabaseUpdateInterface>()
-            .As<ICardDatabaseUpdateInterface>();
+            .As<ICardDatabaseUpdateInterface>()
+            .SingleInstance();
 
             // ICardInfoDatabaseUpdateService
             builder
             .RegisterType<HearthstoneJSONCardDatabaseUpdateService>()
-            .As<ICardDatabaseUpdateService>();
+            .As<ICardDatabaseUpdateService>()
+            .SingleInstance();
 
             // ICardInfoProvider
             builder
@@ -123,13 +126,11 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new FileBasedConfigurationStorage(__context.Resolve<ISerializer<ConfigurationData>>(), configurationFilePath))
-            .Named<IConfigurationStorage>("base");
-
-            builder
-            .RegisterDecorator<IConfigurationStorage>(
-                (__context, __inner) =>
-                    new EventDispatchingConfigurationStorage(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
+                    new FileBasedConfigurationStorage(
+                        __context.Resolve<ISerializer<ConfigurationData>>(),
+                        configurationFilePath,
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+            .As<IConfigurationStorage>()
             .SingleInstance();
 
             // IDeckImportInterface
@@ -267,7 +268,8 @@ namespace Pact
             // IModalDisplay
             builder
             .RegisterType<MainWindowModalDisplay>()
-            .As<IModalDisplay>();
+            .As<IModalDisplay>()
+            .SingleInstance();
 
             // IPlayerDeckTrackerInterface
             builder
@@ -285,7 +287,8 @@ namespace Pact
             // IReplaceDeckInterface
             builder
             .RegisterType<ModalReplaceDeckInterface>()
-            .As<IReplaceDeckInterface>();
+            .As<IReplaceDeckInterface>()
+            .SingleInstance();
 
             // ISerializers
             builder
@@ -330,13 +333,13 @@ namespace Pact
             .As<ISerializer<DeckInfo>>()
             .SingleInstance();
 
-            // IUserConfirmation
+            // IUserConfirmationInterface
             builder
             .RegisterType<ModalUserConfirmationInterface>()
             .As<IUserConfirmationInterface>()
             .SingleInstance();
 
-            // IUserPromptService
+            // IUserPrompt
             builder
             .RegisterType<UserPrompt>()
             .As<IUserPrompt>()
