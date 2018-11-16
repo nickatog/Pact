@@ -23,7 +23,7 @@ namespace Pact
 
             string versionSegment = null;
 
-            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync(BASE_PATH + "latest/");
+            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{BASE_PATH}latest/");
             using (HttpResponseMessage response = (await requestTask.ConfigureAwait(false)).EnsureSuccessStatusCode())
                 versionSegment = response.RequestMessage.RequestUri.Segments.LastOrDefault();
 

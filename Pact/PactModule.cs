@@ -70,22 +70,33 @@ namespace Pact
             .As<IBackgroundWorkInterface>()
             .SingleInstance();
 
-            // ICardInfoDatabaseManager
+            // ICardDatabase
             builder
             .Register(
                 __context =>
-                    new JSONCardDatabaseManager(
+                    new JSONCardDatabase(
+                        Path.Combine(
+                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                            "cards.json")))
+            .As<ICardDatabase>()
+            .SingleInstance();
+
+            // ICardDatabaseManager
+            builder
+            .Register(
+                __context =>
+                    new FileBasedCardDatabaseManager(
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<ICardDatabaseManager>()
             .SingleInstance();
 
-            // ICardInfoDatabaseUpdateInterface
+            // ICardDatabaseUpdateInterface
             builder
             .RegisterType<ModalCardDatabaseUpdateInterface>()
             .As<ICardDatabaseUpdateInterface>()
             .SingleInstance();
 
-            // ICardInfoDatabaseUpdateService
+            // ICardDatabaseUpdateService
             builder
             .RegisterType<HearthstoneJSONCardDatabaseUpdateService>()
             .As<ICardDatabaseUpdateService>()
@@ -95,10 +106,8 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new JSONCardInfoProvider(
-                        Path.Combine(
-                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                            "cards.json"),
+                    new LocalDatabaseCardInfoProvider(
+                        __context.Resolve<ICardDatabase>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
             .As<ICardInfoProvider>()
             .SingleInstance();

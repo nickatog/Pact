@@ -9,25 +9,21 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class JSONCardDatabaseManager
+    public sealed class FileBasedCardDatabaseManager
         : ICardDatabaseManager
     {
-        #region Private members
         private static readonly string s_appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         private const string CARD_DATABASE_FILENAME = "cards.json";
         private const string CARD_DATABASE_VERSION_FILENAME = "cards.version";
 
         private readonly IEventDispatcher _viewEventDispatcher;
-        #endregion // Private members
 
-        public JSONCardDatabaseManager(
-            #region Dependency assignments
+        public FileBasedCardDatabaseManager(
             IEventDispatcher viewEventDispatcher)
         {
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
-            #endregion // Dependency assignments
         }
 
         int? ICardDatabaseManager.GetCurrentVersion()
@@ -38,9 +34,7 @@ namespace Pact
             {
                 text = File.ReadAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME));
             }
-            catch (FileNotFoundException)
-            {
-            }
+            catch (FileNotFoundException) {}
 
             if (int.TryParse(text, out int version))
                 return version;
@@ -75,6 +69,7 @@ namespace Pact
 
                 File.WriteAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME), version.ToString());
 
+                // TODO: move this back out to a decorator explicitly for firing events
                 _viewEventDispatcher.DispatchEvent(new Events.CardDatabaseUpdated());
             }
         }

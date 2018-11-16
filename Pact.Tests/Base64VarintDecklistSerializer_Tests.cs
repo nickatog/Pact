@@ -16,8 +16,8 @@ namespace Pact.Tests
             IDecklistSerializer serializer =
                 new TextDecklistSerializer(
                     new VarintDecklistSerializer(
-                        new JSONCardInfoProvider(
-                            @"C:\Users\Nicholas Anderson\Documents\Visual Studio 2017\Projects\Pact\cards.json",
+                        new LocalDatabaseCardInfoProvider(
+                            new JSONCardDatabase(@"C:\Users\Nicholas Anderson\Documents\Visual Studio 2017\Projects\Pact\cards.json"),
                             ((Valkyrie.IEventDispatcherFactory)new Valkyrie.InMemoryEventDispatcherFactory()).Create())));
 
             using (var inputStream = new MemoryStream(Encoding.Default.GetBytes(deckstring)))
