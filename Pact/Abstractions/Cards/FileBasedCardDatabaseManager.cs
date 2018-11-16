@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 using Valkyrie;
@@ -12,16 +11,21 @@ namespace Pact
     public sealed class FileBasedCardDatabaseManager
         : ICardDatabaseManager
     {
-        private static readonly string s_appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        private const string CARD_DATABASE_FILENAME = "cards.json";
-        private const string CARD_DATABASE_VERSION_FILENAME = "cards.version";
-
+        private readonly string _cardDatabaseFilePath;
+        private readonly string _cardDatabaseVersionFilePath;
         private readonly IEventDispatcher _viewEventDispatcher;
 
         public FileBasedCardDatabaseManager(
+            string cardDatabaseFilePath,
+            string cardDatabaseVersionFilePath,
             IEventDispatcher viewEventDispatcher)
         {
+            _cardDatabaseFilePath =
+                cardDatabaseFilePath.Require(nameof(cardDatabaseFilePath));
+
+            _cardDatabaseVersionFilePath =
+                cardDatabaseVersionFilePath.Require(nameof(cardDatabaseVersionFilePath));
+
             _viewEventDispatcher =
                 viewEventDispatcher.Require(nameof(viewEventDispatcher));
         }
@@ -32,7 +36,7 @@ namespace Pact
 
             try
             {
-                text = File.ReadAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME));
+                text = File.ReadAllText(_cardDatabaseVersionFilePath);
             }
             catch (FileNotFoundException) {}
 
@@ -56,18 +60,16 @@ namespace Pact
                     Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                         "Pact",
-                        $"~{CARD_DATABASE_FILENAME}");
+                        $"~{Path.GetFileName(_cardDatabaseFilePath)}");
 
                 using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
                     await updateStream.CopyToAsync(tempFileStream);
 
-                string targetFilePath = Path.Combine(s_appDirectory, CARD_DATABASE_FILENAME);
-
-                File.Copy(tempFilePath, targetFilePath, true);
+                File.Copy(tempFilePath, _cardDatabaseFilePath, true);
 
                 File.Delete(tempFilePath);
 
-                File.WriteAllText(Path.Combine(s_appDirectory, CARD_DATABASE_VERSION_FILENAME), version.ToString());
+                File.WriteAllText(_cardDatabaseVersionFilePath, version.ToString());
 
                 // TODO: move this back out to a decorator explicitly for firing events
                 _viewEventDispatcher.DispatchEvent(new Events.CardDatabaseUpdated());

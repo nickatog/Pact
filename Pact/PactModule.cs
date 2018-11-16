@@ -85,8 +85,14 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new FileBasedCardDatabaseManager(
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+                {
+                    string appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                    return new FileBasedCardDatabaseManager(
+                        Path.Combine(appDirectory, "cards.json"),
+                        Path.Combine(appDirectory, "cards.version"),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
+                })
             .As<ICardDatabaseManager>()
             .SingleInstance();
 
