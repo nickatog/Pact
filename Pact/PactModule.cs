@@ -90,10 +90,17 @@ namespace Pact
 
                     return new FileBasedCardDatabaseManager(
                         Path.Combine(appDirectory, "cards.json"),
-                        Path.Combine(appDirectory, "cards.version"),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view"));
+                        Path.Combine(appDirectory, "cards.version"));
                 })
-            .As<ICardDatabaseManager>()
+            .Named<ICardDatabaseManager>("base");
+
+            builder
+            .RegisterDecorator<ICardDatabaseManager>(
+                (__context, __inner) =>
+                    new EventDispatchingCardDatabaseManager(
+                        __inner,
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                "base")
             .SingleInstance();
 
             // ICardDatabaseUpdateInterface
@@ -104,7 +111,9 @@ namespace Pact
 
             // ICardDatabaseUpdateService
             builder
-            .RegisterType<HearthstoneJSONCardDatabaseUpdateService>()
+            .Register(
+                __context =>
+                    new HearthstoneJSONCardDatabaseUpdateService("https://api.hearthstonejson.com/v1/"))
             .As<ICardDatabaseUpdateService>()
             .SingleInstance();
 
@@ -128,13 +137,18 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new FileBasedConfigurationSource(__context.Resolve<ISerializer<ConfigurationData>>(), configurationFilePath))
+                    new FileBasedConfigurationSource(
+                        __context.Resolve<ISerializer<ConfigurationData>>(),
+                        configurationFilePath))
             .Named<IConfigurationSource>("base");
 
             builder
             .RegisterDecorator<IConfigurationSource>(
                 (__context, __inner) =>
-                    new CachingConfigurationSource(__inner, __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")), "base")
+                    new CachingConfigurationSource(
+                        __inner,
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                "base")
             .SingleInstance();
 
             // IConfigurationStorage
@@ -143,9 +157,16 @@ namespace Pact
                 __context =>
                     new FileBasedConfigurationStorage(
                         __context.Resolve<ISerializer<ConfigurationData>>(),
-                        configurationFilePath,
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
-            .As<IConfigurationStorage>()
+                        configurationFilePath))
+            .Named<IConfigurationStorage>("base");
+
+            builder
+            .RegisterDecorator<IConfigurationStorage>(
+                (__context, __inner) =>
+                    new EventDispatchingConfigurationStorage(
+                        __inner,
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                "base")
             .SingleInstance();
 
             // IDeckImportInterface

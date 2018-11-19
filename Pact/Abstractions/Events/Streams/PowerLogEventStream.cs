@@ -42,7 +42,7 @@ namespace Pact
             _filePath = _configurationSource.GetSettings().PowerLogFilePath;
             
             _eventHandlers.Add(
-                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
+                new DelegateEventHandler<ViewEvents.ConfigurationSettingsSaved>(
                     __event =>
                     {
                         string newFilePath = _configurationSource.GetSettings().PowerLogFilePath;

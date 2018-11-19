@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+
 using Pact.Extensions.Contract;
 
 namespace Pact
@@ -17,54 +18,66 @@ namespace Pact
             Encoding encoding = null)
         {
             _serializer = serializer.Require(nameof(serializer));
-
             _encoding = encoding ?? Encoding.Default;
         }
 
-        async Task<Decklist> IDecklistSerializer.Deserialize(Stream stream)
+        Task<Decklist> IDecklistSerializer.Deserialize(
+            Stream stream)
         {
             stream.Require(nameof(stream));
 
-            string deckstring = null;
-            using (var reader = new StreamReader(stream, _encoding))
+            return __Deserialize();
+
+            async Task<Decklist> __Deserialize()
             {
-                string line;
-                while ((line = await reader.ReadLineAsync()) != null)
+                string deckstring = null;
+                using (var reader = new StreamReader(stream, _encoding))
                 {
-                    if (line.Length <= 0 || line[0] == '#')
-                        continue;
+                    string line;
+                    while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
+                    {
+                        if (line.Length <= 0 || line[0] == '#')
+                            continue;
 
-                    deckstring = line;
+                        deckstring = line;
 
-                    break;
+                        break;
+                    }
                 }
+
+                if (deckstring == null)
+                    throw new Exception("Text did not contain a deckstring!");
+
+                using (var dataStream = new MemoryStream(Convert.FromBase64String(deckstring)))
+                    return await _serializer.Deserialize(dataStream).ConfigureAwait(false);
             }
-
-            if (deckstring == null)
-                throw new Exception("Text did not contain a deckstring!");
-
-            using (var dataStream = new MemoryStream(Convert.FromBase64String(deckstring)))
-                return await _serializer.Deserialize(dataStream);
         }
 
-        async Task IDecklistSerializer.Serialize(Stream stream, Decklist decklist)
+        Task IDecklistSerializer.Serialize(
+            Stream stream,
+            Decklist decklist)
         {
             stream.Require(nameof(stream));
 
-            byte[] bytes;
-            using (var dataStream = new MemoryStream())
+            return __Serialize();
+
+            async Task __Serialize()
             {
-                await _serializer.Serialize(dataStream, decklist);
+                byte[] bytes;
+                using (var dataStream = new MemoryStream())
+                {
+                    await _serializer.Serialize(dataStream, decklist).ConfigureAwait(false);
 
-                dataStream.Position = 0;
+                    dataStream.Position = 0;
 
-                bytes = new byte[dataStream.Length];
-                dataStream.Read(bytes, 0, (int)dataStream.Length);
+                    bytes = new byte[dataStream.Length];
+                    dataStream.Read(bytes, 0, (int)dataStream.Length);
+                }
+
+                byte[] encodedBytes = _encoding.GetBytes(Convert.ToBase64String(bytes));
+
+                await stream.WriteAsync(encodedBytes, 0, encodedBytes.Length).ConfigureAwait(false);
             }
-
-            byte[] encodedBytes = _encoding.GetBytes(Convert.ToBase64String(bytes));
-
-            await stream.WriteAsync(encodedBytes, 0, encodedBytes.Length);
         }
     }
 }

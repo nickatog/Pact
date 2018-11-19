@@ -2,6 +2,6 @@
 {
     public interface IConfigurationSource
     {
-        IConfigurationSettings GetSettings();
+        ConfigurationSettings GetSettings();
     }
 }

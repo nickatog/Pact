@@ -17,8 +17,11 @@ namespace Pact
         }
 
         public Guid DeckID { get; }
+
         public string DeckString { get; }
+
         public UInt16 Position { get; }
+
         public string Title { get; }
     }
 }

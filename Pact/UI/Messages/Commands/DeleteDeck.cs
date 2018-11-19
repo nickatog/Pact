@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pact.Commands
+namespace Pact.ViewCommands
 {
     public sealed class DeleteDeck
     {

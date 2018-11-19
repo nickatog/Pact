@@ -16,11 +16,8 @@ namespace Pact
             AsyncSemaphore asyncMutex,
             IDeckInfoFileStorage deckInfoFileStorage)
         {
-            _asyncMutex =
-                asyncMutex.Require(nameof(asyncMutex));
-
-            _deckInfoFileStorage =
-                deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
+            _asyncMutex = asyncMutex.Require(nameof(asyncMutex));
+            _deckInfoFileStorage = deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
         }
 
         Task<IEnumerable<DeckInfo>> IDeckRepository.GetAllDecksAndGameResults()

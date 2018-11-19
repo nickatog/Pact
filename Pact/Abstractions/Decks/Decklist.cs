@@ -5,15 +5,16 @@ namespace Pact
 {
     public struct Decklist
     {
-        public IEnumerable<(string CardID, int Count)> Cards { get; private set; }
-        public string HeroID { get; private set; }
-
         public Decklist(
             string heroID,
-            IEnumerable<(string, int)> cards)
+            IEnumerable<DecklistCard> cards)
         {
-            Cards = cards?.ToList() ?? Enumerable.Empty<(string, int)>();
+            Cards = cards?.ToList() ?? Enumerable.Empty<DecklistCard>();
             HeroID = heroID;
         }
+
+        public IEnumerable<DecklistCard> Cards { get; }
+
+        public string HeroID { get; }
     }
 }

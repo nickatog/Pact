@@ -91,12 +91,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Abstractions\Cards\EventDispatchingCardDatabaseManager.cs" />
     <Compile Include="Abstractions\Cards\HearthstoneJSONCardDatabaseUpdateService.cs" />
     <Compile Include="Abstractions\Cards\ICardDatabase.cs" />
     <Compile Include="Abstractions\Cards\ICardDatabaseManager.cs" />
     <Compile Include="Abstractions\Cards\ICardDatabaseUpdateService.cs" />
     <Compile Include="Abstractions\Cards\JSONCardDatabase.cs" />
     <Compile Include="Abstractions\Cards\FileBasedCardDatabaseManager.cs" />
+    <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
+    <Compile Include="Abstractions\Decks\DecklistCard.cs" />
     <Compile Include="Abstractions\Decks\DeckDetails.cs" />
     <Compile Include="Abstractions\Decks\DeckInfoFileStorage.cs" />
     <Compile Include="Abstractions\Decks\FileBasedDeckRepository.cs" />
@@ -118,7 +121,7 @@
     <Compile Include="Abstractions\Configuration\GlobalConfigurationStorage.cs" />
     <Compile Include="Abstractions\Configuration\IConfigurationSource.cs" />
     <Compile Include="Abstractions\Configuration\IConfigurationStorage.cs" />
-    <Compile Include="Abstractions\Events\View Events\ConfigurationSettingsSaved.cs" />
+    <Compile Include="UI\Messages\Events\ConfigurationSettingsSaved.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\HearthstoneConfiguration.cs" />
     <Compile Include="Abstractions\Hearthstone Configuration\IHearthstoneConfiguration.cs" />
     <Compile Include="UI\Messages\Events\CardDatabaseUpdated.cs" />
@@ -148,7 +151,7 @@
     <Compile Include="UI\Converters\HiddenVisibilityWhenMatchesBoolConverter.cs" />
     <Compile Include="UI\Converters\SelectedViewMatchesNameConverter.cs" />
     <Compile Include="UI\Converters\SingleValueToThicknessConverter.cs" />
-    <Compile Include="Abstractions\Decks\Base64VarintDecklistSerializer.cs" />
+    <Compile Include="Abstractions\Decks\VarintDecklistSerializer.cs" />
     <Compile Include="Abstractions\Cards\CardInfo.cs" />
     <Compile Include="Abstractions\Decks\DeckInfo.cs" />
     <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />
@@ -229,7 +232,6 @@
     <Compile Include="Abstractions\Cards\LocalDatabaseCardInfoProvider.cs" />
     <Compile Include="Abstractions\Events\PlayerDetermined.cs" />
     <Compile Include="Abstractions\Events\PlayerReceivedCoin.cs" />
-    <Compile Include="Abstractions\Configuration\IConfigurationSettings.cs" />
     <Compile Include="Abstractions\Decks\IDecklistSerializer.cs" />
     <Compile Include="Abstractions\Events\Streams\IEventStreamFactory.cs" />
     <Compile Include="UI\View Models\MainWindowViewModel.cs" />

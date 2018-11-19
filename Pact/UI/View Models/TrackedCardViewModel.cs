@@ -112,7 +112,7 @@ namespace Pact
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
             _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
+                new DelegateEventHandler<ViewEvents.ConfigurationSettingsSaved>(
                     __event =>
                     {
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CardTextOffset)));

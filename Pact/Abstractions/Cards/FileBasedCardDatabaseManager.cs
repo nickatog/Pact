@@ -2,8 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 
-using Valkyrie;
-
 using Pact.Extensions.Contract;
 
 namespace Pact
@@ -13,21 +11,13 @@ namespace Pact
     {
         private readonly string _cardDatabaseFilePath;
         private readonly string _cardDatabaseVersionFilePath;
-        private readonly IEventDispatcher _viewEventDispatcher;
 
         public FileBasedCardDatabaseManager(
             string cardDatabaseFilePath,
-            string cardDatabaseVersionFilePath,
-            IEventDispatcher viewEventDispatcher)
+            string cardDatabaseVersionFilePath)
         {
-            _cardDatabaseFilePath =
-                cardDatabaseFilePath.Require(nameof(cardDatabaseFilePath));
-
-            _cardDatabaseVersionFilePath =
-                cardDatabaseVersionFilePath.Require(nameof(cardDatabaseVersionFilePath));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _cardDatabaseFilePath = cardDatabaseFilePath.Require(nameof(cardDatabaseFilePath));
+            _cardDatabaseVersionFilePath = cardDatabaseVersionFilePath.Require(nameof(cardDatabaseVersionFilePath));
         }
 
         int? ICardDatabaseManager.GetCurrentVersion()
@@ -62,17 +52,18 @@ namespace Pact
                         "Pact",
                         $"~{Path.GetFileName(_cardDatabaseFilePath)}");
 
+                var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(tempFilePath));
+                if (!directoryInfo.Exists)
+                    directoryInfo.Create();
+
                 using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
-                    await updateStream.CopyToAsync(tempFileStream);
+                    await updateStream.CopyToAsync(tempFileStream).ConfigureAwait(false);
 
                 File.Copy(tempFilePath, _cardDatabaseFilePath, true);
 
                 File.Delete(tempFilePath);
 
                 File.WriteAllText(_cardDatabaseVersionFilePath, version.ToString());
-
-                // TODO: move this back out to a decorator explicitly for firing events
-                _viewEventDispatcher.DispatchEvent(new Events.CardDatabaseUpdated());
             }
         }
     }

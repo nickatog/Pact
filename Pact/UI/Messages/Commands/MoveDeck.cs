@@ -1,4 +1,4 @@
-﻿namespace Pact.Commands
+﻿namespace Pact.ViewCommands
 {
     public sealed class MoveDeck
     {

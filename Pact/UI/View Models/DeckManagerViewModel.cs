@@ -51,44 +51,19 @@ namespace Pact
             IUserConfirmationInterface userConfirmationInterface,
             IEventDispatcher viewEventDispatcher)
         {
-            _backgroundWorkInterface =
-                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
-
-            _cardInfoProvider =
-                cardInfoProvider.Require(nameof(cardInfoProvider));
-
-            _deckImportInterface =
-                deckImportInterface.Require(nameof(deckImportInterface));
-
-            _decklistSerializer =
-                decklistSerializer.Require(nameof(decklistSerializer));
-
-            _deckRepository =
-                deckRepository.Require(nameof(deckRepository));
-
-            _eventStreamFactory =
-                eventStreamFactory.Require(nameof(eventStreamFactory));
-
-            _gameEventDispatcher =
-                gameEventDispatcher.Require(nameof(gameEventDispatcher));
-
-            _gameResultRepository =
-                gameResultRepository.Require(nameof(gameResultRepository));
-
-            _logger =
-                logger.Require(nameof(logger));
-
-            _playerDeckTrackerInterface =
-                playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
-
-            _replaceDeckInterface =
-                replaceDeckInterface.Require(nameof(replaceDeckInterface));
-
-            _userConfirmationInterface =
-                userConfirmationInterface.Require(nameof(userConfirmationInterface));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _backgroundWorkInterface = backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckRepository = deckRepository.Require(nameof(deckRepository));
+            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
+            _gameResultRepository = gameResultRepository.Require(nameof(gameResultRepository));
+            _logger = logger.Require(nameof(logger));
+            _playerDeckTrackerInterface = playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
+            _replaceDeckInterface = replaceDeckInterface.Require(nameof(replaceDeckInterface));
+            _userConfirmationInterface = userConfirmationInterface.Require(nameof(userConfirmationInterface));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
             #endregion // Dependency assignment
 
             // Start loading pre-existing decks
@@ -129,7 +104,7 @@ namespace Pact
                 });
 
             _viewEventDispatcher.RegisterHandler(
-                new DelegateEventHandler<Commands.DeleteDeck>(
+                new DelegateEventHandler<ViewCommands.DeleteDeck>(
                     async __event =>
                     {
                         DeckViewModel deck = _deckViewModels.FirstOrDefault(__deck => __deck.DeckID == __event.DeckID);
@@ -142,7 +117,7 @@ namespace Pact
                     }));
 
             _viewEventDispatcher.RegisterHandler(
-                new DelegateEventHandler<Commands.MoveDeck>(
+                new DelegateEventHandler<ViewCommands.MoveDeck>(
                     async __event =>
                     {
                         ushort sourcePosition = __event.SourcePosition;

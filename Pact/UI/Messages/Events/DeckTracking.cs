@@ -1,4 +1,4 @@
-﻿namespace Pact.Events
+﻿namespace Pact.ViewEvents
 {
     public sealed class DeckTracking
     {

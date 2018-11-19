@@ -39,7 +39,7 @@ namespace Pact.Tests
         [Fact]
         public async void LatestVersion_Test()
         {
-            ICardDatabaseUpdateService test = new HearthstoneJSONCardDatabaseUpdateService();
+            ICardDatabaseUpdateService test = new HearthstoneJSONCardDatabaseUpdateService("https://api.hearthstonejson.com/v1/");
 
             Console.WriteLine(await test.GetLatestVersion());
         }

@@ -33,7 +33,7 @@ namespace Pact
             _configurationStorage =
                 configurationStorage.Require(nameof(configurationStorage));
 
-            IConfigurationSettings configurationSettings = _configurationSource.GetSettings();
+            ConfigurationSettings configurationSettings = _configurationSource.GetSettings();
 
             CardTextOffset = configurationSettings.CardTextOffset;
             FontSize = configurationSettings.FontSize;

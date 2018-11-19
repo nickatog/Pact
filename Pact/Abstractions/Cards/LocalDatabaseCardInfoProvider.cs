@@ -19,16 +19,13 @@ namespace Pact
             ICardDatabase cardDatabase,
             IEventDispatcher viewEventDispatcher)
         {
-            _cardDatabase =
-                cardDatabase.Require(nameof(cardDatabase));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _cardDatabase = cardDatabase.Require(nameof(cardDatabase));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             LoadCards();
 
             _viewEventDispatcher.RegisterHandler(
-                new DelegateEventHandler<Events.CardDatabaseUpdated>(
+                new DelegateEventHandler<ViewEvents.CardDatabaseUpdated>(
                     __ => LoadCards()));
 
             void LoadCards()

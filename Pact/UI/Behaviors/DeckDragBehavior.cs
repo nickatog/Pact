@@ -59,7 +59,7 @@ namespace Pact
                 DropHighlightTop.Visibility = Visibility.Hidden;
                 DropHighlightBottom.Visibility = Visibility.Hidden;
 
-                GlobalViewEventDispatcher.Instance.DispatchEvent(new Commands.MoveDeck(sourcePosition, targetPosition));
+                GlobalViewEventDispatcher.Instance.DispatchEvent(new ViewCommands.MoveDeck(sourcePosition, targetPosition));
             }
         }
 

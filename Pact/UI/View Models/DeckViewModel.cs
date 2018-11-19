@@ -102,7 +102,7 @@ namespace Pact
             #endregion // Dependencies
             
             _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.DeckTracking>(
+                new DelegateEventHandler<ViewEvents.DeckTracking>(
                     __event =>
                     {
                         IsTracking = __event.DeckViewModel == this;
@@ -147,7 +147,7 @@ namespace Pact
 
                     _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
 
-                    _viewEventDispatcher.DispatchEvent(new Commands.DeleteDeck(DeckID));
+                    _viewEventDispatcher.DispatchEvent(new ViewCommands.DeleteDeck(DeckID));
                 },
                 canExecute:
                     () => !IsTracking,
@@ -227,7 +227,7 @@ namespace Pact
             new DelegateCommand(
                 () =>
                 {
-                    _viewEventDispatcher.DispatchEvent(new Events.DeckTracking(this));
+                    _viewEventDispatcher.DispatchEvent(new ViewEvents.DeckTracking(this));
 
                     _playerDeckTrackerInterface.TrackDeck(Decklist);
 
@@ -253,7 +253,7 @@ namespace Pact
 
                     IEventHandler unregisterHandlers = null;
                     unregisterHandlers =
-                        new DelegateEventHandler<Events.DeckTracking>(
+                        new DelegateEventHandler<ViewEvents.DeckTracking>(
                             __event =>
                             {
                                 _gameEventDispatcher.UnregisterHandler(recordGameResult);
@@ -271,7 +271,7 @@ namespace Pact
                 {
                     _playerDeckTrackerInterface.Close();
 
-                    _viewEventDispatcher.DispatchEvent(new Events.DeckTracking(null));
+                    _viewEventDispatcher.DispatchEvent(new ViewEvents.DeckTracking(null));
                 });
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);

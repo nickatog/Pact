@@ -99,7 +99,7 @@ namespace Pact
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));
 
             _viewEventHandlers.Add(
-                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
+                new DelegateEventHandler<ViewEvents.ConfigurationSettingsSaved>(
                     __ => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)))));
 
             _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));

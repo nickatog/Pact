@@ -17,8 +17,7 @@ namespace Pact
         public JSONCardDatabase(
             string filePath)
         {
-            _filePath =
-                filePath.Require(nameof(filePath));
+            _filePath = filePath.Require(nameof(filePath));
         }
 
         Task<IEnumerable<CardInfo>> ICardDatabase.GetCards()

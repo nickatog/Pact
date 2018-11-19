@@ -2,8 +2,7 @@
 
 namespace Pact
 {
-    public sealed class ConfigurationSettings
-        : IConfigurationSettings
+    public struct ConfigurationSettings
     {
         public ConfigurationSettings(
             ConfigurationData configurationData)

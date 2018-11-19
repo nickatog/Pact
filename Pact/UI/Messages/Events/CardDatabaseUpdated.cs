@@ -1,6 +1,4 @@
-﻿namespace Pact.Events
+﻿namespace Pact.ViewEvents
 {
-    public sealed class CardDatabaseUpdated
-    {
-    }
+    public sealed class CardDatabaseUpdated {}
 }

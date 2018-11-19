@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -13,17 +14,19 @@ namespace Pact
         private static readonly HttpClient s_httpClient = new HttpClient();
         private static readonly Regex s_versionPattern = new Regex(@"(?<Version>\d+).*", RegexOptions.Compiled);
 
-        private const string BASE_PATH = "https://api.hearthstonejson.com/v1/";
+        private readonly string _baseURI;
+
+        public HearthstoneJSONCardDatabaseUpdateService(
+            string baseURI)
+        {
+            _baseURI = baseURI.Require(nameof(baseURI));
+        }
 
         async Task<int?> ICardDatabaseUpdateService.GetLatestVersion()
         {
-#if DEBUG
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-#endif
-
             string versionSegment = null;
 
-            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{BASE_PATH}latest/");
+            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{_baseURI}latest/");
             using (HttpResponseMessage response = (await requestTask.ConfigureAwait(false)).EnsureSuccessStatusCode())
                 versionSegment = response.RequestMessage.RequestUri.Segments.LastOrDefault();
 
@@ -34,20 +37,16 @@ namespace Pact
             if (!patternMatch.Success)
                 return null;
 
-            if (!int.TryParse(patternMatch.Groups["Version"].Value, out int version))
-                return null;
+            if (int.TryParse(patternMatch.Groups["Version"].Value, out int version))
+                return version;
 
-            return version;
+            return null;
         }
 
         async Task<Stream> ICardDatabaseUpdateService.GetVersionStream(
             int version)
         {
-#if DEBUG
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-#endif
-
-            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{BASE_PATH}{version}/enUS/cards.json");
+            Task<HttpResponseMessage> requestTask = s_httpClient.GetAsync($"{_baseURI}{version}/enUS/cards.json");
             HttpResponseMessage response = (await requestTask.ConfigureAwait(false)).EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);

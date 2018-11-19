@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Windows;
 
-using Pact.Extensions.Contract;
-
 namespace Pact
 {
     [Serializable]
     public struct ConfigurationData
     {
         public ConfigurationData(
-            IConfigurationSettings configurationSettings)
+            ConfigurationSettings configurationSettings)
         {
-            configurationSettings.Require(nameof(configurationSettings));
-
             _cardTextOffset = configurationSettings.CardTextOffset;
             _fontSize = configurationSettings.FontSize;
             _hasLoaded = configurationSettings.HasLoaded;

@@ -7,7 +7,7 @@ namespace Pact
     public sealed class CachingConfigurationSource
         : IConfigurationSource
     {
-        private IConfigurationSettings _cachedConfigurationSettings;
+        private ConfigurationSettings? _cachedConfigurationSettings;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _viewEventDispatcher;
         private readonly object _lock = new object();
@@ -16,29 +16,26 @@ namespace Pact
             IConfigurationSource configurationSource,
             IEventDispatcher viewEventDispatcher)
         {
-            _configurationSource =
-                configurationSource.Require(nameof(configurationSource));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _viewEventDispatcher.RegisterHandler(
-                new DelegateEventHandler<Events.ConfigurationSettingsSaved>(
-                    __ => _cachedConfigurationSettings = null));
+                new DelegateEventHandler<ViewEvents.ConfigurationSettingsSaved>(
+                    __ =>
+                    {
+                        lock(_lock)
+                            _cachedConfigurationSettings = null;
+                    }));
         }
 
-        IConfigurationSettings IConfigurationSource.GetSettings()
+        ConfigurationSettings IConfigurationSource.GetSettings()
         {
-            IConfigurationSettings configurationSettings = _cachedConfigurationSettings;
-            if (configurationSettings != null)
-                return configurationSettings;
-
             lock (_lock)
             {
-                if (_cachedConfigurationSettings == null)
+                if (!_cachedConfigurationSettings.HasValue)
                     _cachedConfigurationSettings = _configurationSource.GetSettings();
 
-                return _cachedConfigurationSettings;
+                return _cachedConfigurationSettings.Value;
             }
         }
     }

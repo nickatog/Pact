@@ -17,11 +17,8 @@ namespace Pact
             ICollectionSerializer<DeckInfo> deckInfoCollectionSerializer,
             string filePath)
         {
-            _deckInfoCollectionSerializer =
-                deckInfoCollectionSerializer.Require(nameof(deckInfoCollectionSerializer));
-
-            _filePath =
-                filePath.Require(nameof(filePath));
+            _deckInfoCollectionSerializer = deckInfoCollectionSerializer.Require(nameof(deckInfoCollectionSerializer));
+            _filePath = filePath.Require(nameof(filePath));
         }
 
         async Task<IEnumerable<DeckInfo>> IDeckInfoFileStorage.GetAll()
@@ -29,20 +26,27 @@ namespace Pact
             var fileInfo = new FileInfo(_filePath);
             if (!fileInfo.Exists || fileInfo.Length <= 0)
                 return Enumerable.Empty<DeckInfo>();
-
-            using (var stream = new FileStream(_filePath, FileMode.OpenOrCreate))
+            
+            using (var stream = new FileStream(_filePath, FileMode.Open))
                 return await _deckInfoCollectionSerializer.Deserialize(stream).ConfigureAwait(false);
         }
 
-        async Task IDeckInfoFileStorage.SaveAll(
+        Task IDeckInfoFileStorage.SaveAll(
             IEnumerable<DeckInfo> deckInfos)
         {
-            var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(_filePath));
-            if (!directoryInfo.Exists)
-                directoryInfo.Create();
+            deckInfos.Require(nameof(deckInfos));
 
-            using (var stream = new FileStream(_filePath, FileMode.Create))
-                await _deckInfoCollectionSerializer.Serialize(stream, deckInfos).ConfigureAwait(false);
+            return __SaveAll();
+
+            async Task __SaveAll()
+            {
+                var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(_filePath));
+                if (!directoryInfo.Exists)
+                    directoryInfo.Create();
+
+                using (var stream = new FileStream(_filePath, FileMode.Create))
+                    await _deckInfoCollectionSerializer.Serialize(stream, deckInfos).ConfigureAwait(false);
+            }
         }
     }
 }
