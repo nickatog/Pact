@@ -2,31 +2,40 @@
 using System.IO;
 using System.Threading.Tasks;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public static class Varint
     {
-        public static async Task<int> Parse(
+        public static Task<int> Parse(
             Stream stream)
         {
-            int result = 0;
+            stream.Require(nameof(stream));
 
-            int bytesRead = 0;
+            return __Parse();
 
-            var byteValue = new byte[1];
-            while (await stream.ReadAsync(byteValue, 0, 1).ConfigureAwait(false) != 0)
+            async Task<int> __Parse()
             {
-                int shiftedValue = (byteValue[0] & 0x7F) << bytesRead * 7;
+                int result = 0;
 
-                result += shiftedValue;
+                int bytesRead = 0;
 
-                bytesRead++;
+                var byteValue = new byte[1];
+                while (await stream.ReadAsync(byteValue, 0, 1).ConfigureAwait(false) != 0)
+                {
+                    int shiftedValue = (byteValue[0] & 0x7F) << bytesRead * 7;
 
-                if ((byteValue[0] & 0x80) == 0)
-                    break;
+                    result += shiftedValue;
+
+                    bytesRead++;
+
+                    if ((byteValue[0] & 0x80) == 0)
+                        break;
+                }
+
+                return result;
             }
-
-            return result;
         }
 
         public static IEnumerable<byte> GetBytes(

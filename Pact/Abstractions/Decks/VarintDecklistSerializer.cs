@@ -9,7 +9,7 @@ using Pact.Extensions.Contract;
 namespace Pact
 {
     public sealed class VarintDecklistSerializer
-        : IDecklistSerializer
+        : ISerializer<Decklist>
     {
         private readonly ICardInfoProvider _cardInfoProvider;
 
@@ -19,7 +19,7 @@ namespace Pact
             _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
         }
 
-        Task<Decklist> IDecklistSerializer.Deserialize(
+        Task<Decklist> ISerializer<Decklist>.Deserialize(
             Stream stream)
         {
             stream.Require(nameof(stream));
@@ -71,7 +71,7 @@ namespace Pact
             }
         }
 
-        Task IDecklistSerializer.Serialize(
+        Task ISerializer<Decklist>.Serialize(
             Stream stream,
             Decklist decklist)
         {

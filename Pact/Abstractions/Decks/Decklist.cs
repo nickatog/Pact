@@ -9,8 +9,8 @@ namespace Pact
             string heroID,
             IEnumerable<DecklistCard> cards)
         {
-            Cards = cards?.ToList() ?? Enumerable.Empty<DecklistCard>();
             HeroID = heroID;
+            Cards = cards?.ToList() ?? Enumerable.Empty<DecklistCard>();
         }
 
         public IEnumerable<DecklistCard> Cards { get; }

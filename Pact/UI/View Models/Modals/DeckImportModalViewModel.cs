@@ -13,13 +13,13 @@ namespace Pact
         , INotifyPropertyChanged
     {
         #region Private members
-        private readonly IDecklistSerializer _decklistSerializer;
+        private readonly ISerializer<Decklist> _decklistSerializer;
         private string _importErrorMessage;
         #endregion // Private members
 
         public DeckImportModalViewModel(
             #region Dependency assignments
-            IDecklistSerializer decklistSerializer)
+            ISerializer<Decklist> decklistSerializer)
         {
             _decklistSerializer =
                 decklistSerializer.Require(nameof(decklistSerializer));

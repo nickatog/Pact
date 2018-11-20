@@ -9,8 +9,8 @@ namespace Pact
     {
         private ConfigurationSettings? _cachedConfigurationSettings;
         private readonly IConfigurationSource _configurationSource;
-        private readonly IEventDispatcher _viewEventDispatcher;
         private readonly object _lock = new object();
+        private readonly IEventDispatcher _viewEventDispatcher;
 
         public CachingConfigurationSource(
             IConfigurationSource configurationSource,

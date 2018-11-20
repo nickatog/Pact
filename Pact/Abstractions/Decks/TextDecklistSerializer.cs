@@ -8,20 +8,20 @@ using Pact.Extensions.Contract;
 namespace Pact
 {
     public sealed class TextDecklistSerializer
-        : IDecklistSerializer
+        : ISerializer<Decklist>
     {
         private readonly Encoding _encoding;
-        private readonly IDecklistSerializer _serializer;
+        private readonly ISerializer<Decklist> _serializer;
 
         public TextDecklistSerializer(
-            IDecklistSerializer serializer,
+            ISerializer<Decklist> serializer,
             Encoding encoding = null)
         {
             _serializer = serializer.Require(nameof(serializer));
             _encoding = encoding ?? Encoding.Default;
         }
 
-        Task<Decklist> IDecklistSerializer.Deserialize(
+        Task<Decklist> ISerializer<Decklist>.Deserialize(
             Stream stream)
         {
             stream.Require(nameof(stream));
@@ -53,7 +53,7 @@ namespace Pact
             }
         }
 
-        Task IDecklistSerializer.Serialize(
+        Task ISerializer<Decklist>.Serialize(
             Stream stream,
             Decklist decklist)
         {

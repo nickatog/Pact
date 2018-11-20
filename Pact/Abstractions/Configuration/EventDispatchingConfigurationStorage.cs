@@ -23,7 +23,7 @@ namespace Pact
         async Task IConfigurationStorage.SaveChanges(
             ConfigurationData configurationData)
         {
-            await _configurationStorage.SaveChanges(configurationData);
+            await _configurationStorage.SaveChanges(configurationData).ConfigureAwait(false);
 
             _eventDispatcher.DispatchEvent(new ViewEvents.ConfigurationSettingsSaved());
         }

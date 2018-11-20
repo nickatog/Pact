@@ -8,13 +8,13 @@ namespace Pact
         : IDeckImportInterface
     {
         #region Private members
-        private readonly IDecklistSerializer _decklistSerializer;
+        private readonly ISerializer<Decklist> _decklistSerializer;
         private readonly IModalDisplay _modalDisplay;
         #endregion // Private members
 
         public DeckImportInterface(
             #region Dependency assignments
-            IDecklistSerializer decklistSerializer,
+            ISerializer<Decklist> decklistSerializer,
             IModalDisplay modalDisplay)
         {
             _decklistSerializer =

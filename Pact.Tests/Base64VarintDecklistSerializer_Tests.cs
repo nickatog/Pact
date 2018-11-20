@@ -13,7 +13,7 @@ namespace Pact.Tests
         {
             string deckstring = "AAECAaIHCLICrwSoBfIFkbwCm8sCz+ECnOICC7QB7QLUBd0IkrYCgcIC68ICyssCps4C+9MC2+MCAA==";
 
-            IDecklistSerializer serializer =
+            ISerializer<Decklist> serializer =
                 new TextDecklistSerializer(
                     new VarintDecklistSerializer(
                         new LocalDatabaseCardInfoProvider(

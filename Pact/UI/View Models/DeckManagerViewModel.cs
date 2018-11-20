@@ -21,7 +21,7 @@ namespace Pact
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
-        private readonly IDecklistSerializer _decklistSerializer;
+        private readonly ISerializer<Decklist> _decklistSerializer;
         private readonly IDeckRepository _deckRepository;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IEventDispatcher _gameEventDispatcher;
@@ -40,7 +40,7 @@ namespace Pact
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
-            IDecklistSerializer decklistSerializer,
+            ISerializer<Decklist> decklistSerializer,
             IDeckRepository deckRepository,
             IEventStreamFactory eventStreamFactory,
             IEventDispatcher gameEventDispatcher,

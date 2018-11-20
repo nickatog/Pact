@@ -36,7 +36,7 @@ namespace Pact
                         (await _deckInfoFileStorage.GetAll().ConfigureAwait(false)),
                         __deckDetails => __deckDetails.DeckID,
                         __deckInfo => __deckInfo.DeckID,
-                        (__deckDetails, deckInfos) => (DeckDetails: __deckDetails, DeckInfos: deckInfos))
+                        (__deckDetails, __deckInfos) => (DeckDetails: __deckDetails, DeckInfos: __deckInfos))
                     .SelectMany(
                         __joinResult => __joinResult.DeckInfos.Cast<DeckInfo?>().DefaultIfEmpty(),
                         (__joinResult, __deckInfo) =>

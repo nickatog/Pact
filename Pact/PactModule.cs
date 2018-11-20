@@ -42,7 +42,7 @@ namespace Pact
                         __context.Resolve<IBackgroundWorkInterface>(),
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IDeckImportInterface>(),
-                        __context.Resolve<IDecklistSerializer>(),
+                        __context.Resolve<ISerializer<Decklist>>(),
                         __context.Resolve<IDeckRepository>(),
                         __context.Resolve<IEventStreamFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
@@ -187,17 +187,6 @@ namespace Pact
                                 "Pact"),
                             ".decks")))
             .As<IDeckInfoFileStorage>()
-            .SingleInstance();
-
-            // IDecklistSerializer
-            builder
-            .RegisterType<VarintDecklistSerializer>()
-            .Named<IDecklistSerializer>("base");
-
-            builder
-            .RegisterDecorator<IDecklistSerializer>(
-                (__context, __inner) =>
-                    new TextDecklistSerializer(__inner), "base")
             .SingleInstance();
 
             // IDeckRepository
@@ -367,6 +356,16 @@ namespace Pact
                             return Task.CompletedTask;
                         }))
             .As<ISerializer<DeckInfo>>()
+            .SingleInstance();
+
+            builder
+            .RegisterType<VarintDecklistSerializer>()
+            .Named<ISerializer<Decklist>>("base");
+
+            builder
+            .RegisterDecorator<ISerializer<Decklist>>(
+                (__context, __inner) =>
+                    new TextDecklistSerializer(__inner), "base")
             .SingleInstance();
 
             // IUserConfirmationInterface

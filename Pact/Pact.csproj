@@ -232,7 +232,6 @@
     <Compile Include="Abstractions\Cards\LocalDatabaseCardInfoProvider.cs" />
     <Compile Include="Abstractions\Events\PlayerDetermined.cs" />
     <Compile Include="Abstractions\Events\PlayerReceivedCoin.cs" />
-    <Compile Include="Abstractions\Decks\IDecklistSerializer.cs" />
     <Compile Include="Abstractions\Events\Streams\IEventStreamFactory.cs" />
     <Compile Include="UI\View Models\MainWindowViewModel.cs" />
     <Compile Include="UI\Utility\OutlinedText.cs" />

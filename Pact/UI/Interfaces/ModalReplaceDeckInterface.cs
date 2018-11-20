@@ -8,13 +8,13 @@ namespace Pact
         : IReplaceDeckInterface
     {
         #region Private members
-        private readonly IDecklistSerializer _decklistSerializer;
+        private readonly ISerializer<Decklist> _decklistSerializer;
         private readonly IModalDisplay _modalDisplay;
         #endregion // Private members
 
         public ModalReplaceDeckInterface(
-            #region Dependency assignments
-            IDecklistSerializer decklistSerializer,
+        #region Dependency assignments
+            ISerializer<Decklist> decklistSerializer,
             IModalDisplay modalDisplay)
         {
             _decklistSerializer =

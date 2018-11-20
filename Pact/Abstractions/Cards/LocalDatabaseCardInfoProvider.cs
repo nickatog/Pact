@@ -32,15 +32,8 @@ namespace Pact
             {
                 IEnumerable<CardInfo> cardInfos = _cardDatabase.GetCards().Result;
 
-                _cardInfoByDatabaseID =
-                    cardInfos.ToDictionary(
-                        __cardInfo => __cardInfo.DatabaseID,
-                        __cardInfo => __cardInfo);
-
-                _cardInfoByID =
-                    cardInfos.ToDictionary(
-                        __cardInfo => __cardInfo.ID,
-                        __cardInfo => __cardInfo);
+                _cardInfoByDatabaseID = cardInfos.ToDictionary(__cardInfo => __cardInfo.DatabaseID);
+                _cardInfoByID = cardInfos.ToDictionary(__cardInfo => __cardInfo.ID);
             }
         }
 
