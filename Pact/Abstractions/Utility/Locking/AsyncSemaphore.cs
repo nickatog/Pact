@@ -18,21 +18,6 @@ namespace Pact
             _count = count;
         }
 
-        private void Release()
-        {
-            lock (_waiters)
-            {
-                if (_waiters.Count > 0)
-                {
-                    _waiters.Dequeue().SetResult(new WaitHandle(this));
-
-                    return;
-                }
-
-                _count++;
-            }
-        }
-
         public Task<IDisposable> WaitAsync()
         {
             lock (_waiters)
@@ -49,6 +34,21 @@ namespace Pact
                 _waiters.Enqueue(waiter);
 
                 return waiter.Task;
+            }
+        }
+
+        private void Release()
+        {
+            lock (_waiters)
+            {
+                if (_waiters.Count > 0)
+                {
+                    _waiters.Dequeue().SetResult(new WaitHandle(this));
+
+                    return;
+                }
+
+                _count++;
             }
         }
 
@@ -74,7 +74,8 @@ namespace Pact
             {
                 if (!_disposed)
                 {
-                    _semaphore?.Release();
+                    if (disposing)
+                        _semaphore.Release();
 
                     _disposed = true;
                 }

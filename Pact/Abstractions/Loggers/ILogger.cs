@@ -4,6 +4,7 @@ namespace Pact
 {
     public interface ILogger
     {
-        Task Write(string message);
+        Task Write(
+            string message);
     }
 }

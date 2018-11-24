@@ -21,7 +21,7 @@ namespace Pact
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
-        private readonly ISerializer<Decklist> _decklistSerializer;
+        private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private readonly IDeckRepository _deckRepository;
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IGameResultRepository _gameResultRepository;
@@ -31,7 +31,7 @@ namespace Pact
         private readonly IEventDispatcher _viewEventDispatcher;
 
         private Action _deleteCanExecuteChanged;
-        private readonly IList<GameResult> _gameResults;
+        private readonly IList<Models.Client.GameResult> _gameResults;
         private readonly Func<DeckViewModel, ushort> _getPosition;
         private bool _isTracking = false;
         private Action _replaceCanExecuteChanged;
@@ -43,7 +43,7 @@ namespace Pact
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
-            ISerializer<Decklist> decklistSerializer,
+            ISerializer<Models.Client.Decklist> decklistSerializer,
             IDeckRepository deckRepository,
             IEventDispatcher gameEventDispatcher,
             IGameResultRepository gameResultRepository,
@@ -52,10 +52,10 @@ namespace Pact
             IUserConfirmationInterface userConfirmationInterface,
             IEventDispatcher viewEventDispatcher,
             Guid deckID,
-            Decklist decklist,
+            Models.Client.Decklist decklist,
             Func<DeckViewModel, ushort> getPosition,
             string title,
-            IEnumerable<GameResult> gameResults = null)
+            IEnumerable<Models.Client.GameResult> gameResults = null)
         {
             _backgroundWorkInterface =
                 backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
@@ -92,7 +92,7 @@ namespace Pact
 
             DeckID = deckID;
             Decklist = decklist;
-            _gameResults = (gameResults ?? Enumerable.Empty<GameResult>()).ToList();
+            _gameResults = (gameResults ?? Enumerable.Empty<Models.Client.GameResult>()).ToList();
 
             _getPosition =
                 getPosition ?? throw new ArgumentNullException(nameof(getPosition));
@@ -136,7 +136,7 @@ namespace Pact
 
         public Guid DeckID { get; }
 
-        public Decklist Decklist { get; private set; }
+        public Models.Client.Decklist Decklist { get; private set; }
 
         public ICommand Delete =>
             new DelegateCommand(
@@ -186,7 +186,7 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    Decklist? replacementDecklist = await _replaceDeckInterface.GetReplacementDecklist();
+                    Models.Client.Decklist? replacementDecklist = await _replaceDeckInterface.GetReplacementDecklist();
                     if (!replacementDecklist.HasValue)
                         return;
 
@@ -205,7 +205,7 @@ namespace Pact
         {
             return
                 _deckRepository.UpdateDeck(
-                    new DeckDetails(
+                    new Models.Client.DeckDetail(
                         DeckID,
                         Title,
                         GetDeckstring(),
@@ -239,7 +239,7 @@ namespace Pact
 
                                 string opponentClass = _cardInfoProvider.GetCardInfo(__event.OpponentHeroCardID)?.Class;
 
-                                var gameResult = new GameResult(timestamp, __event.GameWon, opponentClass);
+                                var gameResult = new Models.Client.GameResult(timestamp, __event.GameWon, opponentClass);
 
                                 _gameResults.Add(gameResult);
 

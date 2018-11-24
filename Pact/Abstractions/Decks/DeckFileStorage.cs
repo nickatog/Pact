@@ -7,34 +7,34 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class DeckInfoFileStorage
-        : IDeckInfoFileStorage
+    public sealed class DeckFileStorage
+        : IDeckFileStorage
     {
-        private readonly ICollectionSerializer<DeckInfo> _deckInfoCollectionSerializer;
+        private readonly ICollectionSerializer<Models.Data.Deck> _deckCollectionSerializer;
         private readonly string _filePath;
 
-        public DeckInfoFileStorage(
-            ICollectionSerializer<DeckInfo> deckInfoCollectionSerializer,
+        public DeckFileStorage(
+            ICollectionSerializer<Models.Data.Deck> deckCollectionSerializer,
             string filePath)
         {
-            _deckInfoCollectionSerializer = deckInfoCollectionSerializer.Require(nameof(deckInfoCollectionSerializer));
+            _deckCollectionSerializer = deckCollectionSerializer.Require(nameof(deckCollectionSerializer));
             _filePath = filePath.Require(nameof(filePath));
         }
 
-        async Task<IEnumerable<DeckInfo>> IDeckInfoFileStorage.GetAll()
+        async Task<IEnumerable<Models.Data.Deck>> IDeckFileStorage.GetAll()
         {
             var fileInfo = new FileInfo(_filePath);
             if (!fileInfo.Exists || fileInfo.Length <= 0)
-                return Enumerable.Empty<DeckInfo>();
+                return Enumerable.Empty<Models.Data.Deck>();
             
             using (var stream = new FileStream(_filePath, FileMode.Open))
-                return await _deckInfoCollectionSerializer.Deserialize(stream).ConfigureAwait(false);
+                return await _deckCollectionSerializer.Deserialize(stream).ConfigureAwait(false);
         }
 
-        Task IDeckInfoFileStorage.SaveAll(
-            IEnumerable<DeckInfo> deckInfos)
+        Task IDeckFileStorage.SaveAll(
+            IEnumerable<Models.Data.Deck> decks)
         {
-            deckInfos.Require(nameof(deckInfos));
+            decks.Require(nameof(decks));
 
             return __SaveAll();
 
@@ -45,7 +45,7 @@ namespace Pact
                     directoryInfo.Create();
 
                 using (var stream = new FileStream(_filePath, FileMode.Create))
-                    await _deckInfoCollectionSerializer.Serialize(stream, deckInfos).ConfigureAwait(false);
+                    await _deckCollectionSerializer.Serialize(stream, decks).ConfigureAwait(false);
             }
         }
     }

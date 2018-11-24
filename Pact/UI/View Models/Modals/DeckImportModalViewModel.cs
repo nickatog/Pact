@@ -12,18 +12,13 @@ namespace Pact
         : IModalViewModel<DeckImportResult?>
         , INotifyPropertyChanged
     {
-        #region Private members
-        private readonly ISerializer<Decklist> _decklistSerializer;
+        private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private string _importErrorMessage;
-        #endregion // Private members
 
         public DeckImportModalViewModel(
-            #region Dependency assignments
-            ISerializer<Decklist> decklistSerializer)
+            ISerializer<Models.Client.Decklist> decklistSerializer)
         {
-            _decklistSerializer =
-                decklistSerializer.Require(nameof(decklistSerializer));
-            #endregion // Dependency assignments
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -46,7 +41,7 @@ namespace Pact
 
                     try
                     {
-                        Decklist decklist;
+                        Models.Client.Decklist decklist;
 
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
@@ -62,7 +57,7 @@ namespace Pact
         public string ImportErrorMessage
         {
             get => _importErrorMessage;
-            set
+            private set
             {
                 _importErrorMessage = value;
 

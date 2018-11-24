@@ -15,8 +15,7 @@ namespace Pact
         public VarintCollectionSerializer(
             ISerializer<T> itemSerializer)
         {
-            _itemSerializer =
-                itemSerializer.Require(nameof(itemSerializer));
+            _itemSerializer = itemSerializer.Require(nameof(itemSerializer));
         }
 
         Task<IEnumerable<T>> ICollectionSerializer<T>.Deserialize(

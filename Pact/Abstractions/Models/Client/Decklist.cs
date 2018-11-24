@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Pact
+namespace Pact.Models.Client
 {
     public struct Decklist
     {
@@ -14,7 +14,6 @@ namespace Pact
         }
 
         public IEnumerable<DecklistCard> Cards { get; }
-
         public string HeroID { get; }
     }
 }

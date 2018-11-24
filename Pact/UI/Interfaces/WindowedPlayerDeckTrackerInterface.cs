@@ -10,7 +10,6 @@ namespace Pact
     public sealed class WindowedPlayerDeckTrackerInterface
         : IPlayerDeckTrackerInterface
     {
-        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcherFactory _eventDispatcherFactory;
@@ -20,31 +19,19 @@ namespace Pact
         private CancellationTokenSource _cancellation;
         private PlayerDeckTrackerView _view;
         private PlayerDeckTrackerViewModel _viewModel;
-        #endregion // Private members
 
         public WindowedPlayerDeckTrackerInterface(
-            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
             IEventDispatcherFactory eventDispatcherFactory,
             IEventStreamFactory eventStreamFactory,
             IEventDispatcher viewEventDispatcher)
         {
-            _cardInfoProvider =
-                cardInfoProvider.Require(nameof(cardInfoProvider));
-
-            _configurationSource =
-                configurationSource.Require(nameof(configurationSource));
-
-            _eventDispatcherFactory =
-                eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
-
-            _eventStreamFactory =
-                eventStreamFactory.Require(nameof(eventStreamFactory));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
-            #endregion // Dependency assignments
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _eventDispatcherFactory = eventDispatcherFactory.Require(nameof(eventDispatcherFactory));
+            _eventStreamFactory = eventStreamFactory.Require(nameof(eventStreamFactory));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
         }
 
         void IPlayerDeckTrackerInterface.Close()
@@ -53,7 +40,7 @@ namespace Pact
         }
 
         void IPlayerDeckTrackerInterface.TrackDeck(
-            Decklist decklist)
+            Models.Client.Decklist decklist)
         {
             Reset();
 

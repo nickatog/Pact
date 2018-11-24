@@ -49,8 +49,7 @@ namespace Pact
                 string tempFilePath =
                     Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "Pact",
-                        $"~{Path.GetFileName(_cardDatabaseFilePath)}");
+                        $@"Pact\~{Path.GetFileName(_cardDatabaseFilePath)}");
 
                 var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(tempFilePath));
                 if (!directoryInfo.Exists)

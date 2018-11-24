@@ -4,6 +4,6 @@ namespace Pact
 {
     public interface IReplaceDeckInterface
     {
-        Task<Decklist?> GetReplacementDecklist();
+        Task<Models.Client.Decklist?> GetReplacementDecklist();
     }
 }

@@ -11,22 +11,19 @@ namespace Pact
         : IGameResultRepository
     {
         private readonly AsyncSemaphore _asyncMutex;
-        private readonly IDeckInfoFileStorage _deckInfoFileStorage;
+        private readonly IDeckFileStorage _deckInfoFileStorage;
 
         public FileBasedGameResultRepository(
             AsyncSemaphore asyncMutex,
-            IDeckInfoFileStorage deckInfoFileStorage)
+            IDeckFileStorage deckInfoFileStorage)
         {
-            _asyncMutex =
-                asyncMutex.Require(nameof(asyncMutex));
-
-            _deckInfoFileStorage =
-                deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
+            _asyncMutex = asyncMutex.Require(nameof(asyncMutex));
+            _deckInfoFileStorage = deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
         }
 
         async Task IGameResultRepository.AddGameResult(
             Guid deckID,
-            GameResult gameResult)
+            Models.Client.GameResult gameResult)
         {
             using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
             {
@@ -39,14 +36,20 @@ namespace Pact
                                 return __deckInfo;
 
                             return
-                                new DeckInfo(
+                                new Models.Data.Deck(
                                     __deckInfo.DeckID,
                                     __deckInfo.DeckString,
                                     __deckInfo.Title,
                                     __deckInfo.Position,
                                     __deckInfo.GameResults
                                         .Concat(
-                                    new List<GameResult>() { gameResult }));
+                                    new List<Models.Data.GameResult>()
+                                    {
+                                        new Models.Data.GameResult(
+                                            gameResult.Timestamp,
+                                            gameResult.GameWon,
+                                            gameResult.OpponentClass)
+                                    }));
                         })).ConfigureAwait(false);
             }
         }

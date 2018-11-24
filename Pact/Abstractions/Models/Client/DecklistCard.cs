@@ -1,4 +1,4 @@
-﻿namespace Pact
+﻿namespace Pact.Models.Client
 {
     public struct DecklistCard
     {
@@ -11,7 +11,6 @@
         }
 
         public string CardID { get; }
-
         public int Count { get; }
     }
 }

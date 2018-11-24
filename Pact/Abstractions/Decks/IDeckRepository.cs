@@ -5,12 +5,12 @@ namespace Pact
 {
     public interface IDeckRepository
     {
-        Task<IEnumerable<DeckInfo>> GetAllDecksAndGameResults();
+        Task<IEnumerable<Models.Client.Deck>> GetAllDecksAndGameResults();
 
         Task ReplaceDecks(
-            IEnumerable<DeckDetails> deckDetails);
+            IEnumerable<Models.Client.DeckDetail> deckDetails);
 
         Task UpdateDeck(
-            DeckDetails deckDetails);
+            Models.Client.DeckDetail deckDetail);
     }
 }

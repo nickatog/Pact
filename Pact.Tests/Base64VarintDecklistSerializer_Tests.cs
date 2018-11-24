@@ -13,7 +13,7 @@ namespace Pact.Tests
         {
             string deckstring = "AAECAaIHCLICrwSoBfIFkbwCm8sCz+ECnOICC7QB7QLUBd0IkrYCgcIC68ICyssCps4C+9MC2+MCAA==";
 
-            ISerializer<Decklist> serializer =
+            ISerializer<Models.Client.Decklist> serializer =
                 new TextDecklistSerializer(
                     new VarintDecklistSerializer(
                         new LocalDatabaseCardInfoProvider(
@@ -22,7 +22,7 @@ namespace Pact.Tests
 
             using (var inputStream = new MemoryStream(Encoding.Default.GetBytes(deckstring)))
             {
-                Decklist decklist = await serializer.Deserialize(inputStream);
+                Models.Client.Decklist decklist = await serializer.Deserialize(inputStream);
 
                 using (var outputStream = new MemoryStream())
                 {

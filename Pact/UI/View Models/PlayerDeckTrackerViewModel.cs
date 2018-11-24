@@ -19,7 +19,7 @@ namespace Pact
         private readonly IEventDispatcher _gameEventDispatcher;
         private readonly IEventDispatcher _viewEventDispatcher;
 
-        private readonly Decklist _decklist;
+        private readonly Models.Client.Decklist _decklist;
         private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private bool? _opponentCoinStatus;
         private int _playerID;
@@ -33,7 +33,7 @@ namespace Pact
             IConfigurationSource configurationSource,
             IEventDispatcher gameEventDispatcher,
             IEventDispatcher viewEventDispatcher,
-            Decklist decklist)
+            Models.Client.Decklist decklist)
         {
             _cardInfoProvider =
                 cardInfoProvider.Require(nameof(cardInfoProvider));

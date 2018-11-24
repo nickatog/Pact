@@ -16,11 +16,8 @@ namespace Pact
             Func<Stream, Task<T>> deserialize,
             Func<Stream, T, Task> serialize)
         {
-            _deserialize =
-                deserialize.Require(nameof(deserialize));
-
-            _serialize =
-                serialize.Require(nameof(serialize));
+            _deserialize = deserialize.Require(nameof(deserialize));
+            _serialize = serialize.Require(nameof(serialize));
         }
 
         Task<T> ISerializer<T>.Deserialize(

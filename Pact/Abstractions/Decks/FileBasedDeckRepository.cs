@@ -10,68 +10,80 @@ namespace Pact
         : IDeckRepository
     {
         private readonly AsyncSemaphore _asyncMutex;
-        private readonly IDeckInfoFileStorage _deckInfoFileStorage;
+        private readonly IDeckFileStorage _deckFileStorage;
 
         public FileBasedDeckRepository(
             AsyncSemaphore asyncMutex,
-            IDeckInfoFileStorage deckInfoFileStorage)
+            IDeckFileStorage deckFileStorage)
         {
             _asyncMutex = asyncMutex.Require(nameof(asyncMutex));
-            _deckInfoFileStorage = deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
+            _deckFileStorage = deckFileStorage.Require(nameof(deckFileStorage));
         }
 
-        Task<IEnumerable<DeckInfo>> IDeckRepository.GetAllDecksAndGameResults()
+        async Task<IEnumerable<Models.Client.Deck>> IDeckRepository.GetAllDecksAndGameResults()
         {
-            return _deckInfoFileStorage.GetAll();
+            return
+                (await _deckFileStorage.GetAll().ConfigureAwait(false))
+                .Select(
+                    __deck =>
+                        new Models.Client.Deck(
+                            __deck.DeckID,
+                            __deck.DeckString,
+                            __deck.Title,
+                            __deck.Position,
+                            __deck.GameResults
+                            .Select(
+                                __gameResult =>
+                                    new Models.Client.GameResult(
+                                        __gameResult.Timestamp,
+                                        __gameResult.GameWon,
+                                        __gameResult.OpponentClass))));
         }
 
         async Task IDeckRepository.ReplaceDecks(
-            IEnumerable<DeckDetails> deckDetails)
+            IEnumerable<Models.Client.DeckDetail> deckDetails)
         {
             using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
             {
-                await _deckInfoFileStorage.SaveAll(
-                    (deckDetails ?? Enumerable.Empty<DeckDetails>())
+                await _deckFileStorage.SaveAll(
+                    (deckDetails ?? Enumerable.Empty<Models.Client.DeckDetail>())
                     .GroupJoin(
-                        (await _deckInfoFileStorage.GetAll().ConfigureAwait(false)),
+                        (await _deckFileStorage.GetAll().ConfigureAwait(false)),
                         __deckDetails => __deckDetails.DeckID,
-                        __deckInfo => __deckInfo.DeckID,
-                        (__deckDetails, __deckInfos) => (DeckDetails: __deckDetails, DeckInfos: __deckInfos))
+                        __deck => __deck.DeckID,
+                        (__deckDetails, __decks) => (DeckDetails: __deckDetails, Decks: __decks))
                     .SelectMany(
-                        __joinResult => __joinResult.DeckInfos.Cast<DeckInfo?>().DefaultIfEmpty(),
-                        (__joinResult, __deckInfo) =>
-                        {
-                            return
-                                new DeckInfo(
-                                    __joinResult.DeckDetails.DeckID,
-                                    __joinResult.DeckDetails.DeckString,
-                                    __joinResult.DeckDetails.Title,
-                                    __joinResult.DeckDetails.Position,
-                                    __deckInfo?.GameResults ?? Enumerable.Empty<GameResult>());
-                        })).ConfigureAwait(false);
+                        __joinResult => __joinResult.Decks.Cast<Models.Data.Deck?>().DefaultIfEmpty(),
+                        (__joinResult, __deck) =>
+                            new Models.Data.Deck(
+                                __joinResult.DeckDetails.DeckID,
+                                __joinResult.DeckDetails.DeckString,
+                                __joinResult.DeckDetails.Title,
+                                __joinResult.DeckDetails.Position,
+                                __deck?.GameResults ?? Enumerable.Empty<Models.Data.GameResult>()))).ConfigureAwait(false);
             }
         }
 
         async Task IDeckRepository.UpdateDeck(
-            DeckDetails deckDetails)
+            Models.Client.DeckDetail deckDetail)
         {
             using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
             {
-                await _deckInfoFileStorage.SaveAll(
-                    (await _deckInfoFileStorage.GetAll().ConfigureAwait(false))
+                await _deckFileStorage.SaveAll(
+                    (await _deckFileStorage.GetAll().ConfigureAwait(false))
                     .Select(
-                        __deckInfo =>
+                        __deck =>
                         {
-                            if (__deckInfo.DeckID != deckDetails.DeckID)
-                                return __deckInfo;
+                            if (__deck.DeckID != deckDetail.DeckID)
+                                return __deck;
 
                             return
-                                new DeckInfo(
-                                    __deckInfo.DeckID,
-                                    deckDetails.DeckString,
-                                    deckDetails.Title,
-                                    deckDetails.Position,
-                                    __deckInfo.GameResults);
+                                new Models.Data.Deck(
+                                    deckDetail.DeckID,
+                                    deckDetail.DeckString,
+                                    deckDetail.Title,
+                                    deckDetail.Position,
+                                    __deck.GameResults);
                         })).ConfigureAwait(false);
             }
         }

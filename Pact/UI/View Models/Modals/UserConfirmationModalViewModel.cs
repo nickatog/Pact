@@ -9,20 +9,13 @@ namespace Pact
         : IModalViewModel<bool>
     {
         public UserConfirmationModalViewModel(
-            #region Dependency assignments
             string messageText,
             string acceptText,
             string declineText)
         {
-            MessageText =
-                messageText.Require(nameof(messageText));
-
-            AcceptText =
-                acceptText.Require(nameof(acceptText));
-
-            DeclineText =
-                declineText.Require(nameof(declineText));
-            #endregion // Dependency assignments
+            MessageText = messageText.Require(nameof(messageText));
+            AcceptText = acceptText.Require(nameof(acceptText));
+            DeclineText = declineText.Require(nameof(declineText));
         }
 
         public event Action<bool> OnClosed;

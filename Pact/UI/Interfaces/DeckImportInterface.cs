@@ -7,22 +7,15 @@ namespace Pact
     public sealed class DeckImportInterface
         : IDeckImportInterface
     {
-        #region Private members
-        private readonly ISerializer<Decklist> _decklistSerializer;
+        private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private readonly IModalDisplay _modalDisplay;
-        #endregion // Private members
 
         public DeckImportInterface(
-            #region Dependency assignments
-            ISerializer<Decklist> decklistSerializer,
+            ISerializer<Models.Client.Decklist> decklistSerializer,
             IModalDisplay modalDisplay)
         {
-            _decklistSerializer =
-                decklistSerializer.Require(nameof(decklistSerializer));
-
-            _modalDisplay =
-                modalDisplay.Require(nameof(modalDisplay));
-            #endregion // Dependency assignments
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
         }
 
         Task<DeckImportDetails?> IDeckImportInterface.GetDeckImportDetails()

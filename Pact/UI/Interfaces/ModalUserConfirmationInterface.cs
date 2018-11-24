@@ -7,17 +7,12 @@ namespace Pact
     public sealed class ModalUserConfirmationInterface
         : IUserConfirmationInterface
     {
-        #region Private members
         private readonly IModalDisplay _modalDisplay;
-        #endregion // Private members
 
         public ModalUserConfirmationInterface(
-            #region Dependency assignments
             IModalDisplay modalDisplay)
         {
-            _modalDisplay =
-                modalDisplay.Require(nameof(modalDisplay));
-            #endregion // Dependency assignments
+            _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
         }
 
         Task<bool> IUserConfirmationInterface.Confirm(

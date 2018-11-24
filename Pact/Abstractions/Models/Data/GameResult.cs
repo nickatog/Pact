@@ -1,10 +1,13 @@
 ﻿using System;
 
-namespace Pact
+namespace Pact.Models.Data
 {
-    [Serializable]
     public struct GameResult
     {
+        public bool GameWon;
+        public string OpponentClass;
+        public DateTime Timestamp;
+
         public GameResult(
             DateTime timestamp,
             bool gameWon,
@@ -14,11 +17,5 @@ namespace Pact
             GameWon = gameWon;
             OpponentClass = opponentClass;
         }
-
-        public bool GameWon { get; }
-
-        public string OpponentClass { get; }
-
-        public DateTime Timestamp { get; }
     }
 }

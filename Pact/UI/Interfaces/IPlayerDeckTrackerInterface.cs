@@ -5,6 +5,6 @@
         void Close();
 
         void TrackDeck(
-            Decklist decklist);
+            Models.Client.Decklist decklist);
     }
 }

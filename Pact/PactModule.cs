@@ -14,12 +14,12 @@ namespace Pact
         protected override void Load(
             ContainerBuilder builder)
         {
-            string configurationFilePath =
+            string appDataDirectoryPath =
                 Path.Combine(
-                    Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "Pact"),
-                    ".config");
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "Pact");
+
+            string configurationFilePath = Path.Combine(appDataDirectoryPath, ".config");
 
             // AsyncSemaphores
             builder
@@ -42,7 +42,7 @@ namespace Pact
                         __context.Resolve<IBackgroundWorkInterface>(),
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IDeckImportInterface>(),
-                        __context.Resolve<ISerializer<Decklist>>(),
+                        __context.Resolve<ISerializer<Models.Client.Decklist>>(),
                         __context.Resolve<IDeckRepository>(),
                         __context.Resolve<IEventStreamFactory>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
@@ -128,9 +128,16 @@ namespace Pact
             .SingleInstance();
 
             // ICollectionSerializers
+            // [!] Varint is no longer necessary; deck storage was the only thing that depended on this to begin with.
+            //     Is it potentially useful somewhere else? Should it be saved?
             builder
             .RegisterGeneric(typeof(VarintCollectionSerializer<>))
             .As(typeof(ICollectionSerializer<>))
+            .SingleInstance();
+
+            builder
+            .RegisterType<JSONCollectionSerializer<Models.Data.Deck>>()
+            .As<ICollectionSerializer<Models.Data.Deck>>()
             .SingleInstance();
 
             // IConfigurationSource
@@ -179,14 +186,10 @@ namespace Pact
             builder
             .Register(
                 __context =>
-                    new DeckInfoFileStorage(
-                        __context.Resolve<ICollectionSerializer<DeckInfo>>(),
-                        Path.Combine(
-                            Path.Combine(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                "Pact"),
-                            ".decks")))
-            .As<IDeckInfoFileStorage>()
+                    new DeckFileStorage(
+                        __context.Resolve<ICollectionSerializer<Models.Data.Deck>>(),
+                        Path.Combine(appDataDirectoryPath, "decks.json")))
+            .As<IDeckFileStorage>()
             .SingleInstance();
 
             // IDeckRepository
@@ -195,7 +198,7 @@ namespace Pact
                 __context =>
                     new FileBasedDeckRepository(
                         __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
-                        __context.Resolve<IDeckInfoFileStorage>()))
+                        __context.Resolve<IDeckFileStorage>()))
             .As<IDeckRepository>()
             .SingleInstance();
 
@@ -237,7 +240,7 @@ namespace Pact
                 __context =>
                     new FileBasedGameResultRepository(
                         __context.ResolveNamed<AsyncSemaphore>("DeckPersistence"),
-                        __context.Resolve<IDeckInfoFileStorage>()))
+                        __context.Resolve<IDeckFileStorage>()))
             .As<IGameResultRepository>()
             .SingleInstance();
 
@@ -338,32 +341,11 @@ namespace Pact
             .SingleInstance();
 
             builder
-            .Register(
-                __context =>
-                    new DelegateSerializer<DeckInfo>(
-                        __stream =>
-                        {
-                            var serializer = new BinaryFormatter();
-
-                            return Task.FromResult((DeckInfo)serializer.Deserialize(__stream));
-                        },
-                        (__stream, __deckInfo) =>
-                        {
-                            var serializer = new BinaryFormatter();
-
-                            serializer.Serialize(__stream, __deckInfo);
-
-                            return Task.CompletedTask;
-                        }))
-            .As<ISerializer<DeckInfo>>()
-            .SingleInstance();
-
-            builder
             .RegisterType<VarintDecklistSerializer>()
-            .Named<ISerializer<Decklist>>("base");
+            .Named<ISerializer<Models.Client.Decklist>>("base");
 
             builder
-            .RegisterDecorator<ISerializer<Decklist>>(
+            .RegisterDecorator<ISerializer<Models.Client.Decklist>>(
                 (__context, __inner) =>
                     new TextDecklistSerializer(__inner), "base")
             .SingleInstance();

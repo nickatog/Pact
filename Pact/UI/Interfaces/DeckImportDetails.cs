@@ -4,14 +4,13 @@
     {
         public DeckImportDetails(
             string title,
-            Decklist decklist)
+            Models.Client.Decklist decklist)
         {
             Title = title;
             Decklist = decklist;
         }
 
-        public Decklist Decklist { get; }
-
+        public Models.Client.Decklist Decklist { get; }
         public string Title { get; }
     }
 }

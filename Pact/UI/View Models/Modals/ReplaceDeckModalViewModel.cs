@@ -9,26 +9,21 @@ using Pact.Extensions.Contract;
 namespace Pact
 {
     public sealed class ReplaceDeckModalViewModel
-        : IModalViewModel<Decklist?>
+        : IModalViewModel<Models.Client.Decklist?>
         , INotifyPropertyChanged
     {
-        #region Private members
-        private readonly ISerializer<Decklist> _decklistSerializer;
+        private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private string _importErrorMessage;
-        #endregion // Private members
 
         public ReplaceDeckModalViewModel(
-        #region Dependency assignments
-            ISerializer<Decklist> decklistSerializer)
+            ISerializer<Models.Client.Decklist> decklistSerializer)
         {
-            _decklistSerializer =
-                decklistSerializer.Require(nameof(decklistSerializer));
-            #endregion // Dependency assignments
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public event Action<Decklist?> OnClosed;
+        public event Action<Models.Client.Decklist?> OnClosed;
 
         public ICommand Cancel =>
             new DelegateCommand(
@@ -44,7 +39,7 @@ namespace Pact
 
                     try
                     {
-                        Decklist decklist;
+                        Models.Client.Decklist decklist;
 
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
@@ -60,7 +55,7 @@ namespace Pact
         public string ImportErrorMessage
         {
             get => _importErrorMessage;
-            set
+            private set
             {
                 _importErrorMessage = value;
 

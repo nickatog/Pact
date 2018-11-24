@@ -15,7 +15,6 @@ namespace Pact
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
-        #region Private members
         private Action _canExecuteDownloadChanged;
         private readonly ICardDatabaseManager _cardDatabaseManager;
         private readonly ICardDatabaseUpdateService _cardDatabaseUpdateService;
@@ -25,23 +24,15 @@ namespace Pact
         private int? _latestVersion;
         private string _latestVersionText;
         private readonly Dispatcher _uiDispatcher;
-        #endregion // Private members
 
         public CardDatabaseUpdateModalViewModel(
-        #region Dependency assignments
             ICardDatabaseManager cardDatabaseManager,
             ICardDatabaseUpdateService cardDatabaseUpdateService,
             Dispatcher uiDispatcher)
         {
-            _cardDatabaseManager =
-                cardDatabaseManager.Require(nameof(cardDatabaseManager));
-
-            _cardDatabaseUpdateService =
-                cardDatabaseUpdateService.Require(nameof(cardDatabaseUpdateService));
-
-            _uiDispatcher =
-                uiDispatcher.Require(nameof(uiDispatcher));
-            #endregion // Dependency assignments
+            _cardDatabaseManager = cardDatabaseManager.Require(nameof(cardDatabaseManager));
+            _cardDatabaseUpdateService = cardDatabaseUpdateService.Require(nameof(cardDatabaseUpdateService));
+            _uiDispatcher = uiDispatcher.Require(nameof(uiDispatcher));
 
             _currentVersion = _cardDatabaseManager.GetCurrentVersion();
 
@@ -123,7 +114,7 @@ namespace Pact
         public string ErrorMessage
         {
             get => _errorMessage;
-            set
+            private set
             {
                 _errorMessage = value;
 
@@ -134,7 +125,7 @@ namespace Pact
         public string LatestVersion
         {
             get => _latestVersionText;
-            set
+            private set
             {
                 _latestVersionText = value;
 

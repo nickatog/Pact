@@ -10,35 +10,26 @@ namespace Pact
     public sealed class ConfigurationSettingsViewModel
         : INotifyPropertyChanged
     {
-        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly IConfigurationSource _configurationSource;
         private readonly IConfigurationStorage _configurationStorage;
 
         private string _powerLogFilePath;
-        #endregion // Private members
 
         public ConfigurationSettingsViewModel(
-            #region Dependency assignments
             IBackgroundWorkInterface backgroundWorkInterface,
             IConfigurationSource configurationSource,
             IConfigurationStorage configurationStorage)
         {
-            _backgroundWorkInterface =
-                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
-
-            _configurationSource =
-                configurationSource.Require(nameof(configurationSource));
-
-            _configurationStorage =
-                configurationStorage.Require(nameof(configurationStorage));
+            _backgroundWorkInterface = backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _configurationStorage = configurationStorage.Require(nameof(configurationStorage));
 
             ConfigurationSettings configurationSettings = _configurationSource.GetSettings();
 
             CardTextOffset = configurationSettings.CardTextOffset;
             FontSize = configurationSettings.FontSize;
             _powerLogFilePath = configurationSettings.PowerLogFilePath;
-            #endregion // Dependency assignments
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

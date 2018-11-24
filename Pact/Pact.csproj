@@ -99,14 +99,19 @@
     <Compile Include="Abstractions\Cards\JSONCardDatabase.cs" />
     <Compile Include="Abstractions\Cards\FileBasedCardDatabaseManager.cs" />
     <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
-    <Compile Include="Abstractions\Decks\DecklistCard.cs" />
-    <Compile Include="Abstractions\Decks\DeckDetails.cs" />
-    <Compile Include="Abstractions\Decks\DeckInfoFileStorage.cs" />
+    <Compile Include="Abstractions\Models\Client\DecklistCard.cs" />
+    <Compile Include="Abstractions\Decks\DeckFileStorage.cs" />
     <Compile Include="Abstractions\Decks\FileBasedDeckRepository.cs" />
-    <Compile Include="Abstractions\Decks\IDeckInfoFileStorage.cs" />
+    <Compile Include="Abstractions\Decks\IDeckFileStorage.cs" />
     <Compile Include="Abstractions\Decks\IDeckRepository.cs" />
     <Compile Include="Abstractions\Game Results\FileBasedGameResultRepository.cs" />
     <Compile Include="Abstractions\Game Results\IGameResultRepository.cs" />
+    <Compile Include="Abstractions\Models\Client\Deck.cs" />
+    <Compile Include="Abstractions\Models\Client\DeckDetail.cs" />
+    <Compile Include="Abstractions\Models\Client\GameResult.cs" />
+    <Compile Include="Abstractions\Models\Data\Deck.cs" />
+    <Compile Include="Abstractions\Models\Data\GameResult.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\JSONCollectionSerializer.cs" />
     <Compile Include="UI\Interfaces\ICardDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\IReplaceDeckInterface.cs" />
     <Compile Include="UI\Interfaces\ModalCardInfoDatabaseUpdateInterface.cs" />
@@ -153,7 +158,6 @@
     <Compile Include="UI\Converters\SingleValueToThicknessConverter.cs" />
     <Compile Include="Abstractions\Decks\VarintDecklistSerializer.cs" />
     <Compile Include="Abstractions\Cards\CardInfo.cs" />
-    <Compile Include="Abstractions\Decks\DeckInfo.cs" />
     <Compile Include="Abstractions\Events\CardRemovedFromDeck.cs" />
     <Compile Include="Abstractions\Events\GameEnded.cs" />
     <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
@@ -199,7 +203,7 @@
     <Compile Include="UI\Views\Modals\DeckImportView.xaml.cs">
       <DependentUpon>DeckImportView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Abstractions\Decks\Decklist.cs" />
+    <Compile Include="Abstractions\Models\Client\Decklist.cs" />
     <Compile Include="UI\Views\DeckManagerView.xaml.cs">
       <DependentUpon>DeckManagerView.xaml</DependentUpon>
     </Compile>
@@ -246,7 +250,7 @@
     </Compile>
     <Compile Include="UI\View Models\TrackedCardViewModel.cs" />
     <Compile Include="Abstractions\Decks\TextDecklistSerializer.cs" />
-    <Compile Include="Abstractions\Decks\Varint.cs" />
+    <Compile Include="Abstractions\Utility\Serialization\Varint.cs" />
     <Compile Include="UI\Interfaces\ModalUserConfirmationInterface.cs" />
     <Compile Include="UI\View Models\Modals\UserConfirmationModalViewModel.cs" />
     <Compile Include="UI\Views\Modals\UserConfirmationView.xaml.cs">

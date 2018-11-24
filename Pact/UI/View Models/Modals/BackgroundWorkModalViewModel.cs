@@ -2,24 +2,21 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 
+using Pact.Extensions.Contract;
+
 namespace Pact
 {
     public sealed class BackgroundWorkModalViewModel
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
-        #region Private members
         private readonly Task _backgroundWork;
         private string _statusMessage;
-        #endregion // Private members
 
         public BackgroundWorkModalViewModel(
-            #region Dependency assignments
             Func<Action<string>, Task> backgroundWorker)
         {
-            if (backgroundWorker == null)
-                throw new ArgumentNullException(nameof(backgroundWorker));
-            #endregion // Dependency assignments
+            backgroundWorker.Require(nameof(backgroundWorker));
 
             _backgroundWork = backgroundWorker(__statusMessage => StatusMessage = __statusMessage);
         }
@@ -32,14 +29,13 @@ namespace Pact
             {
                 _backgroundWork.ContinueWith(__ => value?.Invoke(true));
             }
-            remove
-            { }
+            remove {}
         }
 
         public string StatusMessage
         {
             get => _statusMessage;
-            set
+            private set
             {
                 _statusMessage = value;
 

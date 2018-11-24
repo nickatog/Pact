@@ -7,6 +7,6 @@ namespace Pact
     {
         Task AddGameResult(
             Guid deckID,
-            GameResult gameResult);
+            Models.Client.GameResult gameResult);
     }
 }

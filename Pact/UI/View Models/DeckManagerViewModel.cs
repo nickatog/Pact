@@ -21,7 +21,7 @@ namespace Pact
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
-        private readonly ISerializer<Decklist> _decklistSerializer;
+        private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private readonly IDeckRepository _deckRepository;
         private readonly IEventStreamFactory _eventStreamFactory;
         private readonly IEventDispatcher _gameEventDispatcher;
@@ -40,7 +40,7 @@ namespace Pact
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
-            ISerializer<Decklist> decklistSerializer,
+            ISerializer<Models.Client.Decklist> decklistSerializer,
             IDeckRepository deckRepository,
             IEventStreamFactory eventStreamFactory,
             IEventDispatcher gameEventDispatcher,
@@ -70,7 +70,7 @@ namespace Pact
             Task.Run(
                 async () =>
                 {
-                    IEnumerable<DeckInfo> deckInfos = await _deckRepository.GetAllDecksAndGameResults();
+                    IEnumerable<Models.Client.Deck> deckInfos = await _deckRepository.GetAllDecksAndGameResults();
 
                     _deckViewModels =
                         new ObservableCollection<DeckViewModel>(
@@ -133,7 +133,7 @@ namespace Pact
                         await SaveDecks();
                     }));
 
-            Decklist DeserializeDecklist(
+            Models.Client.Decklist DeserializeDecklist(
                 string deckstring)
             {
                 using (var stream = new MemoryStream(Encoding.Default.GetBytes(deckstring)))
@@ -145,10 +145,10 @@ namespace Pact
 
         private DeckViewModel CreateDeckViewModel(
             Guid deckID,
-            Decklist decklist,
+            Models.Client.Decklist decklist,
             int position,
             string title,
-            IEnumerable<GameResult> gameResults = null)
+            IEnumerable<Models.Client.GameResult> gameResults = null)
         {
             return
                 new DeckViewModel(
@@ -193,8 +193,9 @@ namespace Pact
 
         private Task SaveDecks()
         {
-            IEnumerable<DeckDetails> deckDetails =
-                _deckViewModels.Select(
+            IEnumerable<Models.Client.DeckDetail> deckDetails =
+                _deckViewModels
+                .Select(
                     __deckViewModel =>
                     {
                         using (var stream = new MemoryStream())
@@ -205,7 +206,7 @@ namespace Pact
 
                             using (var reader = new StreamReader(stream))
                                 return
-                                    new DeckDetails(
+                                    new Models.Client.DeckDetail(
                                         __deckViewModel.DeckID,
                                         __deckViewModel.Title,
                                         reader.ReadToEnd(),

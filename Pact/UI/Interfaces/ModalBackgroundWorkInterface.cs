@@ -8,17 +8,12 @@ namespace Pact
     public sealed class ModalBackgroundWorkInterface
         : IBackgroundWorkInterface
     {
-        #region Private members
         private readonly IModalDisplay _modalDisplay;
-        #endregion // Private members
 
         public ModalBackgroundWorkInterface(
-            #region Dependency assignments
             IModalDisplay modalDisplay)
         {
-            _modalDisplay =
-                modalDisplay.Require(nameof(modalDisplay));
-            #endregion // Dependency assignments
+            _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
         }
 
         Task IBackgroundWorkInterface.Perform(
