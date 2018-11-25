@@ -25,7 +25,6 @@ namespace Pact
                 while (await stream.ReadAsync(byteValue, 0, 1).ConfigureAwait(false) != 0)
                 {
                     int shiftedValue = (byteValue[0] & 0x7F) << bytesRead * 7;
-
                     result += shiftedValue;
 
                     bytesRead++;

@@ -4,6 +4,6 @@ namespace Pact
 {
     public interface IDeckImportInterface
     {
-        Task<DeckImportDetails?> GetDeckImportDetails();
+        Task<Models.Interface.DeckImportDetail?> GetDetail();
     }
 }

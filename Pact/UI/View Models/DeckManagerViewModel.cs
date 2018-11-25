@@ -17,7 +17,6 @@ namespace Pact
     public sealed class DeckManagerViewModel
         : INotifyPropertyChanged
     {
-        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
@@ -33,10 +32,8 @@ namespace Pact
         private readonly IEventDispatcher _viewEventDispatcher;
 
         private IList<DeckViewModel> _deckViewModels;
-        #endregion // Private members
 
         public DeckManagerViewModel(
-            #region Dependency assignment
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
@@ -64,26 +61,24 @@ namespace Pact
             _replaceDeckInterface = replaceDeckInterface.Require(nameof(replaceDeckInterface));
             _userConfirmationInterface = userConfirmationInterface.Require(nameof(userConfirmationInterface));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
-            #endregion // Dependency assignment
 
             // Start loading pre-existing decks
             Task.Run(
                 async () =>
                 {
-                    IEnumerable<Models.Client.Deck> deckInfos = await _deckRepository.GetAllDecksAndGameResults();
+                    IEnumerable<Models.Client.Deck> decks = await _deckRepository.GetAllDecks();
 
                     _deckViewModels =
                         new ObservableCollection<DeckViewModel>(
-                            deckInfos
-                            .OrderBy(__deckInfo => __deckInfo.Position)
+                            decks
+                            .OrderBy(__deck => __deck.Position)
                             .Select(
-                                __deckInfo =>
+                                __deck =>
                                     CreateDeckViewModel(
-                                        __deckInfo.DeckID,
-                                        DeserializeDecklist(__deckInfo.DeckString),
-                                        __deckInfo.Position,
-                                        __deckInfo.Title,
-                                        __deckInfo.GameResults)));
+                                        __deck.DeckID,
+                                        DeserializeDecklist(__deck.DeckString),
+                                        __deck.Title,
+                                        __deck.GameResults)));
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DeckViewModels)));
                 });
@@ -107,11 +102,13 @@ namespace Pact
                 new DelegateEventHandler<ViewCommands.DeleteDeck>(
                     async __event =>
                     {
-                        DeckViewModel deck = _deckViewModels.FirstOrDefault(__deck => __deck.DeckID == __event.DeckID);
-                        if (deck == null)
+                        DeckViewModel deckViewModel =
+                            _deckViewModels
+                            .FirstOrDefault(__deckViewModel => __deckViewModel.DeckID == __event.DeckID);
+                        if (deckViewModel == null)
                             return;
                         
-                        _deckViewModels.Remove(deck);
+                        _deckViewModels.Remove(deckViewModel);
 
                         await SaveDecks();
                     }));
@@ -143,10 +140,29 @@ namespace Pact
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public IEnumerable<DeckViewModel> DeckViewModels => _deckViewModels;
+
+        public ICommand ImportDeck =>
+            new DelegateCommand(
+                async () =>
+                {
+                    Models.Interface.DeckImportDetail? deckImportDetail = await _deckImportInterface.GetDetail();
+                    if (!deckImportDetail.HasValue)
+                        return;
+
+                    _deckViewModels.Insert(
+                        0,
+                        CreateDeckViewModel(
+                            Guid.NewGuid(),
+                            deckImportDetail.Value.Decklist,
+                            deckImportDetail.Value.Title));
+
+                    await SaveDecks();
+                });
+
         private DeckViewModel CreateDeckViewModel(
             Guid deckID,
             Models.Client.Decklist decklist,
-            int position,
             string title,
             IEnumerable<Models.Client.GameResult> gameResults = null)
         {
@@ -170,27 +186,6 @@ namespace Pact
                     gameResults);
         }
 
-        public IEnumerable<DeckViewModel> DeckViewModels => _deckViewModels;
-
-        public ICommand ImportDeck =>
-            new DelegateCommand(
-                async () =>
-                {
-                    DeckImportDetails? deck = await _deckImportInterface.GetDeckImportDetails();
-                    if (!deck.HasValue)
-                        return;
-
-                    _deckViewModels.Insert(
-                        0,
-                        CreateDeckViewModel(
-                            Guid.NewGuid(),
-                            deck.Value.Decklist,
-                            0,
-                            deck.Value.Title));
-
-                    await SaveDecks();
-                });
-
         private Task SaveDecks()
         {
             IEnumerable<Models.Client.DeckDetail> deckDetails =
@@ -205,16 +200,18 @@ namespace Pact
                             stream.Position = 0;
 
                             using (var reader = new StreamReader(stream))
+                            {
                                 return
                                     new Models.Client.DeckDetail(
                                         __deckViewModel.DeckID,
                                         __deckViewModel.Title,
                                         reader.ReadToEnd(),
                                         __deckViewModel.Position);
+                            }
                         }
                     });
 
-            return _deckRepository.ReplaceDecks(deckDetails);
+            return _deckRepository.ReplaceAllDecks(deckDetails);
         }
     }
 }

@@ -11,48 +11,60 @@ namespace Pact
         : ICardInfoProvider
     {
         private readonly ICardDatabase _cardDatabase;
-        private IDictionary<int, CardInfo> _cardInfoByDatabaseID;
-        private IDictionary<string, CardInfo> _cardInfoByID;
-        private readonly IEventDispatcher _viewEventDispatcher;
+        private IDictionary<int, Models.Data.Card> _cardByDatabaseID;
+        private IDictionary<string, Models.Data.Card> _cardByID;
+        private readonly IEventDispatcher _eventDispatcher;
 
         public LocalDatabaseCardInfoProvider(
             ICardDatabase cardDatabase,
-            IEventDispatcher viewEventDispatcher)
+            IEventDispatcher eventDispatcher)
         {
             _cardDatabase = cardDatabase.Require(nameof(cardDatabase));
-            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _eventDispatcher = eventDispatcher.Require(nameof(eventDispatcher));
 
             LoadCards();
 
-            _viewEventDispatcher.RegisterHandler(
+            _eventDispatcher.RegisterHandler(
                 new DelegateEventHandler<ViewEvents.CardDatabaseUpdated>(
                     __ => LoadCards()));
 
             void LoadCards()
             {
-                IEnumerable<CardInfo> cardInfos = _cardDatabase.GetCards().Result;
+                IEnumerable<Models.Data.Card> cardInfos = _cardDatabase.GetCards().Result;
 
-                _cardInfoByDatabaseID = cardInfos.ToDictionary(__cardInfo => __cardInfo.DatabaseID);
-                _cardInfoByID = cardInfos.ToDictionary(__cardInfo => __cardInfo.ID);
+                _cardByDatabaseID = cardInfos.ToDictionary(__cardInfo => __cardInfo.dbfId);
+                _cardByID = cardInfos.ToDictionary(__cardInfo => __cardInfo.id);
             }
         }
 
-        CardInfo? ICardInfoProvider.GetCardInfo(
+        Models.Client.CardInfo? ICardInfoProvider.GetCardInfo(
             string cardID)
         {
-            if (_cardInfoByID.TryGetValue(cardID, out CardInfo cardInfo))
-                return cardInfo;
+            if (_cardByID.TryGetValue(cardID, out Models.Data.Card card))
+                return CreateCardInfo(card);
 
             return null;
         }
 
-        CardInfo? ICardInfoProvider.GetCardInfo(
+        Models.Client.CardInfo? ICardInfoProvider.GetCardInfo(
             int databaseID)
         {
-            if (_cardInfoByDatabaseID.TryGetValue(databaseID, out CardInfo cardInfo))
-                return cardInfo;
+            if (_cardByDatabaseID.TryGetValue(databaseID, out Models.Data.Card card))
+                return CreateCardInfo(card);
 
             return null;
+        }
+
+        private static Models.Client.CardInfo CreateCardInfo(
+            Models.Data.Card card)
+        {
+            return
+                new Models.Client.CardInfo(
+                    card.name,
+                    card.cardClass,
+                    card.cost,
+                    card.id,
+                    card.dbfId);
         }
     }
 }

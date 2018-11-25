@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 
 using Pact.Extensions.Contract;
@@ -11,13 +10,16 @@ namespace Pact
     {
         private readonly string _cardDatabaseFilePath;
         private readonly string _cardDatabaseVersionFilePath;
+        private readonly string _stagingDirectoryPath;
 
         public FileBasedCardDatabaseManager(
             string cardDatabaseFilePath,
-            string cardDatabaseVersionFilePath)
+            string cardDatabaseVersionFilePath,
+            string stagingDirectoryPath)
         {
             _cardDatabaseFilePath = cardDatabaseFilePath.Require(nameof(cardDatabaseFilePath));
             _cardDatabaseVersionFilePath = cardDatabaseVersionFilePath.Require(nameof(cardDatabaseVersionFilePath));
+            _stagingDirectoryPath = stagingDirectoryPath.Require(nameof(stagingDirectoryPath));
         }
 
         int? ICardDatabaseManager.GetCurrentVersion()
@@ -46,14 +48,11 @@ namespace Pact
 
             async Task __UpdateCardDatabase()
             {
-                string tempFilePath =
-                    Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        $@"Pact\~{Path.GetFileName(_cardDatabaseFilePath)}");
-
-                var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(tempFilePath));
+                var directoryInfo = new DirectoryInfo(_stagingDirectoryPath);
                 if (!directoryInfo.Exists)
                     directoryInfo.Create();
+
+                string tempFilePath = Path.Combine(_stagingDirectoryPath, $"~{Path.GetFileName(_cardDatabaseFilePath)}");
 
                 using (var tempFileStream = new FileStream(tempFilePath, FileMode.Create))
                     await updateStream.CopyToAsync(tempFileStream).ConfigureAwait(false);

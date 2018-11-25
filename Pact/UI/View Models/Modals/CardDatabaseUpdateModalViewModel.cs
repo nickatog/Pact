@@ -15,15 +15,16 @@ namespace Pact
         : IModalViewModel<bool>
         , INotifyPropertyChanged
     {
-        private Action _canExecuteDownloadChanged;
         private readonly ICardDatabaseManager _cardDatabaseManager;
         private readonly ICardDatabaseUpdateService _cardDatabaseUpdateService;
+        private readonly Dispatcher _uiDispatcher;
+
+        private Action _canExecuteDownloadChanged;
         private readonly int? _currentVersion;
         private string _errorMessage;
         private bool _isUpdating;
         private int? _latestVersion;
         private string _latestVersionText;
-        private readonly Dispatcher _uiDispatcher;
 
         public CardDatabaseUpdateModalViewModel(
             ICardDatabaseManager cardDatabaseManager,

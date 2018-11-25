@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
-using System.Windows.Media;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public class OpponentCoinStatusToBrushConverter
+    public sealed class SelectedViewMatchesName
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -14,10 +14,9 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is bool opponentCoinStatus)
-                return opponentCoinStatus ? Brushes.Yellow : Brushes.Red;
+            var regex = new Regex($".*{parameter.ToString()}ViewModel.*", RegexOptions.IgnoreCase);
 
-            return Brushes.Green;
+            return regex.IsMatch(value.GetType().Name);
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

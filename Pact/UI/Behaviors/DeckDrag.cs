@@ -2,9 +2,9 @@
 using System.Windows.Input;
 using System.Windows.Interactivity;
 
-namespace Pact
+namespace Pact.Behaviors
 {
-    public sealed class DeckDragBehavior
+    public sealed class DeckDrag
         : Behavior<DeckView>
     {
         private ushort DeckPosition => ((DeckViewModel)AssociatedObject.DataContext).Position;

@@ -21,9 +21,9 @@ namespace Pact
         }
 
         async Task IConfigurationStorage.SaveChanges(
-            ConfigurationData configurationData)
+            Models.Client.ConfigurationSettings configurationSettings)
         {
-            await _configurationStorage.SaveChanges(configurationData).ConfigureAwait(false);
+            await _configurationStorage.SaveChanges(configurationSettings).ConfigureAwait(false);
 
             _eventDispatcher.DispatchEvent(new ViewEvents.ConfigurationSettingsSaved());
         }

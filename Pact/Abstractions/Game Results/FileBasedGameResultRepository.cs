@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,14 +10,14 @@ namespace Pact
         : IGameResultRepository
     {
         private readonly AsyncSemaphore _asyncMutex;
-        private readonly IDeckFileStorage _deckInfoFileStorage;
+        private readonly IDeckFileStorage _deckFileStorage;
 
         public FileBasedGameResultRepository(
             AsyncSemaphore asyncMutex,
-            IDeckFileStorage deckInfoFileStorage)
+            IDeckFileStorage deckFileStorage)
         {
             _asyncMutex = asyncMutex.Require(nameof(asyncMutex));
-            _deckInfoFileStorage = deckInfoFileStorage.Require(nameof(deckInfoFileStorage));
+            _deckFileStorage = deckFileStorage.Require(nameof(deckFileStorage));
         }
 
         async Task IGameResultRepository.AddGameResult(
@@ -27,29 +26,25 @@ namespace Pact
         {
             using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
             {
-                await _deckInfoFileStorage.SaveAll(
-                    (await _deckInfoFileStorage.GetAll().ConfigureAwait(false))
+                await _deckFileStorage.SaveAll(
+                    (await _deckFileStorage.GetAll().ConfigureAwait(false))
                     .Select(
-                        __deckInfo =>
+                        __deck =>
                         {
-                            if (__deckInfo.DeckID != deckID)
-                                return __deckInfo;
+                            if (__deck.DeckID != deckID)
+                                return __deck;
 
                             return
                                 new Models.Data.Deck(
-                                    __deckInfo.DeckID,
-                                    __deckInfo.DeckString,
-                                    __deckInfo.Title,
-                                    __deckInfo.Position,
-                                    __deckInfo.GameResults
-                                        .Concat(
-                                    new List<Models.Data.GameResult>()
-                                    {
+                                    __deck.DeckID,
+                                    __deck.DeckString,
+                                    __deck.Title,
+                                    __deck.Position,
+                                    __deck.GameResults.Append(
                                         new Models.Data.GameResult(
                                             gameResult.Timestamp,
                                             gameResult.GameWon,
-                                            gameResult.OpponentClass)
-                                    }));
+                                            gameResult.OpponentClass)));
                         })).ConfigureAwait(false);
             }
         }

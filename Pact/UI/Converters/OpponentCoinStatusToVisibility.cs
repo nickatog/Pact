@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class OpponentCoinStatusToVisibilityConverter
+    public sealed class OpponentCoinStatusToVisibility
         : IValueConverter
     {
         object IValueConverter.Convert(

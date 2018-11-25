@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Pact.Extensions.Enumerable;
+
 using Valkyrie;
+
+using Pact.Extensions.Enumerable;
+using Pact.Extensions.String;
 
 namespace Pact
 {
@@ -46,7 +49,7 @@ namespace Pact
                     __event =>
                     {
                         string newFilePath = _configurationSource.GetSettings().PowerLogFilePath;
-                        if (!string.Equals(newFilePath, _filePath, StringComparison.OrdinalIgnoreCase))
+                        if (!newFilePath.Eq(_filePath))
                         {
                             _remainingText = null;
                             _streamPosition = 0L;

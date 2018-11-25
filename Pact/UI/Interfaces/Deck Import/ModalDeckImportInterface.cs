@@ -4,13 +4,13 @@ using Pact.Extensions.Contract;
 
 namespace Pact
 {
-    public sealed class DeckImportInterface
+    public sealed class ModalDeckImportInterface
         : IDeckImportInterface
     {
         private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
         private readonly IModalDisplay _modalDisplay;
 
-        public DeckImportInterface(
+        public ModalDeckImportInterface(
             ISerializer<Models.Client.Decklist> decklistSerializer,
             IModalDisplay modalDisplay)
         {
@@ -18,21 +18,13 @@ namespace Pact
             _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
         }
 
-        Task<DeckImportDetails?> IDeckImportInterface.GetDeckImportDetails()
+        Task<Models.Interface.DeckImportDetail?> IDeckImportInterface.GetDetail()
         {
-            var completionSource = new TaskCompletionSource<DeckImportDetails?>();
+            var completionSource = new TaskCompletionSource<Models.Interface.DeckImportDetail?>();
 
             _modalDisplay.Show(
                 new DeckImportModalViewModel(_decklistSerializer),
-                __result =>
-                {
-                    DeckImportDetails? details = null;
-
-                    if (__result.HasValue)
-                        details = new DeckImportDetails(__result.Value.Title, __result.Value.Decklist);
-
-                    completionSource.SetResult(details);
-                });
+                __result => completionSource.SetResult(__result));
 
             return completionSource.Task;
         }

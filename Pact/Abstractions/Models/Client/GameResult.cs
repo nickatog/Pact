@@ -5,7 +5,7 @@ namespace Pact.Models.Client
     public struct GameResult
     {
         public GameResult(
-            DateTime timestamp,
+            DateTimeOffset timestamp,
             bool gameWon,
             string opponentClass)
         {
@@ -16,6 +16,6 @@ namespace Pact.Models.Client
 
         public bool GameWon { get; }
         public string OpponentClass { get; }
-        public DateTime Timestamp { get; }
+        public DateTimeOffset Timestamp { get; }
     }
 }

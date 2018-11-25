@@ -5,9 +5,9 @@ using System.Windows.Data;
 
 using Pact.Extensions.String;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class SingleValueToThicknessConverter
+    public sealed class SingleValueToThickness
         : IValueConverter
     {
         object IValueConverter.Convert(

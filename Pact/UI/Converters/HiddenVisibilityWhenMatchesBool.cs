@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows.Data;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class SelectedViewMatchesNameConverter
+    public sealed class HiddenVisibilityWhenMatchesBool
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -14,9 +13,12 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            var regex = new Regex($".*{parameter.ToString()}ViewModel.*", RegexOptions.IgnoreCase);
+            if (value is bool boolValue
+                && bool.TryParse(parameter?.ToString(), out bool boolParameter)
+                && boolValue == boolParameter)
+                return -1;
 
-            return regex.IsMatch(value.GetType().Name);
+            return 1;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

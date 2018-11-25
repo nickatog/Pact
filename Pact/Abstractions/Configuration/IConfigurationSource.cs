@@ -2,6 +2,6 @@
 {
     public interface IConfigurationSource
     {
-        ConfigurationSettings GetSettings();
+        Models.Client.ConfigurationSettings GetSettings();
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class CardCountToOpacityConverter
+    public sealed class CollapsedVisibilityWhenNull
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -13,10 +14,11 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is int count)
-                return count == 0 ? 0.5 : 0;
+            bool expectingNullValue = true;
+            if (bool.TryParse(parameter?.ToString(), out bool boolParameter))
+                expectingNullValue = boolParameter;
 
-            return 0;
+            return (value == null) == expectingNullValue ? Visibility.Collapsed : Visibility.Visible;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

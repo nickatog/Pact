@@ -42,6 +42,7 @@ namespace Pact
             _entityMappings.Clear();
             _gameLosers.Clear();
             _gameWinners.Clear();
+            _playerHeroCards.Clear();
             PlayerID = null;
             _playerNames.Clear();
         }

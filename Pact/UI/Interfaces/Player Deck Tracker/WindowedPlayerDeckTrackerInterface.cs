@@ -81,9 +81,7 @@ namespace Pact
         private void Reset()
         {
             _cancellation?.Cancel();
-
             _viewModel?.Cleanup();
-
             _view?.Close();
         }
     }

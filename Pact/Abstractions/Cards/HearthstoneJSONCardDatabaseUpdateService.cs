@@ -33,11 +33,11 @@ namespace Pact
             if (versionSegment == null)
                 return null;
 
-            Match patternMatch = s_versionPattern.Match(versionSegment);
-            if (!patternMatch.Success)
+            Match versionMatch = s_versionPattern.Match(versionSegment);
+            if (!versionMatch.Success)
                 return null;
 
-            if (int.TryParse(patternMatch.Groups["Version"].Value, out int version))
+            if (int.TryParse(versionMatch.Groups["Version"].Value, out int version))
                 return version;
 
             return null;

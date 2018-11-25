@@ -8,6 +8,6 @@ namespace Pact
         Task<IEnumerable<Models.Data.Deck>> GetAll();
 
         Task SaveAll(
-            IEnumerable<Models.Data.Deck> deckInfos);
+            IEnumerable<Models.Data.Deck> decks);
     }
 }

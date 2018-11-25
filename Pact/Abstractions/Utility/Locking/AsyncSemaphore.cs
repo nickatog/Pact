@@ -56,17 +56,12 @@ namespace Pact
             : IDisposable
         {
             private bool _disposed = false;
-            private readonly AsyncSemaphore _semaphore;
+            private readonly AsyncSemaphore _parent;
 
             public WaitHandle(
-                AsyncSemaphore semaphore)
+                AsyncSemaphore parent)
             {
-                _semaphore = semaphore;
-            }
-
-            ~WaitHandle()
-            {
-                Dispose(false);
+                _parent = parent;
             }
 
             void Dispose(
@@ -75,7 +70,7 @@ namespace Pact
                 if (!_disposed)
                 {
                     if (disposing)
-                        _semaphore.Release();
+                        _parent.Release();
 
                     _disposed = true;
                 }
@@ -84,8 +79,6 @@ namespace Pact
             void IDisposable.Dispose()
             {
                 Dispose(true);
-
-                GC.SuppressFinalize(this);
             }
         }
     }

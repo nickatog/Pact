@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class CollapsedVisibilityWhenNullConverter
+    public sealed class HiddenWhenZeroCount
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -14,11 +14,10 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            bool expectingNullValue = true;
-            if (bool.TryParse(parameter?.ToString(), out bool boolParameter))
-                expectingNullValue = boolParameter;
+            if (value is int count && count == 0)
+                return Visibility.Hidden;
 
-            return (value == null) == expectingNullValue ? Visibility.Collapsed : Visibility.Visible;
+            return Visibility.Visible;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

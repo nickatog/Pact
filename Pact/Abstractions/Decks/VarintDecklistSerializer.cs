@@ -86,20 +86,20 @@ namespace Pact
             {
                 await stream.WriteAsync(new byte[] { 0, 1, 2 }, 0, 3).ConfigureAwait(false);
 
-                await __WriteCardsToStream(
+                await __WriteCards(
                     new List<Models.Client.DecklistCard>
                     {
                         new Models.Client.DecklistCard(decklist.HeroID, 1)
                     }).ConfigureAwait(false);
 
-                await __WriteCardsToStream(decklistCards.Where(__card => __card.Count == 1)).ConfigureAwait(false);
+                await __WriteCards(decklistCards.Where(__card => __card.Count == 1)).ConfigureAwait(false);
 
-                await __WriteCardsToStream(decklistCards.Where(__card => __card.Count == 2)).ConfigureAwait(false);
+                await __WriteCards(decklistCards.Where(__card => __card.Count == 2)).ConfigureAwait(false);
 
-                await __WriteCardsToStream(decklistCards.Where(__card => __card.Count > 2), true).ConfigureAwait(false);
+                await __WriteCards(decklistCards.Where(__card => __card.Count > 2), true).ConfigureAwait(false);
             }
 
-            async Task __WriteCardsToStream(
+            async Task __WriteCards(
                 IEnumerable<Models.Client.DecklistCard> cards,
                 bool includeCount = false)
             {

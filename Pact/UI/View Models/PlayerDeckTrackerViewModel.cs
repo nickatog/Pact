@@ -13,7 +13,6 @@ namespace Pact
     public sealed class PlayerDeckTrackerViewModel
         : INotifyPropertyChanged
     {
-        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
@@ -22,33 +21,23 @@ namespace Pact
         private readonly Models.Client.Decklist _decklist;
         private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private bool? _opponentCoinStatus;
-        private int _playerID;
+        private int? _playerID;
         private IList<TrackedCardViewModel> _trackedCardViewModels;
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-        #endregion // Private members
 
         public PlayerDeckTrackerViewModel(
-            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
             IEventDispatcher gameEventDispatcher,
             IEventDispatcher viewEventDispatcher,
             Models.Client.Decklist decklist)
         {
-            _cardInfoProvider =
-                cardInfoProvider.Require(nameof(cardInfoProvider));
-
-            _configurationSource =
-                configurationSource.Require(nameof(configurationSource));
-
-            _gameEventDispatcher =
-                gameEventDispatcher.Require(nameof(gameEventDispatcher));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _decklist = decklist;
-            #endregion // Dependency assignments
 
             Reset();
             
@@ -56,7 +45,7 @@ namespace Pact
                 new DelegateEventHandler<Events.CardAddedToDeck>(
                     __event =>
                     {
-                        if (__event.PlayerID != _playerID)
+                        if (!_playerID.Equals(__event.PlayerID))
                             return;
 
                         if (_trackedCardViewModels.Any(__trackedCardViewModel => __trackedCardViewModel.CardID.Eq(__event.CardID)))
@@ -64,11 +53,7 @@ namespace Pact
 
                         int? playerID = _trackedCardViewModels.First()?.PlayerID;
 
-                        _trackedCardViewModels.Add(
-                            CreateCardViewModel(
-                                __event.CardID,
-                                1,
-                                playerID));
+                        _trackedCardViewModels.Add(CreateCardViewModel(__event.CardID, 1, playerID));
 
                         _trackedCardViewModels =
                             _trackedCardViewModels
@@ -120,6 +105,21 @@ namespace Pact
 
         public int Count => _trackedCardViewModels.Sum(__trackedCardViewModel => __trackedCardViewModel.Count);
 
+        public int FontSize => _configurationSource.GetSettings().FontSize;
+
+        public bool? OpponentCoinStatus
+        {
+            get => _opponentCoinStatus;
+            private set
+            {
+                _opponentCoinStatus = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OpponentCoinStatus)));
+            }
+        }
+
+        public IEnumerable<TrackedCardViewModel> TrackedCardViewModels => _trackedCardViewModels;
+
         private TrackedCardViewModel CreateCardViewModel(
             string cardID,
             int count,
@@ -145,28 +145,16 @@ namespace Pact
             return viewModel;
         }
 
-        public int FontSize => _configurationSource.GetSettings().FontSize;
-
-        public bool? OpponentCoinStatus
-        {
-            get => _opponentCoinStatus;
-            private set
-            {
-                _opponentCoinStatus = value;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OpponentCoinStatus)));
-            }
-        }
-
         private void Reset()
         {
             OpponentCoinStatus = null;
+            _playerID = null;
 
-            _trackedCardViewModels.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
+            _trackedCardViewModels?.ForEach(__trackedCardViewModel => __trackedCardViewModel.Cleanup());
 
             _trackedCardViewModels =
                 _decklist.Cards
-                .Select(__cardInfo => CreateCardViewModel(__cardInfo.CardID, __cardInfo.Count))
+                .Select(__decklistCard => CreateCardViewModel(__decklistCard.CardID, __decklistCard.Count))
                 .OrderBy(__trackedCardViewModel => __trackedCardViewModel.Cost)
                 .ThenBy(__trackedCardViewModel => __trackedCardViewModel.Name)
                 .ToList();
@@ -174,7 +162,5 @@ namespace Pact
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TrackedCardViewModels)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         }
-
-        public IEnumerable<TrackedCardViewModel> TrackedCardViewModels => _trackedCardViewModels;
     }
 }

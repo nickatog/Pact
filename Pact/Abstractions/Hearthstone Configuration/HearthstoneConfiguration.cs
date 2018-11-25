@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using Pact.Extensions.String;
+
 namespace Pact
 {
     public sealed class HearthstoneConfiguration
@@ -20,17 +22,17 @@ namespace Pact
 
             if (!File.Exists(filePath))
             {
-                string directoryPath = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(directoryPath))
-                    Directory.CreateDirectory(directoryPath);
+                var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(filePath));
+                if (!directoryInfo.Exists)
+                    directoryInfo.Create();
 
                 File.WriteAllText(filePath, $"[{SECTIONNAME_POWER}]\n{SETTINGNAME_FILEPRINTING}=True");
 
                 return;
             }
 
-            var sectionHeaderRegex = new Regex(@"^\s*\[(?<Name>.*)\]\s*$");
-            var filePrintingSettingRegex =
+            var sectionHeaderPattern = new Regex(@"^\s*\[(?<Name>.*)\]\s*$");
+            var filePrintingSettingPattern =
                 new Regex(
                     $@"^\s*{SETTINGNAME_FILEPRINTING}=(?<Value>\S*)\s*$",
                     RegexOptions.IgnoreCase);
@@ -42,16 +44,16 @@ namespace Pact
             var lines = new List<string>(File.ReadAllLines(filePath));
             for (int linePosition = 0; linePosition < lines.Count; linePosition++)
             {
-                Match match = sectionHeaderRegex.Match(lines[linePosition]);
+                Match match = sectionHeaderPattern.Match(lines[linePosition]);
                 if (match.Success)
                 {
-                    inPowerSection = string.Equals(match.Groups["Name"].Value, SECTIONNAME_POWER, StringComparison.OrdinalIgnoreCase);
+                    inPowerSection = match.Groups["Name"].Value.Eq(SECTIONNAME_POWER);
                     if (inPowerSection)
                         powerSectionPosition = linePosition;
                 }
                 else if (inPowerSection)
                 {
-                    match = filePrintingSettingRegex.Match(lines[linePosition]);
+                    match = filePrintingSettingPattern.Match(lines[linePosition]);
                     if (match.Success)
                     {
                         bool.TryParse(match.Groups["Value"].Value, out bool filePrintingSettingValue);

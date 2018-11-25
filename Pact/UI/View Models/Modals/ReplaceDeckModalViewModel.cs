@@ -13,6 +13,7 @@ namespace Pact
         , INotifyPropertyChanged
     {
         private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
+
         private string _importErrorMessage;
 
         public ReplaceDeckModalViewModel(

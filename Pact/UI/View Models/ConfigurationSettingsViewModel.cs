@@ -25,7 +25,7 @@ namespace Pact
             _configurationSource = configurationSource.Require(nameof(configurationSource));
             _configurationStorage = configurationStorage.Require(nameof(configurationStorage));
 
-            ConfigurationSettings configurationSettings = _configurationSource.GetSettings();
+            Models.Client.ConfigurationSettings configurationSettings = _configurationSource.GetSettings();
 
             CardTextOffset = configurationSettings.CardTextOffset;
             FontSize = configurationSettings.FontSize;
@@ -73,13 +73,12 @@ namespace Pact
                         {
                             __setStatus?.Invoke("Saving settings...");
 
-                            await _configurationStorage.SaveChanges(
-                                new ConfigurationData(_configurationSource.GetSettings())
-                                {
-                                    CardTextOffset = CardTextOffset,
-                                    FontSize = FontSize,
-                                    PowerLogFilePath = PowerLogFilePath
-                                });
+                            Models.Client.ConfigurationSettings configurationSettings = _configurationSource.GetSettings();
+                            configurationSettings.CardTextOffset = CardTextOffset;
+                            configurationSettings.FontSize = FontSize;
+                            configurationSettings.PowerLogFilePath = PowerLogFilePath;
+
+                            await _configurationStorage.SaveChanges(configurationSettings);
 
                             __setStatus?.Invoke("Settings saved!");
 

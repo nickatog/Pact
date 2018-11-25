@@ -27,14 +27,14 @@ namespace Pact
 
         Task ICardDatabaseUpdateInterface.CheckForUpdates()
         {
-            var completionSource = new TaskCompletionSource<bool>();
+            var completionSource = new TaskCompletionSource<object>();
 
             _modalDisplay.Show(
                 new CardDatabaseUpdateModalViewModel(
                     _cardDatabaseManager,
                     _cardDatabaseUpdateService,
                     _uiDispatcher),
-                __ => completionSource.SetResult(true));
+                __ => completionSource.SetResult(null));
 
             return completionSource.Task;
         }

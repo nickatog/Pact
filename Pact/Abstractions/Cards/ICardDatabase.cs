@@ -5,6 +5,6 @@ namespace Pact
 {
     public interface ICardDatabase
     {
-        Task<IEnumerable<CardInfo>> GetCards();
+        Task<IEnumerable<Models.Data.Card>> GetCards();
     }
 }

@@ -11,7 +11,6 @@
         }
 
         public ushort SourcePosition { get; }
-
         public ushort TargetPosition { get; }
     }
 }

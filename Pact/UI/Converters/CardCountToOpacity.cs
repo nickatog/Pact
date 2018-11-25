@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class HiddenWhenZeroCountConverter
+    public sealed class CardCountToOpacity
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -14,10 +13,10 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is int count && count == 0)
-                return Visibility.Hidden;
+            if (value is int count)
+                return count == 0 ? 0.5 : 0;
 
-            return Visibility.Visible;
+            return 0;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

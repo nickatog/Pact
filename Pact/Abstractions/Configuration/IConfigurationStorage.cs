@@ -5,6 +5,6 @@ namespace Pact
     public interface IConfigurationStorage
     {
         Task SaveChanges(
-            ConfigurationData configurationData);
+            Models.Client.ConfigurationSettings configurationSettings);
     }
 }

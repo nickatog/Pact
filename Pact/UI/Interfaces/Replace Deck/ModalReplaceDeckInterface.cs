@@ -18,7 +18,7 @@ namespace Pact
             _modalDisplay = modalDisplay.Require(nameof(modalDisplay));
         }
 
-        Task<Models.Client.Decklist?> IReplaceDeckInterface.GetReplacementDecklist()
+        Task<Models.Client.Decklist?> IReplaceDeckInterface.GetDecklist()
         {
             var completionSource = new TaskCompletionSource<Models.Client.Decklist?>();
 

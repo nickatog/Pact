@@ -23,7 +23,7 @@ namespace Pact
 
             GlobalConfigurationSource.Instance = _container.Resolve<IConfigurationSource>();
             GlobalConfigurationStorage.Instance = _container.Resolve<IConfigurationStorage>();
-            GlobalViewEventDispatcher.Instance = _container.ResolveNamed<IEventDispatcher>("view");
+            GlobalViewEventDispatcher.Instance = _container.ResolveNamed<IEventDispatcher>("View");
         }
 
         protected override void OnStartup(

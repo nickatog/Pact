@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
 using Autofac;
@@ -19,9 +18,16 @@ namespace Pact
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Pact");
 
-            string configurationFilePath = Path.Combine(appDataDirectoryPath, ".config");
+            string configurationFilePath = Path.Combine(appDataDirectoryPath, "config.json");
 
             // AsyncSemaphores
+            builder
+            .Register(
+                __context =>
+                    new AsyncSemaphore())
+            .Named<AsyncSemaphore>("ConfigurationPersistence")
+            .SingleInstance();
+
             builder
             .Register(
                 __context =>
@@ -45,13 +51,13 @@ namespace Pact
                         __context.Resolve<ISerializer<Models.Client.Decklist>>(),
                         __context.Resolve<IDeckRepository>(),
                         __context.Resolve<IEventStreamFactory>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("game"),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("Game"),
                         __context.Resolve<IGameResultRepository>(),
                         __context.Resolve<ILogger>(),
                         __context.Resolve<IPlayerDeckTrackerInterface>(),
                         __context.Resolve<IReplaceDeckInterface>(),
                         __context.Resolve<IUserConfirmationInterface>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .AsSelf();
 
             // DevToolsViewModel
@@ -90,7 +96,8 @@ namespace Pact
 
                     return new FileBasedCardDatabaseManager(
                         Path.Combine(appDirectory, "cards.json"),
-                        Path.Combine(appDirectory, "cards.version"));
+                        Path.Combine(appDirectory, "cards.version"),
+                        appDataDirectoryPath);
                 })
             .Named<ICardDatabaseManager>("base");
 
@@ -99,7 +106,7 @@ namespace Pact
                 (__context, __inner) =>
                     new EventDispatchingCardDatabaseManager(
                         __inner,
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")),
                 "base")
             .SingleInstance();
 
@@ -123,18 +130,11 @@ namespace Pact
                 __context =>
                     new LocalDatabaseCardInfoProvider(
                         __context.Resolve<ICardDatabase>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<ICardInfoProvider>()
             .SingleInstance();
 
             // ICollectionSerializers
-            // [!] Varint is no longer necessary; deck storage was the only thing that depended on this to begin with.
-            //     Is it potentially useful somewhere else? Should it be saved?
-            builder
-            .RegisterGeneric(typeof(VarintCollectionSerializer<>))
-            .As(typeof(ICollectionSerializer<>))
-            .SingleInstance();
-
             builder
             .RegisterType<JSONCollectionSerializer<Models.Data.Deck>>()
             .As<ICollectionSerializer<Models.Data.Deck>>()
@@ -145,7 +145,7 @@ namespace Pact
             .Register(
                 __context =>
                     new FileBasedConfigurationSource(
-                        __context.Resolve<ISerializer<ConfigurationData>>(),
+                        __context.Resolve<ISerializer<Models.Data.ConfigurationData>>(),
                         configurationFilePath))
             .Named<IConfigurationSource>("base");
 
@@ -154,7 +154,7 @@ namespace Pact
                 (__context, __inner) =>
                     new CachingConfigurationSource(
                         __inner,
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")),
                 "base")
             .SingleInstance();
 
@@ -163,7 +163,8 @@ namespace Pact
             .Register(
                 __context =>
                     new FileBasedConfigurationStorage(
-                        __context.Resolve<ISerializer<ConfigurationData>>(),
+                        __context.ResolveNamed<AsyncSemaphore>("ConfigurationPersistence"),
+                        __context.Resolve<ISerializer<Models.Data.ConfigurationData>>(),
                         configurationFilePath))
             .Named<IConfigurationStorage>("base");
 
@@ -172,13 +173,13 @@ namespace Pact
                 (__context, __inner) =>
                     new EventDispatchingConfigurationStorage(
                         __inner,
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")),
                 "base")
             .SingleInstance();
 
             // IDeckImportInterface
             builder
-            .RegisterType<DeckImportInterface>()
+            .RegisterType<ModalDeckImportInterface>()
             .As<IDeckImportInterface>()
             .SingleInstance();
 
@@ -207,14 +208,14 @@ namespace Pact
             .Register(
                 __context =>
                     __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create())
-            .Named<Valkyrie.IEventDispatcher>("game")
+            .Named<Valkyrie.IEventDispatcher>("Game")
             .SingleInstance();
 
             builder
             .Register(
                 __context =>
                     __context.Resolve<Valkyrie.IEventDispatcherFactory>().Create())
-            .Named<Valkyrie.IEventDispatcher>("view")
+            .Named<Valkyrie.IEventDispatcher>("View")
             .SingleInstance();
 
             // IEventDispatcherFactory
@@ -230,7 +231,7 @@ namespace Pact
                     new PowerLogEventStreamFactory(
                         __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<System.Collections.Generic.IEnumerable<IGameStateDebugEventParser>>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<IEventStreamFactory>()
             .SingleInstance();
 
@@ -308,7 +309,7 @@ namespace Pact
                         __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
                         __context.Resolve<IEventStreamFactory>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("view")))
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<IPlayerDeckTrackerInterface>()
             .SingleInstance();
 
@@ -320,24 +321,8 @@ namespace Pact
 
             // ISerializers
             builder
-            .Register(
-                __context =>
-                    new DelegateSerializer<ConfigurationData>(
-                        __stream =>
-                        {
-                            var serializer = new BinaryFormatter();
-
-                            return Task.FromResult((ConfigurationData)serializer.Deserialize(__stream));
-                        },
-                        (__stream, __item) =>
-                        {
-                            var serializer = new BinaryFormatter();
-
-                            serializer.Serialize(__stream, __item);
-
-                            return Task.CompletedTask;
-                        }))
-            .As<ISerializer<ConfigurationData>>()
+            .RegisterType<JSONSerializer<Models.Data.ConfigurationData>>()
+            .As<ISerializer<Models.Data.ConfigurationData>>()
             .SingleInstance();
 
             builder

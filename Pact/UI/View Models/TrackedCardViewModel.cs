@@ -11,7 +11,6 @@ namespace Pact
     public sealed class TrackedCardViewModel
         : INotifyPropertyChanged
     {
-        #region Private members
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IConfigurationSource _configurationSource;
         private readonly IEventDispatcher _gameEventDispatcher;
@@ -20,10 +19,8 @@ namespace Pact
         private int _count;
         private readonly IList<IEventHandler> _gameEventHandlers = new List<IEventHandler>();
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-        #endregion // Private members
 
         public TrackedCardViewModel(
-            #region Dependency assignments
             ICardInfoProvider cardInfoProvider,
             IConfigurationSource configurationSource,
             IEventDispatcher gameEventDispatcher,
@@ -32,22 +29,14 @@ namespace Pact
             int count,
             int? playerID = null)
         {
-            _cardInfoProvider =
-                cardInfoProvider.Require(nameof(cardInfoProvider));
-
-            _configurationSource =
-                configurationSource.Require(nameof(configurationSource));
-
-            _gameEventDispatcher =
-                gameEventDispatcher.Require(nameof(gameEventDispatcher));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             CardID = cardID;
             _count = count;
             PlayerID = playerID;
-            #endregion // Dependency assignments
 
             _gameEventHandlers.Add(
                 new DelegateEventHandler<Events.CardAddedToDeck>(

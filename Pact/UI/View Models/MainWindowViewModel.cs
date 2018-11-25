@@ -13,7 +13,6 @@ namespace Pact
     {
         public static MainWindowViewModel Instance { get; private set; }
 
-        #region Private members
         private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
         private readonly DevToolsViewModel _devToolsViewModel;
@@ -21,29 +20,19 @@ namespace Pact
 
         private object _modalViewModel;
         private object _viewModel;
-        #endregion // Private members
 
         public MainWindowViewModel(
-            #region Dependency assignments
             ConfigurationSettingsViewModel configurationSettingsViewModel,
             DeckManagerViewModel deckManagerViewModel,
             DevToolsViewModel devToolsViewModel,
             DownloadUpdatesViewModel downloadUpdatesViewModel)
         {
-            _configurationSettingsViewModel =
-                configurationSettingsViewModel.Require(nameof(configurationSettingsViewModel));
-
-            _deckManagerViewModel =
-                deckManagerViewModel.Require(nameof(deckManagerViewModel));
-
-            _devToolsViewModel =
-                devToolsViewModel.Require(nameof(devToolsViewModel));
-
-            _downloadUpdatesViewModel =
-                downloadUpdatesViewModel.Require(nameof(downloadUpdatesViewModel));
+            _configurationSettingsViewModel = configurationSettingsViewModel.Require(nameof(configurationSettingsViewModel));
+            _deckManagerViewModel = deckManagerViewModel.Require(nameof(deckManagerViewModel));
+            _devToolsViewModel = devToolsViewModel.Require(nameof(devToolsViewModel));
+            _downloadUpdatesViewModel = downloadUpdatesViewModel.Require(nameof(downloadUpdatesViewModel));
 
             _viewModel = _deckManagerViewModel;
-            #endregion // Dependency assignments
 
             Instance = this;
         }

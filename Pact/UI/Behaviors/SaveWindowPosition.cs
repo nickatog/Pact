@@ -3,16 +3,16 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interactivity;
 
-namespace Pact
+namespace Pact.Behaviors
 {
-    public sealed class SaveWindowPositionBehavior
+    public sealed class SaveWindowPosition
         : Behavior<Window>
     {
         private readonly Timer _timer;
 
-        public SaveWindowPositionBehavior()
+        public SaveWindowPosition()
         {
-            _timer = new Timer(SaveWindowPosition, null, Timeout.Infinite, Timeout.Infinite);
+            _timer = new Timer(Save, null, Timeout.Infinite, Timeout.Infinite);
         }
 
         protected override void OnAttached()
@@ -29,7 +29,7 @@ namespace Pact
             _timer.Change(1000, Timeout.Infinite);
         }
 
-        private void SaveWindowPosition(
+        private void Save(
             object state)
         {
             double left = default;
@@ -46,12 +46,11 @@ namespace Pact
                     size = AssociatedObject.RenderSize;
                 });
 
-            GlobalConfigurationStorage.Instance.SaveChanges(
-                new ConfigurationData(GlobalConfigurationSource.Instance.GetSettings())
-                {
-                    TrackerWindowLocation = new Point(left, top),
-                    TrackerWindowSize = size
-                });
+            Models.Client.ConfigurationSettings configurationSettings = GlobalConfigurationSource.Instance.GetSettings();
+            configurationSettings.TrackerWindowLocation = new Point(left, top);
+            configurationSettings.TrackerWindowSize = size;
+
+            GlobalConfigurationStorage.Instance.SaveChanges(configurationSettings);
         }
     }
 }

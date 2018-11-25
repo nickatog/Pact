@@ -1,4 +1,4 @@
-﻿namespace Pact
+﻿namespace Pact.Models.Client
 {
     public struct CardInfo
     {
@@ -17,13 +17,9 @@
         }
 
         public string Class { get; }
-
         public int Cost { get; }
-
         public int DatabaseID { get; }
-
         public string ID { get; }
-
         public string Name { get; }
     }
 }

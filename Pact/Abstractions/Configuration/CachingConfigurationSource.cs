@@ -7,19 +7,19 @@ namespace Pact
     public sealed class CachingConfigurationSource
         : IConfigurationSource
     {
-        private ConfigurationSettings? _cachedConfigurationSettings;
+        private Models.Client.ConfigurationSettings? _cachedConfigurationSettings;
         private readonly IConfigurationSource _configurationSource;
         private readonly object _lock = new object();
-        private readonly IEventDispatcher _viewEventDispatcher;
+        private readonly IEventDispatcher _eventDispatcher;
 
         public CachingConfigurationSource(
             IConfigurationSource configurationSource,
-            IEventDispatcher viewEventDispatcher)
+            IEventDispatcher eventDispatcher)
         {
             _configurationSource = configurationSource.Require(nameof(configurationSource));
-            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _eventDispatcher = eventDispatcher.Require(nameof(eventDispatcher));
 
-            _viewEventDispatcher.RegisterHandler(
+            _eventDispatcher.RegisterHandler(
                 new DelegateEventHandler<ViewEvents.ConfigurationSettingsSaved>(
                     __ =>
                     {
@@ -28,7 +28,7 @@ namespace Pact
                     }));
         }
 
-        ConfigurationSettings IConfigurationSource.GetSettings()
+        Models.Client.ConfigurationSettings IConfigurationSource.GetSettings()
         {
             lock (_lock)
             {

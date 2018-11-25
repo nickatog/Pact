@@ -9,10 +9,11 @@ using Pact.Extensions.Contract;
 namespace Pact
 {
     public sealed class DeckImportModalViewModel
-        : IModalViewModel<DeckImportResult?>
+        : IModalViewModel<Models.Interface.DeckImportDetail?>
         , INotifyPropertyChanged
     {
         private readonly ISerializer<Models.Client.Decklist> _decklistSerializer;
+
         private string _importErrorMessage;
 
         public DeckImportModalViewModel(
@@ -23,7 +24,7 @@ namespace Pact
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public event Action<DeckImportResult?> OnClosed;
+        public event Action<Models.Interface.DeckImportDetail?> OnClosed;
 
         public ICommand Cancel =>
             new DelegateCommand(
@@ -46,7 +47,7 @@ namespace Pact
                         using (var stream = new MemoryStream(Encoding.Default.GetBytes(DeckString)))
                             decklist = _decklistSerializer.Deserialize(stream).Result;
 
-                        OnClosed?.Invoke(new DeckImportResult(DeckTitle, decklist));
+                        OnClosed?.Invoke(new Models.Interface.DeckImportDetail(DeckTitle, decklist));
                     }
                     catch (Exception)
                     {

@@ -20,14 +20,14 @@ namespace Pact
             Func<Action<string>, Task> backgroundWorker,
             int fadeDuration)
         {
-            var competionSource = new TaskCompletionSource<bool>();
+            var completionSource = new TaskCompletionSource<object>();
 
             _modalDisplay.Show(
                 new BackgroundWorkModalViewModel(backgroundWorker),
-                __ => competionSource.SetResult(true),
+                __ => completionSource.SetResult(null),
                 fadeDuration);
 
-            return competionSource.Task;
+            return completionSource.Task;
         }
     }
 }

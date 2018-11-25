@@ -6,10 +6,10 @@ namespace Pact.Models.Data
     {
         public bool GameWon;
         public string OpponentClass;
-        public DateTime Timestamp;
+        public DateTimeOffset Timestamp;
 
         public GameResult(
-            DateTime timestamp,
+            DateTimeOffset timestamp,
             bool gameWon,
             string opponentClass)
         {

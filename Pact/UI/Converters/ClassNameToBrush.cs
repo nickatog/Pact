@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class ClassNameToBrushConverter
+    public sealed class ClassNameToBrush
         : IValueConverter
     {
         private readonly static IDictionary<string, Brush> s_classColors =

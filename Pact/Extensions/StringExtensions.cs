@@ -26,12 +26,10 @@ namespace Pact.Extensions.String
                 return new Dictionary<string, string>();
 
             return
-                EnumerateGroups(s_tokenPattern.Matches(line))
-                .ToDictionary(
-                    __kvp => __kvp.Key,
-                    __kvp => __kvp.Value);
+                __EnumerateGroups(s_tokenPattern.Matches(line))
+                .ToDictionary(__kvp => __kvp.Key, __kvp => __kvp.Value);
 
-            IEnumerable<(string Key, string Value)> EnumerateGroups(
+            IEnumerable<(string Key, string Value)> __EnumerateGroups(
                 MatchCollection matchCollection)
             {
                 foreach (Match match in matchCollection)

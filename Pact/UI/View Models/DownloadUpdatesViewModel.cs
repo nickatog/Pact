@@ -6,17 +6,12 @@ namespace Pact
 {
     public sealed class DownloadUpdatesViewModel
     {
-        #region Private members
         private readonly ICardDatabaseUpdateInterface _cardDatabaseUpdateInterface;
-        #endregion // Private members
 
         public DownloadUpdatesViewModel(
-            #region Dependency assignments
             ICardDatabaseUpdateInterface cardDatabaseUpdateInterface)
         {
-            _cardDatabaseUpdateInterface =
-                cardDatabaseUpdateInterface.Require(nameof(cardDatabaseUpdateInterface));
-            #endregion // Dependency assignments
+            _cardDatabaseUpdateInterface = cardDatabaseUpdateInterface.Require(nameof(cardDatabaseUpdateInterface));
         }
 
         public ICommand CheckForUpdates =>

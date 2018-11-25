@@ -17,7 +17,6 @@ namespace Pact
     public sealed class DeckViewModel
         : INotifyPropertyChanged
     {
-        #region Private members
         private readonly IBackgroundWorkInterface _backgroundWorkInterface;
         private readonly ICardInfoProvider _cardInfoProvider;
         private readonly IDeckImportInterface _deckImportInterface;
@@ -36,10 +35,8 @@ namespace Pact
         private bool _isTracking = false;
         private Action _replaceCanExecuteChanged;
         private readonly IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
-        #endregion // Members
         
         public DeckViewModel(
-            #region Dependency assignment
             IBackgroundWorkInterface backgroundWorkInterface,
             ICardInfoProvider cardInfoProvider,
             IDeckImportInterface deckImportInterface,
@@ -57,49 +54,23 @@ namespace Pact
             string title,
             IEnumerable<Models.Client.GameResult> gameResults = null)
         {
-            _backgroundWorkInterface =
-                backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
-
-            _cardInfoProvider =
-                cardInfoProvider.Require(nameof(cardInfoProvider));
-
-            _deckImportInterface =
-                deckImportInterface.Require(nameof(deckImportInterface));
-
-            _decklistSerializer =
-                decklistSerializer.Require(nameof(decklistSerializer));
-
-            _deckRepository =
-                deckRepository.Require(nameof(deckRepository));
-
-            _gameEventDispatcher =
-                gameEventDispatcher.Require(nameof(gameEventDispatcher));
-
-            _gameResultRepository =
-                gameResultRepository.Require(nameof(gameResultRepository));
-
-            _playerDeckTrackerInterface =
-                playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
-
-            _replaceDeckInterface =
-                replaceDeckInterface.Require(nameof(replaceDeckInterface));
-
-            _userConfirmationInterface =
-                userConfirmationInterface.Require(nameof(userConfirmationInterface));
-
-            _viewEventDispatcher =
-                viewEventDispatcher.Require(nameof(viewEventDispatcher));
+            _backgroundWorkInterface = backgroundWorkInterface.Require(nameof(backgroundWorkInterface));
+            _cardInfoProvider = cardInfoProvider.Require(nameof(cardInfoProvider));
+            _deckImportInterface = deckImportInterface.Require(nameof(deckImportInterface));
+            _decklistSerializer = decklistSerializer.Require(nameof(decklistSerializer));
+            _deckRepository = deckRepository.Require(nameof(deckRepository));
+            _gameEventDispatcher = gameEventDispatcher.Require(nameof(gameEventDispatcher));
+            _gameResultRepository = gameResultRepository.Require(nameof(gameResultRepository));
+            _playerDeckTrackerInterface = playerDeckTrackerInterface.Require(nameof(playerDeckTrackerInterface));
+            _replaceDeckInterface = replaceDeckInterface.Require(nameof(replaceDeckInterface));
+            _userConfirmationInterface = userConfirmationInterface.Require(nameof(userConfirmationInterface));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             DeckID = deckID;
             Decklist = decklist;
             _gameResults = (gameResults ?? Enumerable.Empty<Models.Client.GameResult>()).ToList();
-
-            _getPosition =
-                getPosition ?? throw new ArgumentNullException(nameof(getPosition));
-
+            _getPosition = getPosition.Require(nameof(getPosition));
             Title = title ?? string.Empty;
-
-            #endregion // Dependencies
             
             _viewEventHandlers.Add(
                 new DelegateEventHandler<ViewEvents.DeckTracking>(
@@ -154,19 +125,6 @@ namespace Pact
                 canExecuteChangedClient:
                     __canExecuteChanged => _deleteCanExecuteChanged = __canExecuteChanged);
 
-        private string GetDeckstring()
-        {
-            using (var stream = new MemoryStream())
-            {
-                _decklistSerializer.Serialize(stream, Decklist).Wait();
-
-                stream.Position = 0;
-
-                using (var reader = new StreamReader(stream))
-                    return reader.ReadToEnd();
-            }
-        }
-
         public bool IsTracking
         {
             get => _isTracking;
@@ -186,11 +144,11 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    Models.Client.Decklist? replacementDecklist = await _replaceDeckInterface.GetReplacementDecklist();
-                    if (!replacementDecklist.HasValue)
+                    Models.Client.Decklist? decklist = await _replaceDeckInterface.GetDecklist();
+                    if (!decklist.HasValue)
                         return;
 
-                    Decklist = replacementDecklist.Value;
+                    Decklist = decklist.Value;
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Class)));
 
@@ -200,17 +158,6 @@ namespace Pact
                     () => !IsTracking,
                 canExecuteChangedClient:
                     __canExecuteChanged => _replaceCanExecuteChanged = __canExecuteChanged);
-
-        private Task SaveDeck()
-        {
-            return
-                _deckRepository.UpdateDeck(
-                    new Models.Client.DeckDetail(
-                        DeckID,
-                        Title,
-                        GetDeckstring(),
-                        Position));
-        }
 
         public ICommand SaveDeckTitle =>
             new DelegateCommand(
@@ -235,11 +182,11 @@ namespace Pact
                         new DelegateEventHandler<Events.GameEnded>(
                             __event =>
                             {
-                                var timestamp = DateTime.UtcNow;
-
-                                string opponentClass = _cardInfoProvider.GetCardInfo(__event.OpponentHeroCardID)?.Class;
-
-                                var gameResult = new Models.Client.GameResult(timestamp, __event.GameWon, opponentClass);
+                                var gameResult =
+                                    new Models.Client.GameResult(
+                                        DateTimeOffset.Now,
+                                        __event.GameWon,
+                                        _cardInfoProvider.GetCardInfo(__event.OpponentHeroCardID)?.Class);
 
                                 _gameResults.Add(gameResult);
 
@@ -275,5 +222,29 @@ namespace Pact
                 });
 
         public int Wins => _gameResults.Count(__gameResult => __gameResult.GameWon);
+
+        private string GetDeckstring()
+        {
+            using (var stream = new MemoryStream())
+            {
+                _decklistSerializer.Serialize(stream, Decklist).Wait();
+
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream))
+                    return reader.ReadToEnd();
+            }
+        }
+
+        private Task SaveDeck()
+        {
+            return
+                _deckRepository.UpdateDeck(
+                    new Models.Client.DeckDetail(
+                        DeckID,
+                        Title,
+                        GetDeckstring(),
+                        Position));
+        }
     }
 }

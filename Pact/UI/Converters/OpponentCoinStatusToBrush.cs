@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Media;
 
-namespace Pact
+namespace Pact.Converters
 {
-    public sealed class HiddenVisibilityWhenMatchesBoolConverter
+    public class OpponentCoinStatusToBrush
         : IValueConverter
     {
         object IValueConverter.Convert(
@@ -13,12 +14,10 @@ namespace Pact
             object parameter,
             CultureInfo culture)
         {
-            if (value is bool boolValue
-                && bool.TryParse(parameter?.ToString(), out bool boolParameter)
-                && boolValue == boolParameter)
-                return -1;
+            if (value is bool opponentCoinStatus)
+                return opponentCoinStatus ? Brushes.Yellow : Brushes.Red;
 
-            return 1;
+            return Brushes.Green;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

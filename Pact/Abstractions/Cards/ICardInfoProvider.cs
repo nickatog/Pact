@@ -2,10 +2,10 @@
 {
     public interface ICardInfoProvider
     {
-        CardInfo? GetCardInfo(
+        Models.Client.CardInfo? GetCardInfo(
             string cardID);
 
-        CardInfo? GetCardInfo(
+        Models.Client.CardInfo? GetCardInfo(
             int databaseID);
     }
 }
