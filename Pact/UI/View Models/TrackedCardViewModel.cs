@@ -39,7 +39,7 @@ namespace Pact
             PlayerID = playerID;
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardAddedToDeck>(
+                new DelegateEventHandler<GameEvents.CardAddedToDeck>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -47,7 +47,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardDrawnFromDeck>(
+                new DelegateEventHandler<GameEvents.CardDrawnFromDeck>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -55,7 +55,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardEnteredPlayFromDeck>(
+                new DelegateEventHandler<GameEvents.CardEnteredPlayFromDeck>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -63,7 +63,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardOverdrawnFromDeck>(
+                new DelegateEventHandler<GameEvents.CardOverdrawnFromDeck>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -71,7 +71,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardRemovedFromDeck>(
+                new DelegateEventHandler<GameEvents.CardRemovedFromDeck>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -79,7 +79,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardReturnedToDeckFromHand>(
+                new DelegateEventHandler<GameEvents.CardReturnedToDeckFromHand>(
                     __event =>
                     {
                         if (PlayerID.Equals(__event.PlayerID) && __event.CardID == CardID)
@@ -87,7 +87,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.MulliganOptionPresented>(
+                new DelegateEventHandler<GameEvents.MulliganOptionPresented>(
                     __event =>
                     {
                         if (__event.CardID == CardID)
@@ -95,7 +95,7 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.PlayerDetermined>(
+                new DelegateEventHandler<GameEvents.PlayerDetermined>(
                     __event => PlayerID = __event.PlayerID));
 
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));

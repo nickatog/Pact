@@ -108,7 +108,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                 if (triggerKeyword.Eq("TOPDECK"))
                 {
                     if (int.TryParse(entityPlayer, out int playerID) && parseContext.EntityMappings.TryGetValue(entityID, out string cardID))
-                        blockEvents.Add(new Events.CardRemovedFromDeck(playerID, cardID));
+                        blockEvents.Add(new GameEvents.CardRemovedFromDeck(playerID, cardID));
                 }
 
                 return blockEvents;

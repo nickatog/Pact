@@ -52,14 +52,14 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             }
             else if (tag.Eq("ZONE") && entityZone.Eq("DECK") && value.Eq("PLAY") && parseContext.EntityMappings.TryGetValue(entityID, out string cardID))
             {
-                events.Add(new Events.CardEnteredPlayFromDeck(playerID, cardID));
+                events.Add(new GameEvents.CardEnteredPlayFromDeck(playerID, cardID));
             }
             else if (tag.Eq("ZONE") && entityZone.Eq("PLAY") && value.Eq("DECK") && entityAttributes.TryGetValue("cardId", out string entityCardID))
             {
-                events.Add(new Events.CardAddedToDeck(playerID, entityCardID));
+                events.Add(new GameEvents.CardAddedToDeck(playerID, entityCardID));
             }
             else if (tag.Eq("ZONE") && value.Eq("GRAVEYARD") && parseContext.CoinEntityID != null && parseContext.CoinEntityID.Eq(entityID))
-                events.Add(new Events.OpponentCoinLost());
+                events.Add(new GameEvents.OpponentCoinLost());
             else if (tag.Eq("STATE") && value.Eq("COMPLETE"))
             {
                 if (parseContext.PlayerID != null && parseContext.PlayerNames.TryGetValue(parseContext.PlayerID, out string playerName))
@@ -72,7 +72,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         .Select(heroCardIDByPlayerName => heroCardIDByPlayerName.Value)
                         .FirstOrDefault();
 
-                    events.Add(new Events.GameEnded(gameWon, opponentHeroCardID));
+                    events.Add(new GameEvents.GameEnded(gameWon, opponentHeroCardID));
                 }
             }
 

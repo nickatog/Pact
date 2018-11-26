@@ -42,7 +42,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             {
                 int.TryParse(player, out int playerID);
 
-                events.Add(new Events.CardReturnedToDeckFromHand(playerID, cardID));
+                events.Add(new GameEvents.CardReturnedToDeckFromHand(playerID, cardID));
             }
 
             parsedEvents = events;

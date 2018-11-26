@@ -42,7 +42,7 @@ namespace Pact
             Reset();
             
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.CardAddedToDeck>(
+                new DelegateEventHandler<GameEvents.CardAddedToDeck>(
                     __event =>
                     {
                         if (!_playerID.Equals(__event.PlayerID))
@@ -66,19 +66,19 @@ namespace Pact
                     }));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.GameStarted>(
+                new DelegateEventHandler<GameEvents.GameStarted>(
                     __ => Reset()));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.OpponentCoinLost>(
+                new DelegateEventHandler<GameEvents.OpponentCoinLost>(
                     __ => OpponentCoinStatus = false));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.OpponentReceivedCoin>(
+                new DelegateEventHandler<GameEvents.OpponentReceivedCoin>(
                     __ => OpponentCoinStatus = true));
 
             _gameEventHandlers.Add(
-                new DelegateEventHandler<Events.PlayerDetermined>(
+                new DelegateEventHandler<GameEvents.PlayerDetermined>(
                     __event => _playerID = __event.PlayerID));
 
             _gameEventHandlers.ForEach(__handler => _gameEventDispatcher.RegisterHandler(__handler));

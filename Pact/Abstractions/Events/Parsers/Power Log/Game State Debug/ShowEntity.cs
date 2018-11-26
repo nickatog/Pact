@@ -58,13 +58,13 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         
                         if (zoneTag.Eq("HAND"))
                         {
-                            events.Add(new Events.MulliganOptionPresented(cardID));
+                            events.Add(new GameEvents.MulliganOptionPresented(cardID));
 
                             if (int.TryParse(controller, out int playerID) && parseContext.PlayerID == null)
                             {
                                 parseContext.PlayerID = controller;
 
-                                events.Add(new Events.PlayerDetermined(playerID));
+                                events.Add(new GameEvents.PlayerDetermined(playerID));
                             }
                         }
                     }
@@ -75,13 +75,13 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         if (zone.Eq("DECK"))
                         {
                             if (zoneTag.Eq("HAND"))
-                                events.Add(new Events.CardDrawnFromDeck(playerID, cardID));
+                                events.Add(new GameEvents.CardDrawnFromDeck(playerID, cardID));
                             else if (zoneTag.Eq("PLAY"))
-                                events.Add(new Events.CardEnteredPlayFromDeck(playerID, cardID));
+                                events.Add(new GameEvents.CardEnteredPlayFromDeck(playerID, cardID));
                             else if (zoneTag.Eq("GRAVEYARD"))
-                                events.Add(new Events.CardOverdrawnFromDeck(playerID, cardID));
+                                events.Add(new GameEvents.CardOverdrawnFromDeck(playerID, cardID));
                             else if (zoneTag.Eq("SETASIDE"))
-                                events.Add(new Events.CardRemovedFromDeck(playerID, cardID));
+                                events.Add(new GameEvents.CardRemovedFromDeck(playerID, cardID));
                         }
                     }
 
@@ -98,7 +98,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         {
                             // Skulking Geist
                             if (parentBlockEntityCardID.Eq("ICC_701"))
-                                events.Add(new Events.CardRemovedFromDeck(playerID, cardID));
+                                events.Add(new GameEvents.CardRemovedFromDeck(playerID, cardID));
                         }
                     }
 

@@ -61,13 +61,13 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                         {
                             // Fal'dorei Strider
                             if (parentBlockEntityCardID.Eq("LOOT_026"))
-                                events.Add(new Events.CardAddedToDeck(playerID, "LOOT_026e"));
+                                events.Add(new GameEvents.CardAddedToDeck(playerID, "LOOT_026e"));
                             // Jade Idol
                             else if (parentBlockEntityCardID.Eq("CFM_602"))
-                                events.Add(new Events.CardAddedToDeck(playerID, "CFM_602"));
+                                events.Add(new GameEvents.CardAddedToDeck(playerID, "CFM_602"));
                             // Un'Goro Pack
                             else if (parentBlockEntityCardID.Eq("UNG_851"))
-                                events.Add(new Events.CardAddedToDeck(playerID, "UNG_851t1"));
+                                events.Add(new GameEvents.CardAddedToDeck(playerID, "UNG_851t1"));
                         }
                         else if (parentBlockType.Eq("TRIGGER") && zoneTag.Eq("DECK"))
                         {
@@ -81,7 +81,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                             }
                             // Kingsbane
                             if (parentBlockEntityCardID.Eq("LOOT_542"))
-                                events.Add(new Events.CardAddedToDeck(playerID, "LOOT_542"));
+                                events.Add(new GameEvents.CardAddedToDeck(playerID, "LOOT_542"));
                         }
                     }
 
@@ -91,12 +91,12 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     if (parseContext.CurrentGameStep == null)
                     {
                         if (cardID.Eq("GAME_005"))
-                            events.Add(new Events.PlayerReceivedCoin());
+                            events.Add(new GameEvents.PlayerReceivedCoin());
                         else if (cardID == string.Empty && zoneTag.Eq("HAND"))
                         {
                             parseContext.CoinEntityID = id;
 
-                            events.Add(new Events.OpponentReceivedCoin());
+                            events.Add(new GameEvents.OpponentReceivedCoin());
                         }
                     }
 

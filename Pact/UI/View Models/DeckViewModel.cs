@@ -179,7 +179,7 @@ namespace Pact
                     _playerDeckTrackerInterface.TrackDeck(Decklist);
 
                     var recordGameResult =
-                        new DelegateEventHandler<Events.GameEnded>(
+                        new DelegateEventHandler<GameEvents.GameEnded>(
                             __event =>
                             {
                                 var gameResult =

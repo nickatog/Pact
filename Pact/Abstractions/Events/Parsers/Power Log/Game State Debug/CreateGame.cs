@@ -26,7 +26,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
             var linesConsumed = new List<string> { currentLine };
             lines.MoveNext();
 
-            var events = new List<object> { new Events.GameStarted() };
+            var events = new List<object> { new GameEvents.GameStarted() };
 
             parseContext.Reset();
 

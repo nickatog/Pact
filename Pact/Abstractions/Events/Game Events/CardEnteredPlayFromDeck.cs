@@ -1,10 +1,7 @@
-﻿namespace Pact.Events
+﻿namespace Pact.GameEvents
 {
     public sealed class CardEnteredPlayFromDeck
     {
-        public string CardID { get; private set; }
-        public int PlayerID { get; private set; }
-
         public CardEnteredPlayFromDeck(
             int playerID,
             string cardID)
@@ -12,5 +9,8 @@
             CardID = cardID;
             PlayerID = playerID;
         }
+
+        public string CardID { get; }
+        public int PlayerID { get; }
     }
 }

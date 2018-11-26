@@ -1,13 +1,13 @@
-﻿namespace Pact.Events
+﻿namespace Pact.GameEvents
 {
     public sealed class PlayerDetermined
     {
-        public int PlayerID { get; private set; }
-
         public PlayerDetermined(
             int playerID)
         {
             PlayerID = playerID;
         }
+
+        public int PlayerID { get; }
     }
 }

@@ -1,13 +1,13 @@
-﻿namespace Pact.Events
+﻿namespace Pact.GameEvents
 {
     public sealed class MulliganOptionPresented
     {
-        public string CardID { get; private set; }
-
         public MulliganOptionPresented(
             string cardID)
         {
             CardID = cardID;
         }
+
+        public string CardID { get; }
     }
 }

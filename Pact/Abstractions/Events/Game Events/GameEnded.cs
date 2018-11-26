@@ -1,10 +1,7 @@
-﻿namespace Pact.Events
+﻿namespace Pact.GameEvents
 {
     public sealed class GameEnded
     {
-        public bool GameWon { get; private set; }
-        public string OpponentHeroCardID { get; private set; }
-
         public GameEnded(
             bool gameWon,
             string opponentHeroCardID)
@@ -12,5 +9,8 @@
             GameWon = gameWon;
             OpponentHeroCardID = opponentHeroCardID;
         }
+
+        public bool GameWon { get; }
+        public string OpponentHeroCardID { get; }
     }
 }
