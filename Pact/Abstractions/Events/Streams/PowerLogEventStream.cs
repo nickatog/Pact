@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Valkyrie;
 
+using Pact.Extensions.Contract;
 using Pact.Extensions.Enumerable;
 using Pact.Extensions.String;
 
@@ -28,19 +30,9 @@ namespace Pact
             IPowerLogEventParser powerLogEventParser,
             IEventDispatcher viewEventDispatcher)
         {
-            _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
-
-            _powerLogEventParser =
-                powerLogEventParser
-                ?? throw new ArgumentNullException(nameof(powerLogEventParser));
-
-            _viewEventDispatcher =
-                viewEventDispatcher
-                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
-
-            // ---
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _powerLogEventParser = powerLogEventParser.Require(nameof(powerLogEventParser));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _filePath = _configurationSource.GetSettings().PowerLogFilePath;
             
@@ -61,13 +53,18 @@ namespace Pact
             _eventHandlers.ForEach(__eventHandler => _viewEventDispatcher.RegisterHandler(__eventHandler));
         }
 
-        async Task<object> IEventStream.ReadNext()
+        async Task<object> IEventStream.ReadNext(
+            CancellationToken? cancellationToken)
         {
             if (_parsedEvents.Count > 0)
                 return _parsedEvents.Dequeue();
 
             while (true)
             {
+                if (cancellationToken?.IsCancellationRequested ?? false)
+                    return null;
+
+                // ---v
                 if (!File.Exists(_filePath))
                 {
                     await Task.Delay(1000);
@@ -96,15 +93,24 @@ namespace Pact
                         _streamPosition = stream.Position;
                     }
                 }
-
+                
                 foreach (object parsedEvent in _powerLogEventParser.ParseEvents(ref _remainingText))
                     _parsedEvents.Enqueue(parsedEvent);
+                // ---^
 
                 if (_parsedEvents.Count > 0)
                     return _parsedEvents.Dequeue();
 
                 await Task.Delay(1000);
             }
+        }
+
+        void IEventStream.SeekEnd()
+        {
+            // abstract file parsing from above
+            // instead of returning the next event in the queue, clear all queued events and return
+
+            throw new NotImplementedException();
         }
 
         private bool _disposed;

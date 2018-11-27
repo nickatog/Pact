@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pact
@@ -6,8 +7,9 @@ namespace Pact
     public interface IEventStream
         : IDisposable
     {
-        Task<object> ReadNext();
+        Task<object> ReadNext(
+            CancellationToken? cancellationToken = null);
 
-        // SkipToEnd()?
+        void SeekEnd();
     }
 }

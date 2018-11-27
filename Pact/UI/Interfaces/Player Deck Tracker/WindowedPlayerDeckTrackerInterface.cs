@@ -63,9 +63,8 @@ namespace Pact
                     {
                         while (true)
                         {
-                            object @event = await eventStream.ReadNext();
-
-                            if (_cancellation.IsCancellationRequested)
+                            object @event = await eventStream.ReadNext(_cancellation.Token);
+                            if (@event == null)
                                 return;
 
                             eventDispatcher.DispatchEvent(@event);

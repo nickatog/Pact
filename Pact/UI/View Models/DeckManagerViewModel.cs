@@ -83,13 +83,13 @@ namespace Pact
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DeckViewModels)));
                 });
 
-            // This event stream should ideally skip all pre-existing events and then begin pumping new events
-            // Needs new support added to IEventStream
             Task.Run(
                 async () =>
                 {
                     using (IEventStream eventStream = _eventStreamFactory.Create())
                     {
+                        //eventStream.SeekEnd();
+
                         while (true)
                         {
                             try { _gameEventDispatcher.DispatchEvent(await eventStream.ReadNext()); }
