@@ -88,7 +88,7 @@ namespace Pact
                 {
                     using (IEventStream eventStream = _eventStreamFactory.Create())
                     {
-                        //eventStream.SeekEnd();
+                        eventStream.SeekEnd();
 
                         while (true)
                         {

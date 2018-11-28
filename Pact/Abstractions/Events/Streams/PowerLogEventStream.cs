@@ -19,6 +19,7 @@ namespace Pact
         private readonly IPowerLogEventParser _powerLogEventParser;
         private readonly IEventDispatcher _viewEventDispatcher;
 
+        private bool _disposed;
         private readonly IList<IEventHandler> _eventHandlers = new List<IEventHandler>();
         private string _filePath;
         private readonly Queue<object> _parsedEvents = new Queue<object>();
@@ -64,7 +65,6 @@ namespace Pact
                 if (cancellationToken?.IsCancellationRequested ?? false)
                     return null;
 
-                // ---v
                 if (!File.Exists(_filePath))
                 {
                     await Task.Delay(1000);
@@ -72,32 +72,7 @@ namespace Pact
                     continue;
                 }
 
-                using (var stream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    if (stream.Length < _streamPosition)
-                    {
-                        _streamPosition = 0;
-
-                        _remainingText = null;
-                    }
-
-                    stream.Seek(_streamPosition, SeekOrigin.Begin);
-
-                    using (var streamReader = new StreamReader(stream))
-                    {
-                        if (_remainingText != null)
-                            _remainingText += Environment.NewLine;
-                        
-                        _remainingText += streamReader.ReadToEnd();
-
-                        _streamPosition = stream.Position;
-                    }
-                }
-                
-                foreach (object parsedEvent in _powerLogEventParser.ParseEvents(ref _remainingText))
-                    _parsedEvents.Enqueue(parsedEvent);
-                // ---^
-
+                ParsePowerLogEvents();
                 if (_parsedEvents.Count > 0)
                     return _parsedEvents.Dequeue();
 
@@ -107,13 +82,17 @@ namespace Pact
 
         void IEventStream.SeekEnd()
         {
-            // abstract file parsing from above
-            // instead of returning the next event in the queue, clear all queued events and return
+            if (!File.Exists(_filePath))
+                return;
 
-            throw new NotImplementedException();
+            ParsePowerLogEvents();
+            _parsedEvents.Clear();
         }
 
-        private bool _disposed;
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+        }
 
         private void Dispose(
             bool disposing)
@@ -127,9 +106,32 @@ namespace Pact
             }
         }
 
-        void IDisposable.Dispose()
+        private void ParsePowerLogEvents()
         {
-            Dispose(true);
+            using (var stream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                if (stream.Length < _streamPosition)
+                {
+                    _streamPosition = 0;
+
+                    _remainingText = null;
+                }
+
+                stream.Seek(_streamPosition, SeekOrigin.Begin);
+
+                using (var reader = new StreamReader(stream))
+                {
+                    if (_remainingText != null)
+                        _remainingText += Environment.NewLine;
+
+                    _remainingText += reader.ReadToEnd();
+
+                    _streamPosition = stream.Position;
+                }
+            }
+
+            foreach (object parsedEvent in _powerLogEventParser.ParseEvents(ref _remainingText))
+                _parsedEvents.Enqueue(parsedEvent);
         }
     }
 }
