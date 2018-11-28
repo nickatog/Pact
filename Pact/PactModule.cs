@@ -50,7 +50,7 @@ namespace Pact
                         __context.Resolve<IDeckImportInterface>(),
                         __context.Resolve<ISerializer<Models.Client.Decklist>>(),
                         __context.Resolve<IDeckRepository>(),
-                        __context.Resolve<IEventStreamFactory>(),
+                        __context.ResolveNamed<IEventStreamFactory>("Global"),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("Game"),
                         __context.Resolve<IGameResultRepository>(),
                         __context.Resolve<ILogger>(),
@@ -224,15 +224,27 @@ namespace Pact
             .As<Valkyrie.IEventDispatcherFactory>()
             .SingleInstance();
 
-            // IEventStreamFactory
+            // IEventStreamFactories
             builder
             .Register(
                 __context =>
                     new PowerLogEventStreamFactory(
                         __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<System.Collections.Generic.IEnumerable<IGameStateDebugEventParser>>(),
-                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
-            .As<IEventStreamFactory>()
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View"),
+                        true))
+            .Named<IEventStreamFactory>("Global")
+            .SingleInstance();
+
+            builder
+            .Register(
+                __context =>
+                    new PowerLogEventStreamFactory(
+                        __context.Resolve<IConfigurationSource>(),
+                        __context.Resolve<System.Collections.Generic.IEnumerable<IGameStateDebugEventParser>>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View"),
+                        false))
+            .Named<IEventStreamFactory>("Instance")
             .SingleInstance();
 
             // IGameResultRepository
@@ -308,7 +320,7 @@ namespace Pact
                         __context.Resolve<ICardInfoProvider>(),
                         __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<Valkyrie.IEventDispatcherFactory>(),
-                        __context.Resolve<IEventStreamFactory>(),
+                        __context.ResolveNamed<IEventStreamFactory>("Instance"),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<IPlayerDeckTrackerInterface>()
             .SingleInstance();

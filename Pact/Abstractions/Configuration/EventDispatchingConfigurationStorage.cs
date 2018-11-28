@@ -24,7 +24,7 @@ namespace Pact
             Models.Client.ConfigurationSettings configurationSettings)
         {
             await _configurationStorage.SaveChanges(configurationSettings).ConfigureAwait(false);
-
+            
             _eventDispatcher.DispatchEvent(new ViewEvents.ConfigurationSettingsSaved());
         }
     }

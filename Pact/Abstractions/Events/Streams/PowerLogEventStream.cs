@@ -22,18 +22,23 @@ namespace Pact
         private bool _disposed;
         private readonly IList<IEventHandler> _eventHandlers = new List<IEventHandler>();
         private string _filePath;
+        private readonly object _lock = new object();
         private readonly Queue<object> _parsedEvents = new Queue<object>();
         private string _remainingText;
+        private bool _seekEndWhenFileChanges;
         private long _streamPosition;
 
         public PowerLogEventStream(
             IConfigurationSource configurationSource,
             IPowerLogEventParser powerLogEventParser,
-            IEventDispatcher viewEventDispatcher)
+            IEventDispatcher viewEventDispatcher,
+            bool seekEndWhenFileChanges)
         {
             _configurationSource = configurationSource.Require(nameof(configurationSource));
             _powerLogEventParser = powerLogEventParser.Require(nameof(powerLogEventParser));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+
+            _seekEndWhenFileChanges = seekEndWhenFileChanges;
 
             _filePath = _configurationSource.GetSettings().PowerLogFilePath;
             
@@ -44,10 +49,20 @@ namespace Pact
                         string newFilePath = _configurationSource.GetSettings().PowerLogFilePath;
                         if (!newFilePath.Eq(_filePath))
                         {
-                            _remainingText = null;
-                            _streamPosition = 0L;
+                            Task.Run(
+                                () =>
+                                {
+                                    lock (_lock)
+                                    {
+                                        _remainingText = null;
+                                        _streamPosition = 0L;
 
-                            _filePath = newFilePath;
+                                        _filePath = newFilePath;
+                                        
+                                        if (_seekEndWhenFileChanges)
+                                            SeekEnd_();
+                                    }
+                                });
                         }
                     }));
 
@@ -72,9 +87,12 @@ namespace Pact
                     continue;
                 }
 
-                ParsePowerLogEvents();
-                if (_parsedEvents.Count > 0)
-                    return _parsedEvents.Dequeue();
+                lock (_lock)
+                {
+                    ParsePowerLogEvents();
+                    if (_parsedEvents.Count > 0)
+                        return _parsedEvents.Dequeue();
+                }
 
                 await Task.Delay(1000);
             }
@@ -82,11 +100,7 @@ namespace Pact
 
         void IEventStream.SeekEnd()
         {
-            if (!File.Exists(_filePath))
-                return;
-
-            ParsePowerLogEvents();
-            _parsedEvents.Clear();
+            SeekEnd_();
         }
 
         void IDisposable.Dispose()
@@ -132,6 +146,15 @@ namespace Pact
 
             foreach (object parsedEvent in _powerLogEventParser.ParseEvents(ref _remainingText))
                 _parsedEvents.Enqueue(parsedEvent);
+        }
+
+        private void SeekEnd_()
+        {
+            if (!File.Exists(_filePath))
+                return;
+
+            ParsePowerLogEvents();
+            _parsedEvents.Clear();
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 using Valkyrie;
+
+using Pact.Extensions.Contract;
 
 namespace Pact
 {
@@ -11,22 +13,19 @@ namespace Pact
         private readonly IEnumerable<IGameStateDebugEventParser> _eventParsers;
         private readonly IEventDispatcher _viewEventDispatcher;
 
+        private readonly bool _seekEndWhenFileChanges;
+
         public PowerLogEventStreamFactory(
             IConfigurationSource configurationSource,
             IEnumerable<IGameStateDebugEventParser> eventParsers,
-            IEventDispatcher viewEventDispatcher)
+            IEventDispatcher viewEventDispatcher,
+            bool seekEndWhenFileChanges)
         {
-            _configurationSource =
-                configurationSource
-                ?? throw new ArgumentNullException(nameof(configurationSource));
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
+            _eventParsers = eventParsers.Require(nameof(eventParsers));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
-            _eventParsers =
-                eventParsers
-                ?? throw new ArgumentNullException(nameof(eventParsers));
-
-            _viewEventDispatcher =
-                viewEventDispatcher
-                ?? throw new ArgumentNullException(nameof(viewEventDispatcher));
+            _seekEndWhenFileChanges = seekEndWhenFileChanges;
         }
 
         IEventStream IEventStreamFactory.Create()
@@ -35,7 +34,8 @@ namespace Pact
                 new PowerLogEventStream(
                     _configurationSource,
                     new GameStateDebugPowerLogEventParser(_eventParsers),
-                    _viewEventDispatcher);
+                    _viewEventDispatcher,
+                    _seekEndWhenFileChanges);
         }
     }
 }
