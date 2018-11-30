@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,35 +10,32 @@ namespace Pact
     public sealed class GameStateDebugPowerLogEventParser
         : IPowerLogEventParser
     {
+        private static readonly Regex s_gameStateMethodPattern =
+            new Regex(
+                @"^.*GameState.DebugPrint(Power|Game)\(\) - (?<Output>.*)$",
+                RegexOptions.Compiled);
+
+        private const string LINE_PREFIX = "GameState.DebugPrintPower() - ";
+
         private readonly IEnumerable<IGameStateDebugEventParser> _gameStateDebugEventParsers;
         private readonly ParseContext _parseContext;
 
         public GameStateDebugPowerLogEventParser(
             IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers)
         {
-            _gameStateDebugEventParsers =
-                gameStateDebugEventParsers
-                ?? Enumerable.Empty<IGameStateDebugEventParser>();
+            _gameStateDebugEventParsers = gameStateDebugEventParsers ?? Enumerable.Empty<IGameStateDebugEventParser>();
 
             _parseContext = new ParseContext(_gameStateDebugEventParsers);
         }
-
-        private const string LINE_PREFIX = "GameState.DebugPrintPower() - ";
-
-        private static readonly Regex s_gameStateMethodPattern =
-            new Regex(
-                @"^.*GameState.DebugPrint(Power|Game)\(\) - (?<Output>.*)$",
-                RegexOptions.Compiled);
 
         IEnumerable<object> IPowerLogEventParser.ParseEvents(
             ref string text)
         {
             var allParsedEvents = new List<object>();
 
-            using (IEnumerator<string> lines = GetLines(text))
+            using (var lines = new TrackingEnumerator<string>(__GetLines(text)))
             {
                 lines.MoveNext();
-
                 while (lines.Current != null)
                 {
                     IEnumerable<string> linesConsumed = null;
@@ -59,7 +57,7 @@ namespace Pact
 
                         break;
                     }
-
+                    
                     if (linesConsumed == null)
                         lines.MoveNext();
                 }
@@ -69,7 +67,8 @@ namespace Pact
 
             return allParsedEvents;
 
-            IEnumerator<string> GetLines(string source)
+            IEnumerator<string> __GetLines(
+                string source)
             {
                 using (var stringReader = new StringReader(source))
                 {
@@ -81,6 +80,39 @@ namespace Pact
                 }
 
                 yield return null;
+            }
+        }
+
+        private sealed class TrackingEnumerator<T>
+            : IEnumerator<T>
+        {
+            private readonly IEnumerator<T> _enumerator;
+
+            public TrackingEnumerator(
+                IEnumerator<T> enumerator)
+            {
+                _enumerator = enumerator;
+            }
+
+            public bool HasCompleted { get; private set; }
+
+            public T Current => _enumerator.Current;
+
+            object IEnumerator.Current => _enumerator.Current;
+
+            void IDisposable.Dispose()
+            {
+                _enumerator.Dispose();
+            }
+
+            public bool MoveNext()
+            {
+                return HasCompleted = !_enumerator.MoveNext();
+            }
+
+            public void Reset()
+            {
+                _enumerator.Reset();
             }
         }
     }
