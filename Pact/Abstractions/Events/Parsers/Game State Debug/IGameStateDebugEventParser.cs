@@ -5,7 +5,7 @@ namespace Pact
     public interface IGameStateDebugEventParser
     {
         IEnumerable<string> TryParseEvents(
-            IEnumerator<string> lines,
+            TrackingEnumerator<string> lines,
             ParseContext parseContext,
             out IEnumerable<object> parsedEvents);
     }

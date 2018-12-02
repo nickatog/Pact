@@ -259,37 +259,37 @@ namespace Pact
 
             // IGameStateDebugEventParsers
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.Block>()
+            .RegisterType<GameStateDebugEventParsers.Block>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.CreateGame>()
+            .RegisterType<GameStateDebugEventParsers.CreateGame>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.FullEntity>()
+            .RegisterType<GameStateDebugEventParsers.FullEntity>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.HideEntity>()
+            .RegisterType<GameStateDebugEventParsers.HideEntity>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.PlayerID>()
+            .RegisterType<GameStateDebugEventParsers.PlayerID>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.ShowEntity>()
+            .RegisterType<GameStateDebugEventParsers.ShowEntity>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 
             builder
-            .RegisterType<EventParsers.PowerLog.GameStateDebug.TagChange>()
+            .RegisterType<GameStateDebugEventParsers.TagChange>()
             .As<IGameStateDebugEventParser>()
             .SingleInstance();
 

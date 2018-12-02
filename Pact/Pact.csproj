@@ -99,6 +99,8 @@
     <Compile Include="Abstractions\Cards\JSONCardDatabase.cs" />
     <Compile Include="Abstractions\Cards\FileBasedCardDatabaseManager.cs" />
     <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\GameStateDebugEventParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\ParserContext.cs" />
     <Compile Include="Abstractions\Models\Client\CardInfo.cs" />
     <Compile Include="Abstractions\Models\Client\ConfigurationSettings.cs" />
     <Compile Include="Abstractions\Models\Client\DecklistCard.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Abstractions\Models\Data\GameResult.cs" />
     <Compile Include="Abstractions\Utility\Serialization\JSONCollectionSerializer.cs" />
     <Compile Include="Abstractions\Utility\Serialization\JSONSerializer.cs" />
+    <Compile Include="Abstractions\Utility\Enumeration\TrackingEnumerator.cs" />
     <Compile Include="UI\Interfaces\Card Database Update\ICardDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\Replace Deck\IReplaceDeckInterface.cs" />
     <Compile Include="UI\Interfaces\Card Database Update\ModalCardInfoDatabaseUpdateInterface.cs" />
@@ -162,7 +165,7 @@
     <Compile Include="Abstractions\Decks\VarintDecklistSerializer.cs" />
     <Compile Include="Abstractions\Events\Game Events\CardRemovedFromDeck.cs" />
     <Compile Include="Abstractions\Events\Game Events\GameEnded.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\PlayerID.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\PlayerID.cs" />
     <Compile Include="UI\Messages\Commands\DeleteDeck.cs" />
     <Compile Include="Extensions\ContractExtensions.cs" />
     <Compile Include="UI\Converters\CardCountToOpacity.cs" />
@@ -222,15 +225,15 @@
     <Compile Include="Abstractions\Events\Game Events\MulliganOptionPresented.cs" />
     <Compile Include="Abstractions\Events\Game Events\OpponentCoinLost.cs" />
     <Compile Include="Abstractions\Events\Game Events\OpponentReceivedCoin.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\BlockContext.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\FullEntity.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\HideEntity.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\ParseContext.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\TagChange.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\BlockContext.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\FullEntity.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\HideEntity.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\ParseContext.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\TagChange.cs" />
     <Compile Include="Abstractions\Cards\ICardInfoProvider.cs" />
     <Compile Include="Abstractions\Events\Game Events\CardDrawnFromDeck.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\Block.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\ShowEntity.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\Block.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\ShowEntity.cs" />
     <Compile Include="Abstractions\Events\Game Events\CardEnteredPlayFromDeck.cs" />
     <Compile Include="Abstractions\Cards\LocalDatabaseCardInfoProvider.cs" />
     <Compile Include="Abstractions\Events\Game Events\PlayerDetermined.cs" />
@@ -300,10 +303,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\CreateGame.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\Game State Debug\IGameStateDebugEventParser.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\GameStateDebugPowerLogParser.cs" />
-    <Compile Include="Abstractions\Events\Parsers\Power Log\IPowerLogEventParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\CreateGame.cs" />
+    <Compile Include="Abstractions\Events\Parsers\Game State Debug\IGameStateDebugEventParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\GameStateDebugPowerLogEventParser.cs" />
+    <Compile Include="Abstractions\Events\Parsers\IPowerLogEventParser.cs" />
     <Compile Include="Abstractions\Events\Streams\IEventStream.cs" />
     <Compile Include="Abstractions\Events\Streams\PowerLogEventStream.cs" />
     <Compile Include="UI\Views\MainWindowView.xaml.cs">

@@ -36,5 +36,18 @@ namespace Pact.Extensions.String
                     yield return (Key: match.Groups["Key"].Value, match.Groups["Value"].Value);
             }
         }
+
+        public static string Rem(
+            this string text,
+            params string[] tokens)
+        {
+            if (text == null)
+                return null;
+
+            foreach (string token in tokens)
+                text = text.Replace(token, string.Empty);
+
+            return text;
+        }
     }
 }

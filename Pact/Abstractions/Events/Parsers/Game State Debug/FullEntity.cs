@@ -3,57 +3,49 @@ using System.Text.RegularExpressions;
 
 using Pact.Extensions.String;
 
-namespace Pact.EventParsers.PowerLog.GameStateDebug
+namespace Pact.GameStateDebugEventParsers
 {
     public sealed class FullEntity
-        : IGameStateDebugEventParser
+        : GameStateDebugEventParser
     {
-        private static readonly Regex s_fullEntityPattern =
-            new Regex(@"^(?<Offset>\s*)FULL_ENTITY - Creating (?<Attributes>.*)$", RegexOptions.Compiled);
-
         private static readonly Regex s_tagPattern =
             new Regex(@"^\s*tag=(?<tag>\S*) value=(?<value>.*)$", RegexOptions.Compiled);
 
-        IEnumerable<string> IGameStateDebugEventParser.TryParseEvents(
-            IEnumerator<string> lines,
+        public FullEntity()
+            : base("FULL_ENTITY - Creating (?<Attributes>.*)$") {}
+
+        protected override IEnumerable<string> ParseEvents(
+            TrackingEnumerator<string> lines,
             ParseContext parseContext,
-            out IEnumerable<object> parsedEvents)
+            ParserContext parserContext,
+            ref IEnumerable<object> parsedEvents)
         {
-            parsedEvents = null;
-
-            string currentLine = lines.Current;
-            Match match = s_fullEntityPattern.Match(currentLine);
-            if (!match.Success)
-                return null;
-
-            var nestedOffsetPattern = new Regex($@"^{match.Groups["Offset"].Value}    .*$");
-
-            IDictionary<string, string> attributes = match.Groups["Attributes"].Value.ParseKeyValuePairs();
+            IDictionary<string, string> attributes = parserContext.StartGroupValues["Attributes"].ParseKeyValuePairs();
             attributes.TryGetValue("CardID", out string cardID);
             attributes.TryGetValue("ID", out string id);
 
-            var linesConsumed = new List<string> { currentLine };
-            lines.MoveNext();
-
             var events = new List<object>();
-
+            var linesConsumed = new List<string>();
             var tags = new Dictionary<string, string>();
-            Match tagMatch;
 
-            while ((currentLine = lines.Current) != null)
+            while (!lines.HasCompleted)
             {
-                if (!nestedOffsetPattern.IsMatch(currentLine))
+                string currentLine = lines.Current;
+
+                // Check if the current line is outside the scope of this parser
+                if (!parserContext.NestedOffsetPattern.IsMatch(currentLine))
                 {
                     tags.TryGetValue("CARDTYPE", out string cardTypeTag);
                     tags.TryGetValue("CONTROLLER", out string controllerTag);
                     tags.TryGetValue("ZONE", out string zoneTag);
+
                     int.TryParse(controllerTag, out int playerID);
 
                     if (parseContext.ParentBlock != null)
                     {
                         parseContext.ParentBlock.Attributes.TryGetValue("BlockType", out string parentBlockType);
-                        parseContext.ParentBlock.Attributes.TryGetValue("Entity", out string parentBlockEntity);
 
+                        parseContext.ParentBlock.Attributes.TryGetValue("Entity", out string parentBlockEntity);
                         IDictionary<string, string> parentBlockEntityAttributes = parentBlockEntity.ParseKeyValuePairs();
                         parentBlockEntityAttributes.TryGetValue("cardId", out string parentBlockEntityCardID);
 
@@ -87,7 +79,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
 
                     if (cardTypeTag.Eq("HERO") && !parseContext.PlayerHeroCards.ContainsKey(controllerTag))
                         parseContext.PlayerHeroCards[controllerTag] = cardID;
-                    
+
                     if (parseContext.CurrentGameStep == null)
                     {
                         if (cardID.Eq("GAME_005"))
@@ -105,6 +97,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     return linesConsumed;
                 }
 
+                Match tagMatch;
                 if ((tagMatch = s_tagPattern.Match(currentLine)).Success)
                     tags.Add(tagMatch.Groups["tag"].Value, tagMatch.Groups["value"].Value);
 

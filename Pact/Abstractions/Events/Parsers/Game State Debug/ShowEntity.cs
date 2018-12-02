@@ -3,51 +3,42 @@ using System.Text.RegularExpressions;
 
 using Pact.Extensions.String;
 
-namespace Pact.EventParsers.PowerLog.GameStateDebug
+namespace Pact.GameStateDebugEventParsers
 {
     public sealed class ShowEntity
-        : IGameStateDebugEventParser
+        : GameStateDebugEventParser
     {
-        private static readonly Regex s_showEntityPattern =
-            new Regex(@"^(?<Offset>\s*)SHOW_ENTITY - Updating (?<Attributes>.*)$", RegexOptions.Compiled);
-
         private static readonly Regex s_tagPattern =
             new Regex(@"^\s*tag=(?<tag>\S*) value=(?<value>.*)$", RegexOptions.Compiled);
 
-        IEnumerable<string> IGameStateDebugEventParser.TryParseEvents(
-            IEnumerator<string> lines,
+        public ShowEntity()
+            : base("SHOW_ENTITY - Updating (?<Attributes>.*)$") {}
+
+        protected override IEnumerable<string> ParseEvents(
+            TrackingEnumerator<string> lines,
             ParseContext parseContext,
-            out IEnumerable<object> parsedEvents)
+            ParserContext parserContext,
+            ref IEnumerable<object> parsedEvents)
         {
-            parsedEvents = null;
-
-            string currentLine = lines.Current;
-            Match match = s_showEntityPattern.Match(currentLine);
-            if (!match.Success)
-                return null;
-
-            var nestedOffsetPattern = new Regex($@"^{match.Groups["Offset"].Value}    .*$");
-
-            IDictionary<string, string> attributes = match.Groups["Attributes"].Value.ParseKeyValuePairs();
+            IDictionary<string, string> attributes = parserContext.StartGroupValues["Attributes"].ParseKeyValuePairs();
             attributes.TryGetValue("CardID", out string cardID);
-            attributes.TryGetValue("Entity", out string entity);
 
-            IDictionary<string, string> entityAttributes = entity.Replace("[", string.Empty).Replace("]", string.Empty).ParseKeyValuePairs();
+            attributes.TryGetValue("Entity", out string entity);
+            IDictionary<string, string> entityAttributes = entity.Rem("[", "]").ParseKeyValuePairs();
             entityAttributes.TryGetValue("id", out string id);
             entityAttributes.TryGetValue("player", out string player);
             entityAttributes.TryGetValue("zone", out string zone);
 
-            var linesConsumed = new List<string> { currentLine };
-            lines.MoveNext();
-
             var events = new List<object>();
-
+            var linesConsumed = new List<string>();
             var tags = new Dictionary<string, string>();
-            Match tagMatch;
 
-            while ((currentLine = lines.Current) != null)
+            while (!lines.HasCompleted)
             {
-                if (!nestedOffsetPattern.IsMatch(currentLine))
+                string currentLine = lines.Current;
+
+                // Check if the current line is outside the scope of this parser
+                if (!parserContext.NestedOffsetPattern.IsMatch(currentLine))
                 {
                     tags.TryGetValue("CONTROLLER", out string controller);
                     tags.TryGetValue("ZONE", out string zoneTag);
@@ -55,7 +46,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     if (int.TryParse(entity, out int entityID))
                     {
                         parseContext.EntityMappings[entityID.ToString()] = cardID;
-                        
+
                         if (zoneTag.Eq("HAND"))
                         {
                             events.Add(new GameEvents.MulliganOptionPresented(cardID));
@@ -107,6 +98,7 @@ namespace Pact.EventParsers.PowerLog.GameStateDebug
                     return linesConsumed;
                 }
 
+                Match tagMatch;
                 if ((tagMatch = s_tagPattern.Match(currentLine)).Success)
                     tags.Add(tagMatch.Groups["tag"].Value, tagMatch.Groups["value"].Value);
 

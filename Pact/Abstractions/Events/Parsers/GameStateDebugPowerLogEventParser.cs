@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,19 +10,18 @@ namespace Pact
         : IPowerLogEventParser
     {
         private static readonly Regex s_gameStateMethodPattern =
-            new Regex(
-                @"^.*GameState.DebugPrint(Power|Game)\(\) - (?<Output>.*)$",
-                RegexOptions.Compiled);
+            new Regex(@"^.*GameState.DebugPrint(Power|Game)\(\) - (?<Output>.*)$", RegexOptions.Compiled);
 
         private const string LINE_PREFIX = "GameState.DebugPrintPower() - ";
 
-        private readonly IEnumerable<IGameStateDebugEventParser> _gameStateDebugEventParsers;
+        private readonly IList<IGameStateDebugEventParser> _gameStateDebugEventParsers;
+
         private readonly ParseContext _parseContext;
 
         public GameStateDebugPowerLogEventParser(
             IEnumerable<IGameStateDebugEventParser> gameStateDebugEventParsers)
         {
-            _gameStateDebugEventParsers = gameStateDebugEventParsers ?? Enumerable.Empty<IGameStateDebugEventParser>();
+            _gameStateDebugEventParsers = (gameStateDebugEventParsers ?? Enumerable.Empty<IGameStateDebugEventParser>()).ToList();
 
             _parseContext = new ParseContext(_gameStateDebugEventParsers);
         }
@@ -36,7 +34,7 @@ namespace Pact
             using (var lines = new TrackingEnumerator<string>(__GetLines(text)))
             {
                 lines.MoveNext();
-                while (lines.Current != null)
+                while (!lines.HasCompleted)
                 {
                     IEnumerable<string> linesConsumed = null;
 
@@ -78,41 +76,6 @@ namespace Pact
                         if ((match = s_gameStateMethodPattern.Match(currentLine)).Success)
                             yield return match.Groups["Output"].Value;
                 }
-
-                yield return null;
-            }
-        }
-
-        private sealed class TrackingEnumerator<T>
-            : IEnumerator<T>
-        {
-            private readonly IEnumerator<T> _enumerator;
-
-            public TrackingEnumerator(
-                IEnumerator<T> enumerator)
-            {
-                _enumerator = enumerator;
-            }
-
-            public bool HasCompleted { get; private set; }
-
-            public T Current => _enumerator.Current;
-
-            object IEnumerator.Current => _enumerator.Current;
-
-            void IDisposable.Dispose()
-            {
-                _enumerator.Dispose();
-            }
-
-            public bool MoveNext()
-            {
-                return HasCompleted = !_enumerator.MoveNext();
-            }
-
-            public void Reset()
-            {
-                _enumerator.Reset();
             }
         }
     }
