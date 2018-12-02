@@ -141,6 +141,7 @@
     <Compile Include="UI\Interfaces\Deck Import\DeckImportDetail.cs" />
     <Compile Include="UI\Interfaces\Deck Import\ModalDeckImportInterface.cs" />
     <Compile Include="UI\Interfaces\Deck Import\IDeckImportInterface.cs" />
+    <Compile Include="UI\Properties\AppClose.cs" />
     <Compile Include="UI\Properties\DepthToggle.cs" />
     <Compile Include="UI\Properties\TextSelector.cs" />
     <Compile Include="UI\Properties\VisibilityToggle.cs" />

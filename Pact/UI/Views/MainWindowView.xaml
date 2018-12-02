@@ -4,9 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pact"
+        xmlns:properties="clr-namespace:Pact.Properties"
         mc:Ignorable="d"
-        Title="Pact" Height="500" Width="400" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="Segoe UI">
+        Title="Pact" Height="500" Width="400" WindowStyle="None" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="Segoe UI">
     <Window.Resources>
+        <ControlTemplate x:Key="ChromeButton" TargetType="Button">
+            <Grid x:Name="Container" Background="Transparent">
+                <Label x:Name="Text"
+                    Content="{TemplateBinding Content}"
+                    Foreground="{TemplateBinding Foreground}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Padding="{TemplateBinding Padding}">
+                </Label>
+            </Grid>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Container" Property="Background" Value="#808080" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Container" Property="Background" Value="#606060" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
         <ControlTemplate x:Key="SideButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">
                 <Label x:Name="Text"
@@ -38,113 +60,150 @@
         </ControlTemplate>
     </Window.Resources>
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="16" />
+    </WindowChrome.WindowChrome>
+
     <Grid>
-        <Grid Background="#40000000" Panel.ZIndex="1" Opacity="{Binding ModalViewModelOpacity}" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12.5*" />
-                <ColumnDefinition Width="75*" />
-                <ColumnDefinition Width="12.5*" />
-            </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            
-            <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModalViewModel}" />
-        </Grid>
+        <DockPanel Grid.Row="0" Background="#505050">
+            <Label
+                DockPanel.Dock="Left"
+                Content="Pact"
+                FontSize="12"
+                Padding="10,2,2,0"
+                Foreground="White" />
 
-        <Grid Background="Gray">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Button
+                DockPanel.Dock="Right"
+                Template="{StaticResource ChromeButton}"
+                Content="X"
+                FontWeight="Bold"
+                Width="30"
+                Foreground="#303030"
+                Background="#F0A0A0"
+                HorizontalAlignment="Right"
+                WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button.Style>
+                    <Style>
+                        <Setter Property="properties:AppClose.Enable" Value="True" />
+                    </Style>
+                </Button.Style>
+            </Button>
+        </DockPanel>
+        
+        <Grid Grid.Row="1">
+            <Grid Background="#40000000" Panel.ZIndex="1" Opacity="{Binding ModalViewModelOpacity}" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="12.5*" />
+                    <ColumnDefinition Width="75*" />
+                    <ColumnDefinition Width="12.5*" />
+                </Grid.ColumnDefinitions>
 
-            <DockPanel Grid.Column="0" Background="#606060">
-                <StackPanel DockPanel.Dock="Top">
-                    <Button
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ModalViewModel}" />
+            </Grid>
+
+            <Grid Background="Gray">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0" Background="#606060">
+                    <StackPanel DockPanel.Dock="Top">
+                        <Button
                     Template="{StaticResource SideButton}"
                     Content="&#xf03a;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
                     Padding="10,8,10,8" Command="{Binding ShowDeckManager}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent" />
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent" />
 
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DeckManager}" Value="True">
-                                        <Setter Property="Background" Value="CornflowerBlue" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Manage Decks" Placement="Right" VerticalOffset="7" Background="#606060" />
-                        </Button.ToolTip>
-                    </Button>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DeckManager}" Value="True">
+                                            <Setter Property="Background" Value="CornflowerBlue" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource CustomToolTip}" Content="Manage Decks" Placement="Right" VerticalOffset="7" Background="#606060" />
+                            </Button.ToolTip>
+                        </Button>
 
-                    <Button
+                        <Button
                     Content="&#xf085;" FontFamily="{StaticResource FontAwesome}" FontSize="24"
                     Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowConfigurationSettings}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent" />
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent" />
 
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=ConfigurationSettings}" Value="True">
-                                        <Setter Property="Background" Value="CornflowerBlue" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=ConfigurationSettings}" Value="True">
+                                            <Setter Property="Background" Value="CornflowerBlue" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource CustomToolTip}" Content="Edit Settings" Placement="Right" VerticalOffset="7" Background="#606060" />
+                            </Button.ToolTip>
+                        </Button>
+
+                        <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDownloadUpdates}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent" />
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DownloadUpdates}" Value="True">
+                                            <Setter Property="Background" Value="CornflowerBlue" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource CustomToolTip}" Content="Download Updates" Placement="Right" VerticalOffset="7" Background="#606060" />
+                            </Button.ToolTip>
+                        </Button>
+
+                        <Button Content="&#xf121;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDevTools}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent" />
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DevTools}" Value="True">
+                                            <Setter Property="Background" Value="CornflowerBlue" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource CustomToolTip}" Content="Dev Tools" Placement="Right" VerticalOffset="7" Background="#606060" />
+                            </Button.ToolTip>
+                        </Button>
+                    </StackPanel>
+
+                    <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050">
                         <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Edit Settings" Placement="Right" VerticalOffset="7" Background="#606060" />
+                            <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" VerticalOffset="7" Background="#505050" />
                         </Button.ToolTip>
                     </Button>
+                </DockPanel>
 
-                    <Button Content="&#xf019;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDownloadUpdates}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent" />
-
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DownloadUpdates}" Value="True">
-                                        <Setter Property="Background" Value="CornflowerBlue" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Download Updates" Placement="Right" VerticalOffset="7" Background="#606060" />
-                        </Button.ToolTip>
-                    </Button>
-                    
-                    <Button Content="&#xf121;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" Command="{Binding ShowDevTools}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent" />
-
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel, Converter={StaticResource SelectedViewMatchesName}, ConverterParameter=DevTools}" Value="True">
-                                        <Setter Property="Background" Value="CornflowerBlue" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Button.ToolTip>
-                            <ToolTip Template="{StaticResource CustomToolTip}" Content="Dev Tools" Placement="Right" VerticalOffset="7" Background="#606060" />
-                        </Button.ToolTip>
-                    </Button>
-                </StackPanel>
-
-                <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050">
-                    <Button.ToolTip>
-                        <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" VerticalOffset="7" Background="#505050" />
-                    </Button.ToolTip>
-                </Button>
-            </DockPanel>
-
-            <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
+                <ContentControl Grid.Column="1" Content="{Binding ViewModel}" />
+            </Grid>
         </Grid>
     </Grid>
 </Window>
