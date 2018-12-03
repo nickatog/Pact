@@ -63,8 +63,14 @@
         <DataTemplate DataType="{x:Type local:DownloadUpdatesViewModel}">
             <local:DownloadUpdatesView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type local:LogManagementModalViewModel}">
+            <local:LogManagementView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:ReplaceDeckModalViewModel}">
             <local:ReplaceDeckView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:SavedLogViewModel}">
+            <local:SavedLogView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:TrackedCardViewModel}">
             <local:TrackedCardView />

@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Pact.LogManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Pact"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border BorderThickness="1" CornerRadius="4" BorderBrush="Black" Background="LightGray">
+        <Grid Margin="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <Label
+                Grid.Row="0"
+                Content="Manage Saved Logs"
+                FontSize="14" FontWeight="Bold"
+                HorizontalAlignment="Center" />
+
+            <Grid Grid.Row="1">
+                <Label
+                    Content="Loading saved logs..."
+                    FontSize="18"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding LogViewModels, Converter={StaticResource CollapsedVisibilityWhenNull}, ConverterParameter=False}" />
+
+                <ItemsControl
+                    ItemsSource="{Binding LogViewModels}"
+                    Visibility="{Binding LogViewModels, Converter={StaticResource CollapsedVisibilityWhenNull}, ConverterParameter=True}">
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemContainerStyle>
+                        <Style>
+                            <Setter Property="FrameworkElement.Margin" Value="0,2,0,0" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </Grid>
+
+            <Button
+                Grid.Row="2"
+                    Content="Save"
+                    Command="{Binding SaveCurrentLog}"
+                    Width="50" />
+
+            <Grid Grid.Row="3" Height="24">
+                <Label
+                    Content="[NYI]"
+                    Foreground="Red"
+                    FontSize="12"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    Margin="0,-3,0,0" />
+            </Grid>
+
+            <DockPanel Grid.Row="4" Margin="2,2,2,2">
+                <Button
+                    Content="Close"
+                    Command="{Binding Close}"
+                    Padding="20,0" Margin="1,0,0,0"
+                    HorizontalAlignment="Right" />
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

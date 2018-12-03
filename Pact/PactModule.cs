@@ -140,6 +140,11 @@ namespace Pact
             .As<ICollectionSerializer<Models.Data.Deck>>()
             .SingleInstance();
 
+            builder
+            .RegisterType<JSONCollectionSerializer<Models.Data.SavedLog>>()
+            .As<ICollectionSerializer<Models.Data.SavedLog>>()
+            .SingleInstance();
+
             // IConfigurationSource
             builder
             .Register(
@@ -306,6 +311,12 @@ namespace Pact
             .As<ILogger>()
             .SingleInstance();
 
+            // ILogManagementInterface
+            builder
+            .RegisterType<ModalLogManagementInterface>()
+            .As<ILogManagementInterface>()
+            .SingleInstance();
+
             // IModalDisplay
             builder
             .RegisterType<MainWindowModalDisplay>()
@@ -323,6 +334,19 @@ namespace Pact
                         __context.ResolveNamed<IEventStreamFactory>("Instance"),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<IPlayerDeckTrackerInterface>()
+            .SingleInstance();
+
+            // IPowerLogManager
+            builder
+            .Register(
+                __context =>
+                    new FileBasedPowerLogManager(
+                        __context.Resolve<IConfigurationSource>(),
+                        Path.Combine(appDataDirectoryPath, "SavedLogs"),
+                        "logs.json",
+                        __context.Resolve<ICollectionSerializer<Models.Data.SavedLog>>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
+            .As<IPowerLogManager>()
             .SingleInstance();
 
             // IReplaceDeckInterface

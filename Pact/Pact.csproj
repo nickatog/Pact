@@ -101,6 +101,8 @@
     <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
     <Compile Include="Abstractions\Events\Parsers\Game State Debug\GameStateDebugEventParser.cs" />
     <Compile Include="Abstractions\Events\Parsers\Game State Debug\ParserContext.cs" />
+    <Compile Include="Abstractions\Logs\FileBasedPowerLogManager.cs" />
+    <Compile Include="Abstractions\Logs\IPowerLogManager.cs" />
     <Compile Include="Abstractions\Models\Client\CardInfo.cs" />
     <Compile Include="Abstractions\Models\Client\ConfigurationSettings.cs" />
     <Compile Include="Abstractions\Models\Client\DecklistCard.cs" />
@@ -117,10 +119,13 @@
     <Compile Include="Abstractions\Models\Data\ConfigurationData.cs" />
     <Compile Include="Abstractions\Models\Data\Deck.cs" />
     <Compile Include="Abstractions\Models\Data\GameResult.cs" />
+    <Compile Include="Abstractions\Models\Data\SavedLog.cs" />
     <Compile Include="Abstractions\Utility\Serialization\JSONCollectionSerializer.cs" />
     <Compile Include="Abstractions\Utility\Serialization\JSONSerializer.cs" />
     <Compile Include="Abstractions\Utility\Enumeration\TrackingEnumerator.cs" />
     <Compile Include="UI\Interfaces\Card Database Update\ICardDatabaseUpdateInterface.cs" />
+    <Compile Include="UI\Interfaces\Log Management\ILogManagementInterface.cs" />
+    <Compile Include="UI\Interfaces\Log Management\ModalLogManagementInterface.cs" />
     <Compile Include="UI\Interfaces\Replace Deck\IReplaceDeckInterface.cs" />
     <Compile Include="UI\Interfaces\Card Database Update\ModalCardInfoDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\Replace Deck\ModalReplaceDeckInterface.cs" />
@@ -146,6 +151,7 @@
     <Compile Include="UI\Properties\TextSelector.cs" />
     <Compile Include="UI\Properties\VisibilityToggle.cs" />
     <Compile Include="UI\View Models\Modals\CardDatabaseUpdateModalViewModel.cs" />
+    <Compile Include="UI\View Models\Modals\LogManagementModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\ReplaceDeckModalViewModel.cs" />
     <Compile Include="UI\Views\DevToolsView.xaml.cs">
       <DependentUpon>DevToolsView.xaml</DependentUpon>
@@ -188,8 +194,14 @@
     <Compile Include="UI\Views\Modals\CardDatabaseUpdateView.xaml.cs">
       <DependentUpon>CardDatabaseUpdateView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Views\Modals\LogManagementView.xaml.cs">
+      <DependentUpon>LogManagementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Views\Modals\ReplaceDeckView.xaml.cs">
       <DependentUpon>ReplaceDeckView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\SavedLogView.xaml.cs">
+      <DependentUpon>SavedLogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="_ Deprecated\IUserPrompt.cs" />
     <Compile Include="UI\Interfaces\Modal Display\MainWindowModalDisplay.cs" />
@@ -264,7 +276,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Views\Modals\LogManagementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Views\Modals\ReplaceDeckView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\SavedLogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
