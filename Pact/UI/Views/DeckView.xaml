@@ -12,22 +12,25 @@
     <UserControl.Resources>
         <ControlTemplate x:Key="bottomButton" TargetType="Button">
             <Grid Background="{TemplateBinding Background}">
-                <Grid x:Name="Overlay" Background="#20000000" Panel.ZIndex="1" />
+                <Grid x:Name="Overlay" Background="#40000000" Panel.ZIndex="1" />
 
                 <Border x:Name="Outline" BorderBrush="Black" BorderThickness="{TemplateBinding BorderThickness}" />
 
-                <Label Content="{TemplateBinding Content}"
-                       FontFamily="Segoe UI"
+                <Label x:Name="Text" Content="{TemplateBinding Content}"
+                       FontFamily="{StaticResource Quicksand-Bold}"
                        FontSize="10"
+                       Padding="2"
+                       Margin="0,-4,0,-6"
+                       Opacity="0.5"
                        Foreground="{TemplateBinding Foreground}"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Padding="2" />
+                       VerticalAlignment="Center" />
             </Grid>
 
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter TargetName="Overlay" Property="Background" Value="#10000000" />
+                    <Setter TargetName="Text" Property="Opacity" Value="1.0" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter TargetName="Outline" Property="Background" Value="#30000000" />
@@ -78,7 +81,8 @@
                         <Label
                             Grid.Column="0"
                             Content="{Binding Title}"
-                            FontFamily="Arial" FontSize="18" FontWeight="Bold"
+                            FontFamily="{StaticResource Quicksand-Bold}"
+                            FontSize="20"
                             VerticalAlignment="Top"
                             Margin="-2,-2,0,0">
                             <Label.Style>
@@ -92,7 +96,7 @@
                         <TextBox
                             Grid.Column="0"
                             Text="{Binding Title}"
-                            FontFamily="Arial" FontSize="18" FontWeight="Bold"
+                            FontFamily="{StaticResource Quicksand}" FontSize="18"
                             VerticalAlignment="Top"
                             Margin="0,2,4,4"
                             Visibility="Collapsed">
@@ -155,12 +159,12 @@
                         </Button>
                     </Grid>
 
-                    <WrapPanel Grid.Row="1" VerticalAlignment="Top">
-                        <Label Content="Wins: " />
-                        <Label Content="{Binding Wins}" />
+                    <WrapPanel Grid.Row="1" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display" Margin="0,-8,0,0">
+                        <Label Content="Wins:" FontSize="12" FontFamily="{StaticResource Quicksand}" />
+                        <Label Content="{Binding Wins}" FontSize="12" FontFamily="{StaticResource Quicksand}" />
 
-                        <Label Content="Losses: " />
-                        <Label Content="{Binding Losses}" />
+                        <Label Content="Losses:" FontSize="12" FontFamily="{StaticResource Quicksand}" />
+                        <Label Content="{Binding Losses}" FontSize="12" FontFamily="{StaticResource Quicksand}" />
                     </WrapPanel>
 
                     <Grid Grid.Row="2" Height="20">

@@ -61,28 +61,29 @@
     </Window.Resources>
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="16" />
+        <WindowChrome CaptionHeight="22" />
     </WindowChrome.WindowChrome>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="22" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Background="#505050">
+        <Grid Grid.Row="0" Background="#505050">
             <Label
-                DockPanel.Dock="Left"
                 Content="Pact"
-                FontSize="12"
-                Padding="10,2,2,0"
-                Foreground="White" />
+                FontFamily="{StaticResource Quicksand-Bold}"
+                FontSize="14"
+                Foreground="#C0C0C0"
+                HorizontalAlignment="Center"
+                Padding="2" />
 
             <Button
-                DockPanel.Dock="Right"
                 Template="{StaticResource ChromeButton}"
                 Content="X"
-                FontWeight="Bold"
+                FontFamily="{StaticResource Quicksand-Bold}"
+                FontSize="14"
                 Width="30"
                 Foreground="#303030"
                 Background="#F0A0A0"
@@ -94,7 +95,7 @@
                     </Style>
                 </Button.Style>
             </Button>
-        </DockPanel>
+        </Grid>
         
         <Grid Grid.Row="1">
             <Grid Background="#40000000" Panel.ZIndex="1" Opacity="{Binding ModalViewModelOpacity}" Visibility="{Binding ModalViewModel, Converter={StaticResource CollapsedVisibilityWhenNull}}">

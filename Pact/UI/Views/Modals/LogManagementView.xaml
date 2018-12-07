@@ -29,22 +29,32 @@
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding LogViewModels, Converter={StaticResource CollapsedVisibilityWhenNull}, ConverterParameter=False}" />
 
-                <ItemsControl
-                    ItemsSource="{Binding LogViewModels}"
+                <Border
+                    BorderBrush="Black"
+                    BorderThickness="1"
+                    Background="DarkGray"
                     Visibility="{Binding LogViewModels, Converter={StaticResource CollapsedVisibilityWhenNull}, ConverterParameter=True}">
+                    
+                    <ScrollViewer
+                        MaxHeight="200"
+                        VerticalScrollBarVisibility="Visible">
+                    
+                        <ItemsControl ItemsSource="{Binding LogViewModels}" Margin="4,2,4,4">
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemContainerStyle>
-                        <Style>
-                            <Setter Property="FrameworkElement.Margin" Value="0,2,0,0" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                </ItemsControl>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="FrameworkElement.Margin" Value="0,2,0,0" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
             </Grid>
 
             <Button

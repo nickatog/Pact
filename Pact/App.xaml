@@ -16,15 +16,21 @@
         <converters:SingleValueToThickness x:Key="SingleValueToThickness" />
 
         <!-- Fonts -->
-        <FontFamily x:Key="BelweMedium">/Fonts/Belwe-Medium.ttf#Belwe-Medium</FontFamily>
         <FontFamily x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+        <FontFamily x:Key="OpenSans">/Fonts/OpenSans-Regular.ttf#Open Sans</FontFamily>
+        <FontFamily x:Key="OpenSans-Bold">/Fonts/OpenSans-Bold.ttf#Open Sans</FontFamily>
+        <FontFamily x:Key="Quicksand">/Fonts/Quicksand-Regular.ttf#Quicksand</FontFamily>
+        <FontFamily x:Key="Quicksand-Bold">/Fonts/Quicksand-Bold.ttf#Quicksand</FontFamily>
+        <FontFamily x:Key="Ubuntu">/Fonts/Ubuntu-Regular.ttf#Ubuntu</FontFamily>
+        <FontFamily x:Key="Ubuntu-Bold">/Fonts/Ubuntu-Bold.ttf#Ubuntu</FontFamily>
 
         <!-- Templates -->
         <ControlTemplate x:Key="ButtonMajor" TargetType="Button">
             <Border x:Name="Outline" BorderBrush="Black" BorderThickness="1" CornerRadius="4" Background="Transparent">
                 <Label
                     Content="{TemplateBinding Content}"
-                    FontFamily="Segoe UI" FontSize="18" FontWeight="Bold"
+                    FontFamily="{StaticResource Quicksand-Bold}"
+                    FontSize="18"
                     HorizontalAlignment="Center" />
             </Border>
 

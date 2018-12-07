@@ -8,7 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Border BorderBrush="Black" BorderThickness="2" CornerRadius="3" Background="White">
         <StackPanel>
-            <Label Content="{Binding StatusMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Label Content="{Binding StatusMessage}" FontFamily="{StaticResource Quicksand-Bold}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </StackPanel>
     </Border>
 </UserControl>
