@@ -17,7 +17,7 @@
             <Label
                 Grid.Row="0"
                 Content="Update Card Database"
-                FontSize="14" FontWeight="Bold"
+                FontSize="14"
                 HorizontalAlignment="Center" />
 
             <Grid Grid.Row="1">
@@ -48,14 +48,25 @@
                     Margin="0,-3,0,0" />
             </Grid>
 
-            <Grid Grid.Row="3" Margin="2,2,2,2">
+            <Grid Grid.Row="3" Margin="10,0,10,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Cancel" Command="{Binding Cancel}" Margin="0,0,1,0" />
-                <Button Grid.Column="1" Content="Download" Command="{Binding DownloadLatestCardInfoDatabase}" Margin="1,0,0,0" />
+                <Button
+                    Grid.Column="0"
+                    Content="Cancel"
+                    Command="{Binding Cancel}"
+                    Template="{StaticResource ButtonModal}"
+                    Margin="0,0,1,0" />
+                
+                <Button
+                    Grid.Column="1"
+                    Content="Download"
+                    Command="{Binding DownloadLatestCardInfoDatabase}"
+                    Template="{StaticResource ButtonModal}"
+                    Margin="1,0,0,0" />
             </Grid>
         </Grid>
     </Border>

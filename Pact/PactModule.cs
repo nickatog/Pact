@@ -313,7 +313,12 @@ namespace Pact
 
             // ILogManagementInterface
             builder
-            .RegisterType<ModalLogManagementInterface>()
+            .Register(
+                __context =>
+                    new ModalLogManagementInterface(
+                        __context.Resolve<IModalDisplay>(),
+                        __context.Resolve<IPowerLogManager>(),
+                        __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
             .As<ILogManagementInterface>()
             .SingleInstance();
 

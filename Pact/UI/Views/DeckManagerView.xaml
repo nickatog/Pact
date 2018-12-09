@@ -16,9 +16,9 @@
             
             <StackPanel Visibility="{Binding DeckViewModels, Converter={StaticResource CollapsedVisibilityWhenNull}}">
                 <Button
-                    Template="{StaticResource ButtonMajor}"
                     Content="Import New Deck"
                     Command="{Binding ImportDeck}"
+                    Template="{StaticResource ButtonMajor}"
                     Margin="4" />
 
                 <ItemsControl ItemsSource="{Binding DeckViewModels}" Margin="4">

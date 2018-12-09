@@ -92,7 +92,7 @@ namespace Pact
                 {
                     _isUpdating = true;
 
-                    _uiDispatcher.Invoke(() => _canExecuteDownloadChanged?.Invoke());
+                    _canExecuteDownloadChanged?.Invoke();
 
                     try
                     {

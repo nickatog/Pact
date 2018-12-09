@@ -17,7 +17,6 @@
                 <Border x:Name="Outline" BorderBrush="Black" BorderThickness="{TemplateBinding BorderThickness}" />
 
                 <Label x:Name="Text" Content="{TemplateBinding Content}"
-                       FontFamily="{StaticResource Quicksand-Bold}"
                        FontSize="10"
                        Padding="2"
                        Margin="0,-4,0,-6"
@@ -71,7 +70,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -81,7 +80,6 @@
                         <Label
                             Grid.Column="0"
                             Content="{Binding Title}"
-                            FontFamily="{StaticResource Quicksand-Bold}"
                             FontSize="20"
                             VerticalAlignment="Top"
                             Margin="-2,-2,0,0">
@@ -96,7 +94,7 @@
                         <TextBox
                             Grid.Column="0"
                             Text="{Binding Title}"
-                            FontFamily="{StaticResource Quicksand}" FontSize="18"
+                            FontFamily="{StaticResource Quicksand}" FontSize="20"
                             VerticalAlignment="Top"
                             Margin="0,2,4,4"
                             Visibility="Collapsed">
@@ -159,14 +157,13 @@
                         </Button>
                     </Grid>
 
-                    <WrapPanel Grid.Row="1" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display" Margin="0,-8,0,0">
-                        <Label Content="Wins:" FontSize="12" FontFamily="{StaticResource Quicksand}" />
-                        <Label Content="{Binding Wins}" FontSize="12" FontFamily="{StaticResource Quicksand}" />
-
-                        <Label Content="Losses:" FontSize="12" FontFamily="{StaticResource Quicksand}" />
-                        <Label Content="{Binding Losses}" FontSize="12" FontFamily="{StaticResource Quicksand}" />
-                    </WrapPanel>
-
+                    <TextBlock Grid.Row="1" FontFamily="{StaticResource Ubuntu}" FontSize="11" Margin="2,-8,0,-2">
+                        <Label Content="Wins:" />
+                        <Label Content="{Binding Wins}" />
+                        <Label Content="Losses:" />
+                        <Label Content="{Binding Losses}" />
+                    </TextBlock>
+                    
                     <Grid Grid.Row="2" Height="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />

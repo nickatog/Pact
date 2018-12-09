@@ -7,7 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Valkyrie;
+
 using Pact.Extensions.Contract;
+using Pact.Extensions.Enumerable;
 
 namespace Pact
 {
@@ -16,27 +19,57 @@ namespace Pact
         , INotifyPropertyChanged
     {
         private readonly IPowerLogManager _powerLogManager;
+        private readonly IEventDispatcher _viewEventDispatcher;
 
         private IList<SavedLogViewModel> _logViewModels;
+        private IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
 
         public LogManagementModalViewModel(
-            IPowerLogManager powerLogManager)
+            IPowerLogManager powerLogManager,
+            IEventDispatcher viewEventDispatcher)
         {
             _powerLogManager = powerLogManager.Require(nameof(powerLogManager));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
             _powerLogManager.GetSavedLogs()
             .ContinueWith(
                 __task =>
+                {
                     _logViewModels =
                         new ObservableCollection<SavedLogViewModel>(
                             __task.Result
-                            .Select(__savedLog => CreateSavedLogViewModel(__savedLog))))
-            .ContinueWith(
-                __ =>
-                {
+                            .OrderByDescending(__savedLog => __savedLog.Timestamp)
+                            .Select(__savedLog => CreateSavedLogViewModel(__savedLog)));
+
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogViewModels)));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogCount)));
                 });
+
+            _viewEventHandlers.Add(
+                new DelegateEventHandler<ViewCommands.DeleteSavedLog>(
+                    async __event =>
+                    {
+                        try
+                        {
+                            await _powerLogManager.DeleteSavedLog(__event.SavedLogID);
+                        }
+                        catch (Exception)
+                        {
+                            // error message?
+
+                            return;
+                        }
+
+                        SavedLogViewModel viewModel =
+                            _logViewModels
+                            .FirstOrDefault(__viewModel => __viewModel.ID == __event.SavedLogID);
+                        if (viewModel == null)
+                            return;
+
+                        _logViewModels.Remove(viewModel);
+                    }));
+
+            _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.RegisterHandler(__handler));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -45,7 +78,12 @@ namespace Pact
 
         public ICommand Close =>
             new DelegateCommand(
-                () => OnClosed?.Invoke(null));
+                () =>
+                {
+                    _viewEventHandlers.ForEach(__handler => _viewEventDispatcher.UnregisterHandler(__handler));
+
+                    OnClosed?.Invoke(null);
+                });
 
         public string LogCount => (_logViewModels?.Count() ?? 0).ToString();
 
@@ -63,8 +101,7 @@ namespace Pact
                     if (!newLog.HasValue)
                         return;
 
-                    _logViewModels.Add(CreateSavedLogViewModel(newLog.Value));
-
+                    _logViewModels.Insert(0, CreateSavedLogViewModel(newLog.Value));
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogCount)));
                 });
@@ -74,6 +111,8 @@ namespace Pact
         {
             return
                 new SavedLogViewModel(
+                    _powerLogManager,
+                    _viewEventDispatcher,
                     savedLog.ID,
                     savedLog.Title,
                     savedLog.Timestamp,
@@ -83,31 +122,47 @@ namespace Pact
 
     public sealed class SavedLogViewModel
     {
-        private readonly string _editorPath;
-        private readonly Guid _id;
+        private readonly string _editorPath = "notepad";
         private readonly string _filePath;
+        private readonly IPowerLogManager _powerLogEventManager;
+        private readonly IEventDispatcher _viewEventDispatcher;
 
         public SavedLogViewModel(
+            IPowerLogManager powerLogEventManager,
+            IEventDispatcher viewEventDispatcher,
             Guid id,
             string title,
             DateTimeOffset timestamp,
             string filePath)
         {
-            _id = id;
-            Title = title;
+            _powerLogEventManager = powerLogEventManager.Require(nameof(powerLogEventManager));
+            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
+
+            ID = id;
+            Title = title ?? string.Empty;
             Timestamp = timestamp;
             _filePath = filePath;
         }
 
+        public ICommand Delete =>
+            new DelegateCommand(
+                () => _viewEventDispatcher.DispatchEvent(new ViewCommands.DeleteSavedLog(ID)));
+
+        public Guid ID { get; }
+
+        public ICommand SaveTitle =>
+            new DelegateCommand(
+                async () => await _powerLogEventManager.UpdateSavedLog(new SavedLogDetail(ID, Title)));
+
         public DateTimeOffset Timestamp { get; }
 
-        public string Title { get; }
+        public string Title { get; set; }
 
         public ICommand ViewLogFile =>
             new DelegateCommand(
                 () =>
                 {
-                    Process.Start("notepad", _filePath);
+                    Process.Start(_editorPath, _filePath);
                 });
     }
 }

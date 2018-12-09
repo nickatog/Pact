@@ -4,17 +4,126 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Pact"
+             xmlns:properties="clr-namespace:Pact.Properties"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Button Command="{Binding ViewLogFile}">
-        <Border BorderBrush="Black" BorderThickness="1" Background="AntiqueWhite">
+        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4" Background="White">
             <Grid>
-                <DockPanel HorizontalAlignment="Stretch">
-                    <Label
-                        DockPanel.Dock="Left"
-                        Content="{Binding Timestamp}"
-                        HorizontalAlignment="Left" />
-                </DockPanel>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    Content="{Binding Title}"
+                    FontSize="14">
+                    <Label.Style>
+                        <Style>
+                            <Setter Property="properties:VisibilityToggle.CollapseButton" Value="{Binding ElementName=EditLogTitle}" />
+                            <Setter Property="properties:VisibilityToggle.ShowButton" Value="{Binding ElementName=SaveLogTitle}" />
+                        </Style>
+                    </Label.Style>
+                </Label>
+                
+                <TextBox
+                    Grid.Row="0" Grid.Column="0"
+                    Text="{Binding Title}"
+                    FontFamily="{StaticResource Quicksand}"
+                    FontSize="14"
+                    Margin="3,4,4,4"
+                    Visibility="Collapsed">
+                    <TextBox.Style>
+                        <Style>
+                            <Setter Property="properties:VisibilityToggle.CollapseButton" Value="{Binding ElementName=SaveLogTitle}" />
+                            <Setter Property="properties:VisibilityToggle.ShowButton" Value="{Binding ElementName=EditLogTitle}" />
+                            <Setter Property="properties:TextSelector.Button" Value="{Binding ElementName=EditLogTitle}" />
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <Button
+                    Grid.Row="0" Grid.Column="1"
+                    x:Name="EditLogTitle"
+                    Content="&#xf044;"
+                    FontFamily="{StaticResource FontAwesome}"
+                    FontSize="14"
+                    Margin="0,6,4,0"
+                    Panel.ZIndex="1">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <ContentPresenter />
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Button.Style>
+                        <Style>
+                            <Setter Property="properties:DepthToggle.CollapseButton" Value="{Binding ElementName=EditLogTitle}" />
+                            <Setter Property="properties:DepthToggle.ShowButton" Value="{Binding ElementName=SaveLogTitle}" />
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Grid Grid.Row="0" Grid.Column="1" Panel.ZIndex="0" />
+
+                <Button
+                    Grid.Row="0" Grid.Column="1"
+                    x:Name="SaveLogTitle"
+                    Content="&#xf044;"
+                    Command="{Binding SaveTitle}"
+                    Foreground="Green"
+                    FontFamily="{StaticResource FontAwesome}"
+                    FontSize="14"
+                    Margin="0,6,4,0"
+                    Panel.ZIndex="-1">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <ContentPresenter />
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Button.Style>
+                        <Style>
+                            <Setter Property="properties:DepthToggle.CollapseButton" Value="{Binding ElementName=SaveLogTitle}" />
+                            <Setter Property="properties:DepthToggle.ShowButton" Value="{Binding ElementName=EditLogTitle}" />
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Label
+                    Grid.Row="1" Grid.Column="0"
+                    Content="{Binding Timestamp}"
+                    FontFamily="{StaticResource Ubuntu}"
+                    FontSize="11"
+                    Margin="2,-4,0,-2" />
+
+                <Button
+                    Grid.Row="1" Grid.Column="1"
+                    Content="&#xf1f8;"
+                    Command="{Binding Delete}"
+                    Foreground="Red"
+                    FontFamily="{StaticResource FontAwesome}"
+                    FontSize="14"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,4,4">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <ContentPresenter />
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Grid>
         </Border>
 

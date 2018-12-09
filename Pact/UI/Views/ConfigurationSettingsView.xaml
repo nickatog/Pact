@@ -26,12 +26,20 @@
 
     <StackPanel>
         <Button
-            Grid.Row="3"
             Template="{StaticResource ButtonMajor}"
             Content="Save Settings"
             Command="{Binding SaveSettings}"
             Margin="4" />
 
+        <Label
+            Content="General"
+            FontSize="20" FontWeight="Bold" />
+
+        <Rectangle
+            Fill="Black"
+            Height="1"
+            Margin="10,0,10,4" />
+        
         <Label
             Content="Power log file path: "
             FontSize="14"
@@ -39,16 +47,20 @@
 
         <TextBox
             Text="{Binding PowerLogFilePath, Mode=OneWay}" IsReadOnly="True"
-            FontSize="14" 
+            FontFamily="{StaticResource Ubuntu}"
+            FontSize="13"
+            TextOptions.TextFormattingMode="Display"
             Template="{StaticResource TextBox}"
             Margin="10,0,10,0" />
 
         <Button
-            Content="Browse..."
             Command="{Binding BrowseForPowerLogFilePath}"
+            Template="{StaticResource ButtonModal}"
             HorizontalAlignment="Right"
-            Padding="10,0,10,0"
-            Margin="0,2,10,0" />
+            Padding="10,0"
+            Margin="0,2,10,0">
+            <Label Content="Browse..." Margin="0,-8" />
+        </Button>
 
         <Label
             Content="Player Deck Tracker"
