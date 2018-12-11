@@ -35,6 +35,13 @@ namespace Pact
             .Named<AsyncSemaphore>("DeckPersistence")
             .SingleInstance();
 
+            builder
+            .Register(
+                __context =>
+                    new AsyncSemaphore())
+            .Named<AsyncSemaphore>("SavedLogPersistence")
+            .SingleInstance();
+
             // ConfigurationSettingsViewModel
             builder
             .RegisterType<ConfigurationSettingsViewModel>()
@@ -316,6 +323,7 @@ namespace Pact
             .Register(
                 __context =>
                     new ModalLogManagementInterface(
+                        __context.Resolve<IConfigurationSource>(),
                         __context.Resolve<IModalDisplay>(),
                         __context.Resolve<IPowerLogManager>(),
                         __context.ResolveNamed<Valkyrie.IEventDispatcher>("View")))
@@ -346,6 +354,7 @@ namespace Pact
             .Register(
                 __context =>
                     new FileBasedPowerLogManager(
+                        __context.ResolveNamed<AsyncSemaphore>("SavedLogPersistence"),
                         __context.Resolve<IConfigurationSource>(),
                         Path.Combine(appDataDirectoryPath, "SavedLogs"),
                         "logs.json",

@@ -33,6 +33,7 @@ namespace Pact
                         configurationData.FontSize,
                         configurationData.HasLoaded,
                         configurationData.PowerLogFilePath,
+                        configurationData.TextEditorFilePath,
                         configurationData.TrackerWindowLocation,
                         configurationData.TrackerWindowSize);
             }

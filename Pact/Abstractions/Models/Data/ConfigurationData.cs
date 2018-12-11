@@ -8,6 +8,7 @@ namespace Pact.Models.Data
         public int? FontSize;
         public bool HasLoaded;
         public string PowerLogFilePath;
+        public string TextEditorFilePath;
         public Point? TrackerWindowLocation;
         public Size? TrackerWindowSize;
 
@@ -16,6 +17,7 @@ namespace Pact.Models.Data
             int? fontSize,
             bool hasLoaded,
             string powerLogFilePath,
+            string textEditorFilePath,
             Point? trackerWindowLocation,
             Size? trackerWindowSize)
         {
@@ -23,6 +25,7 @@ namespace Pact.Models.Data
             FontSize = fontSize;
             HasLoaded = hasLoaded;
             PowerLogFilePath = powerLogFilePath;
+            TextEditorFilePath = textEditorFilePath;
             TrackerWindowLocation = trackerWindowLocation;
             TrackerWindowSize = trackerWindowSize;
         }

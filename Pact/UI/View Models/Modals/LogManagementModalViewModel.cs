@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Valkyrie;
@@ -18,6 +16,7 @@ namespace Pact
         : IModalViewModel<object>
         , INotifyPropertyChanged
     {
+        private readonly IConfigurationSource _configurationSource;
         private readonly IPowerLogManager _powerLogManager;
         private readonly IEventDispatcher _viewEventDispatcher;
 
@@ -25,9 +24,11 @@ namespace Pact
         private IList<IEventHandler> _viewEventHandlers = new List<IEventHandler>();
 
         public LogManagementModalViewModel(
+            IConfigurationSource configurationSource,
             IPowerLogManager powerLogManager,
             IEventDispatcher viewEventDispatcher)
         {
+            _configurationSource = configurationSource.Require(nameof(configurationSource));
             _powerLogManager = powerLogManager.Require(nameof(powerLogManager));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
@@ -97,7 +98,7 @@ namespace Pact
                 {
                     // lock UI?
 
-                    SavedLog? newLog = await _powerLogManager.SaveCurrentLog(LogTitle);
+                    Models.Client.SavedLog? newLog = await _powerLogManager.SaveCurrentLog(LogTitle);
                     if (!newLog.HasValue)
                         return;
 
@@ -107,10 +108,11 @@ namespace Pact
                 });
 
         private SavedLogViewModel CreateSavedLogViewModel(
-            SavedLog savedLog)
+            Models.Client.SavedLog savedLog)
         {
             return
                 new SavedLogViewModel(
+                    _configurationSource,
                     _powerLogManager,
                     _viewEventDispatcher,
                     savedLog.ID,
@@ -118,51 +120,5 @@ namespace Pact
                     savedLog.Timestamp,
                     savedLog.FilePath);
         }
-    }
-
-    public sealed class SavedLogViewModel
-    {
-        private readonly string _editorPath = "notepad";
-        private readonly string _filePath;
-        private readonly IPowerLogManager _powerLogEventManager;
-        private readonly IEventDispatcher _viewEventDispatcher;
-
-        public SavedLogViewModel(
-            IPowerLogManager powerLogEventManager,
-            IEventDispatcher viewEventDispatcher,
-            Guid id,
-            string title,
-            DateTimeOffset timestamp,
-            string filePath)
-        {
-            _powerLogEventManager = powerLogEventManager.Require(nameof(powerLogEventManager));
-            _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
-
-            ID = id;
-            Title = title ?? string.Empty;
-            Timestamp = timestamp;
-            _filePath = filePath;
-        }
-
-        public ICommand Delete =>
-            new DelegateCommand(
-                () => _viewEventDispatcher.DispatchEvent(new ViewCommands.DeleteSavedLog(ID)));
-
-        public Guid ID { get; }
-
-        public ICommand SaveTitle =>
-            new DelegateCommand(
-                async () => await _powerLogEventManager.UpdateSavedLog(new SavedLogDetail(ID, Title)));
-
-        public DateTimeOffset Timestamp { get; }
-
-        public string Title { get; set; }
-
-        public ICommand ViewLogFile =>
-            new DelegateCommand(
-                () =>
-                {
-                    Process.Start(_editorPath, _filePath);
-                });
     }
 }

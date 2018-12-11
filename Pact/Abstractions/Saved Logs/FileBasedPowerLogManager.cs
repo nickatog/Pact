@@ -14,6 +14,7 @@ namespace Pact
     public sealed class FileBasedPowerLogManager
         : IPowerLogManager
     {
+        private readonly AsyncSemaphore _asyncMutex;
         private readonly IConfigurationSource _configurationSource;
         private readonly string _directoryPath;
         private readonly string _manifestFileName;
@@ -24,12 +25,14 @@ namespace Pact
         private string _powerLogFilePath;
 
         public FileBasedPowerLogManager(
+            AsyncSemaphore asyncMutex,
             IConfigurationSource configurationSource,
             string directoryPath,
             string manifestFileName,
             ICollectionSerializer<Models.Data.SavedLog> savedLogCollectionSerializer,
             IEventDispatcher viewEventDispatcher)
         {
+            _asyncMutex = asyncMutex.Require(nameof(asyncMutex));
             _configurationSource = configurationSource.Require(nameof(configurationSource));
             _directoryPath = directoryPath.Require(nameof(directoryPath));
             _manifestFileName = manifestFileName.Require(nameof(manifestFileName));
@@ -54,25 +57,26 @@ namespace Pact
             }
             catch (FileNotFoundException) {}
 
-            await PersistSavedLogManifest(
-                (await ParseSavedLogManifest().ConfigureAwait(false))
-                .Where(__savedLog => !__savedLog.ID.Equals(savedLogID))).ConfigureAwait(false);
+            using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
+                await PersistSavedLogManifest(
+                    (await ParseSavedLogManifest().ConfigureAwait(false))
+                    .Where(__savedLog => __savedLog.ID != savedLogID)).ConfigureAwait(false);
         }
 
-        async Task<IEnumerable<SavedLog>> IPowerLogManager.GetSavedLogs()
+        async Task<IEnumerable<Models.Client.SavedLog>> IPowerLogManager.GetSavedLogs()
         {
             return
                 (await ParseSavedLogManifest().ConfigureAwait(false))
                 .Select(
                     __savedLog =>
-                        new SavedLog(
+                        new Models.Client.SavedLog(
                             __savedLog.ID,
                             Path.Combine(_directoryPath, $"{__savedLog.ID}.txt"),
                             __savedLog.Title,
                             __savedLog.Timestamp));
         }
 
-        async Task<SavedLog?> IPowerLogManager.SaveCurrentLog(
+        async Task<Models.Client.SavedLog?> IPowerLogManager.SaveCurrentLog(
             string title)
         {
             if (!File.Exists(_powerLogFilePath))
@@ -84,43 +88,43 @@ namespace Pact
 
             var savedLogID = Guid.NewGuid();
             string savedLogFilePath = Path.Combine(_directoryPath, $"{savedLogID}.txt");
+            var timestamp = DateTimeOffset.Now;
 
             using (var targetStream = new FileStream(savedLogFilePath, FileMode.Create))
                 using (var sourceStream = new FileStream(_powerLogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     await sourceStream.CopyToAsync(targetStream).ConfigureAwait(false);
 
-            var timestamp = DateTimeOffset.Now;
+            using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
+                await PersistSavedLogManifest(
+                    (await ParseSavedLogManifest().ConfigureAwait(false))
+                    .Append(new Models.Data.SavedLog(savedLogID, title, timestamp))).ConfigureAwait(false);
 
-            IEnumerable<Models.Data.SavedLog> savedLogs = await ParseSavedLogManifest().ConfigureAwait(false);
-
-            await PersistSavedLogManifest(savedLogs.Append(new Models.Data.SavedLog(savedLogID, title, timestamp))).ConfigureAwait(false);
-
-            return new SavedLog(savedLogID, savedLogFilePath, title, timestamp);
+            return new Models.Client.SavedLog(savedLogID, savedLogFilePath, title, timestamp);
         }
 
         async Task IPowerLogManager.UpdateSavedLog(
-            SavedLogDetail savedLogDetail)
+            Models.Client.SavedLogDetail savedLogDetail)
         {
-            await PersistSavedLogManifest(
-                (await ParseSavedLogManifest().ConfigureAwait(false))
-                .Select(
-                    __savedLog =>
-                    {
-                        if (__savedLog.ID != savedLogDetail.ID)
-                            return __savedLog;
+            using (await _asyncMutex.WaitAsync().ConfigureAwait(false))
+                await PersistSavedLogManifest(
+                    (await ParseSavedLogManifest().ConfigureAwait(false))
+                    .Select(
+                        __savedLog =>
+                        {
+                            if (__savedLog.ID != savedLogDetail.ID)
+                                return __savedLog;
 
-                        return
-                            new Models.Data.SavedLog(
-                                __savedLog.ID,
-                                savedLogDetail.Title,
-                                __savedLog.Timestamp);
-                    })).ConfigureAwait(false);
+                            return
+                                new Models.Data.SavedLog(
+                                    __savedLog.ID,
+                                    savedLogDetail.Title,
+                                    __savedLog.Timestamp);
+                        })).ConfigureAwait(false);
         }
 
         private async Task<IEnumerable<Models.Data.SavedLog>> ParseSavedLogManifest()
         {
             string manifestFilePath = Path.Combine(_directoryPath, _manifestFileName);
-
             if (!File.Exists(manifestFilePath))
                 return Enumerable.Empty<Models.Data.SavedLog>();
 

@@ -101,8 +101,8 @@
     <Compile Include="Abstractions\Configuration\EventDispatchingConfigurationStorage.cs" />
     <Compile Include="Abstractions\Events\Parsers\Game State Debug\GameStateDebugEventParser.cs" />
     <Compile Include="Abstractions\Events\Parsers\Game State Debug\ParserContext.cs" />
-    <Compile Include="Abstractions\Logs\FileBasedPowerLogManager.cs" />
-    <Compile Include="Abstractions\Logs\IPowerLogManager.cs" />
+    <Compile Include="Abstractions\Saved Logs\FileBasedPowerLogManager.cs" />
+    <Compile Include="Abstractions\Saved Logs\IPowerLogManager.cs" />
     <Compile Include="Abstractions\Models\Client\CardInfo.cs" />
     <Compile Include="Abstractions\Models\Client\ConfigurationSettings.cs" />
     <Compile Include="Abstractions\Models\Client\DecklistCard.cs" />
@@ -115,6 +115,8 @@
     <Compile Include="Abstractions\Models\Client\Deck.cs" />
     <Compile Include="Abstractions\Models\Client\DeckDetail.cs" />
     <Compile Include="Abstractions\Models\Client\GameResult.cs" />
+    <Compile Include="Abstractions\Models\Client\SavedLog.cs" />
+    <Compile Include="Abstractions\Models\Client\SavedLogDetail.cs" />
     <Compile Include="Abstractions\Models\Data\Card.cs" />
     <Compile Include="Abstractions\Models\Data\ConfigurationData.cs" />
     <Compile Include="Abstractions\Models\Data\Deck.cs" />
@@ -154,6 +156,7 @@
     <Compile Include="UI\View Models\Modals\CardDatabaseUpdateModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\LogManagementModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\ReplaceDeckModalViewModel.cs" />
+    <Compile Include="UI\View Models\SavedLogViewModel.cs" />
     <Compile Include="UI\Views\DevToolsView.xaml.cs">
       <DependentUpon>DevToolsView.xaml</DependentUpon>
     </Compile>

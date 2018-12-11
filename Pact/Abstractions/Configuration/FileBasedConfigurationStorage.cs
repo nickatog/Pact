@@ -40,6 +40,7 @@ namespace Pact
                             configurationSettings.FontSize,
                             configurationSettings.HasLoaded,
                             configurationSettings.PowerLogFilePath,
+                            configurationSettings.TextEditorFilePath,
                             configurationSettings.TrackerWindowLocation,
                             configurationSettings.TrackerWindowSize)).ConfigureAwait(false);
                 }

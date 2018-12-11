@@ -6,12 +6,14 @@ namespace Pact.Models.Client
     {
         private int? _fontSize;
         private string _powerLogFilePath;
+        private string _textEditorFilePath;
 
         public ConfigurationSettings(
             int cardTextOffset,
             int? fontSize,
             bool hasLoaded,
             string powerLogFilePath,
+            string textEditorFilePath,
             Point? trackerWindowLocation,
             Size? trackerWindowSize)
         {
@@ -19,6 +21,7 @@ namespace Pact.Models.Client
             _fontSize = fontSize;
             HasLoaded = hasLoaded;
             _powerLogFilePath = powerLogFilePath;
+            _textEditorFilePath = textEditorFilePath;
             TrackerWindowLocation = trackerWindowLocation;
             TrackerWindowSize = trackerWindowSize;
         }
@@ -37,6 +40,12 @@ namespace Pact.Models.Client
         {
             get => _powerLogFilePath ?? @"C:\Program Files (x86)\Hearthstone\Logs\Power.log";
             set { _powerLogFilePath = value; }
+        }
+
+        public string TextEditorFilePath
+        {
+            get => _textEditorFilePath ?? "notepad";
+            set { _textEditorFilePath = value; }
         }
 
         public Point? TrackerWindowLocation { get; set; }
