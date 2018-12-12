@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Pact"
         xmlns:properties="clr-namespace:Pact.Properties"
         mc:Ignorable="d"
-        Title="Pact" Height="500" Width="400" WindowStyle="None" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="{StaticResource Quicksand-Bold}">
+        Title="Pact" Height="500" Width="450" WindowStyle="None" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" FontFamily="{StaticResource Quicksand-Bold}">
     <Window.Resources>
         <ControlTemplate x:Key="ChromeButton" TargetType="Button">
             <Grid x:Name="Container" Background="Transparent">
@@ -194,7 +194,7 @@
                         </Button>
                     </StackPanel>
 
-                    <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050">
+                    <Button Content="&#xf129;" FontFamily="{StaticResource FontAwesome}" FontSize="24" Padding="10,8,10,8" Template="{StaticResource SideButton}" VerticalAlignment="Bottom" Background="#505050" Command="{Binding ShowAboutPage}">
                         <Button.ToolTip>
                             <ToolTip Template="{StaticResource CustomToolTip}" Content="About Pact" Placement="Right" VerticalOffset="7" Background="#505050" />
                         </Button.ToolTip>

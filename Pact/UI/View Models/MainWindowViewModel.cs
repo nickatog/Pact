@@ -13,6 +13,7 @@ namespace Pact
     {
         public static MainWindowViewModel Instance { get; private set; }
 
+        private readonly IAboutPageInterface _aboutPageInterface;
         private readonly ConfigurationSettingsViewModel _configurationSettingsViewModel;
         private readonly DeckManagerViewModel _deckManagerViewModel;
         private readonly DevToolsViewModel _devToolsViewModel;
@@ -22,11 +23,13 @@ namespace Pact
         private object _viewModel;
 
         public MainWindowViewModel(
+            IAboutPageInterface aboutPageInterface,
             ConfigurationSettingsViewModel configurationSettingsViewModel,
             DeckManagerViewModel deckManagerViewModel,
             DevToolsViewModel devToolsViewModel,
             DownloadUpdatesViewModel downloadUpdatesViewModel)
         {
+            _aboutPageInterface = aboutPageInterface.Require(nameof(aboutPageInterface));
             _configurationSettingsViewModel = configurationSettingsViewModel.Require(nameof(configurationSettingsViewModel));
             _deckManagerViewModel = deckManagerViewModel.Require(nameof(deckManagerViewModel));
             _devToolsViewModel = devToolsViewModel.Require(nameof(devToolsViewModel));
@@ -95,6 +98,8 @@ namespace Pact
                         });
                 };
         }
+
+        public ICommand ShowAboutPage => new DelegateCommand(async () => await _aboutPageInterface.Show());
 
         public ICommand ShowConfigurationSettings => new DelegateCommand(() => ViewModel = _configurationSettingsViewModel);
 

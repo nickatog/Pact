@@ -77,6 +77,12 @@ namespace Pact
             .RegisterType<DownloadUpdatesViewModel>()
             .AsSelf();
 
+            // IAboutPageInterface
+            builder
+            .RegisterType<ModalAboutPageInterface>()
+            .As<IAboutPageInterface>()
+            .SingleInstance();
+
             // IBackgroundWorkInterface
             builder
             .RegisterType<ModalBackgroundWorkInterface>()

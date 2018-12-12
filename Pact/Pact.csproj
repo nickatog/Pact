@@ -125,6 +125,8 @@
     <Compile Include="Abstractions\Utility\Serialization\JSONCollectionSerializer.cs" />
     <Compile Include="Abstractions\Utility\Serialization\JSONSerializer.cs" />
     <Compile Include="Abstractions\Utility\Enumeration\TrackingEnumerator.cs" />
+    <Compile Include="UI\Interfaces\About Page\IAboutPageInterface.cs" />
+    <Compile Include="UI\Interfaces\About Page\ModalAboutPageInterface.cs" />
     <Compile Include="UI\Interfaces\Card Database Update\ICardDatabaseUpdateInterface.cs" />
     <Compile Include="UI\Interfaces\Log Management\ILogManagementInterface.cs" />
     <Compile Include="UI\Interfaces\Log Management\ModalLogManagementInterface.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="UI\Properties\DepthToggle.cs" />
     <Compile Include="UI\Properties\TextSelector.cs" />
     <Compile Include="UI\Properties\VisibilityToggle.cs" />
+    <Compile Include="UI\View Models\Modals\AboutPageModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\CardDatabaseUpdateModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\LogManagementModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\ReplaceDeckModalViewModel.cs" />
@@ -189,6 +192,9 @@
     <Compile Include="UI\Interfaces\Player Deck Tracker\WindowedPlayerDeckTrackerInterface.cs" />
     <Compile Include="UI\View Models\Modals\DeckImportModalViewModel.cs" />
     <Compile Include="UI\View Models\Modals\BackgroundWorkModalViewModel.cs" />
+    <Compile Include="UI\Views\Modals\AboutPageView.xaml.cs">
+      <DependentUpon>AboutPageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Views\Modals\BackgroundWorkView.xaml.cs">
       <DependentUpon>BackgroundWorkView.xaml</DependentUpon>
     </Compile>
@@ -276,6 +282,10 @@
       <DependentUpon>UserConfirmationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Interfaces\Background Work\ModalBackgroundWorkInterface.cs" />
+    <Page Include="UI\Views\Modals\AboutPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Views\Modals\CardDatabaseUpdateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Pact.AboutPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Border BorderThickness="1" CornerRadius="4" BorderBrush="Black" Background="LightGray">
+        <Grid Margin="4">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Label
+                Grid.Row="0"
+                Content="Pact - A Simple Hearthstone Deck Tracker"
+                FontSize="14" />
+
+            <TextBlock Grid.Row="1" FontFamily="{StaticResource Quicksand}" Margin="10,0,0,0">
+                <Run Text="Created by: Nicholas Anderson" />
+            </TextBlock>
+
+            <TextBlock Grid.Row="2" FontFamily="{StaticResource Quicksand}" Margin="10,0,0,0">
+                <Run Text="Find me at:" />
+            </TextBlock>
+
+            <DockPanel Grid.Row="3" Margin="20,-8,0,0">
+                <Button Cursor="Hand" Command="{Binding VisitGitHub}" HorizontalAlignment="Left">
+                    <DockPanel>
+                        <Label Content="&#xf09b;" FontFamily="{StaticResource FontAwesome}" FontSize="20" />
+
+                        <Label Content="github.com/nickatog" FontFamily="{StaticResource Quicksand}" Margin="0,2,0,0" />
+                    </DockPanel>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </DockPanel>
+
+            <DockPanel Grid.Row="4" Margin="20,-8,0,0">
+                <Button Cursor="Hand" Command="{Binding VisitTwitter}" HorizontalAlignment="Left">
+                    <DockPanel>
+                        <Label Content="&#xf099;" FontFamily="{StaticResource FontAwesome}" FontSize="20" />
+
+                        <Label Content="@Nickatog" FontFamily="{StaticResource Quicksand}" Margin="0,2,0,0" />
+                    </DockPanel>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </DockPanel>
+
+            <Grid Grid.Row="5" Height="28" />
+            
+            <Button
+                Grid.Row="6"
+                Content="Close"
+                Command="{Binding Close}"
+                Template="{StaticResource ButtonModal}"
+                Margin="10,0,10,12" />
+        </Grid>
+    </Border>
+</UserControl>

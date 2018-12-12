@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Valkyrie;
@@ -32,18 +33,16 @@ namespace Pact
             _powerLogManager = powerLogManager.Require(nameof(powerLogManager));
             _viewEventDispatcher = viewEventDispatcher.Require(nameof(viewEventDispatcher));
 
-            _powerLogManager.GetSavedLogs()
-            .ContinueWith(
-                __task =>
+            Task.Run(
+                async () =>
                 {
                     _logViewModels =
                         new ObservableCollection<SavedLogViewModel>(
-                            __task.Result
+                            (await _powerLogManager.GetSavedLogs().ConfigureAwait(false))
                             .OrderByDescending(__savedLog => __savedLog.Timestamp)
                             .Select(__savedLog => CreateSavedLogViewModel(__savedLog)));
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogViewModels)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogCount)));
                 });
 
             _viewEventHandlers.Add(
@@ -86,8 +85,6 @@ namespace Pact
                     OnClosed?.Invoke(null);
                 });
 
-        public string LogCount => (_logViewModels?.Count() ?? 0).ToString();
-
         public string LogTitle { get; set; }
 
         public IEnumerable<SavedLogViewModel> LogViewModels => _logViewModels;
@@ -96,15 +93,11 @@ namespace Pact
             new DelegateCommand(
                 async () =>
                 {
-                    // lock UI?
-
-                    Models.Client.SavedLog? newLog = await _powerLogManager.SaveCurrentLog(LogTitle);
-                    if (!newLog.HasValue)
+                    Models.Client.SavedLog? savedLog = await _powerLogManager.SaveCurrentLog(LogTitle);
+                    if (!savedLog.HasValue)
                         return;
 
-                    _logViewModels.Insert(0, CreateSavedLogViewModel(newLog.Value));
-
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LogCount)));
+                    _logViewModels.Insert(0, CreateSavedLogViewModel(savedLog.Value));
                 });
 
         private SavedLogViewModel CreateSavedLogViewModel(

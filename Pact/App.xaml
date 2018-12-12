@@ -65,6 +65,9 @@
         </ControlTemplate>
 
         <!-- Views -->
+        <DataTemplate DataType="{x:Type local:AboutPageModalViewModel}">
+            <local:AboutPageView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:BackgroundWorkModalViewModel}">
             <local:BackgroundWorkView />
         </DataTemplate>
