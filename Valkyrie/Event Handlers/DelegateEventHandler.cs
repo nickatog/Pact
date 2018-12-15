@@ -6,15 +6,12 @@ namespace Valkyrie
         : IEventHandler
         where TEvent : class
     {
-        private readonly Action<TEvent> _handlerAction = null;
+        private readonly Action<TEvent> _handlerAction;
 
         public DelegateEventHandler(
             Action<TEvent> handlerAction)
         {
-            if (handlerAction == null)
-                throw new ArgumentNullException(nameof(handlerAction));
-
-            _handlerAction = handlerAction;
+            _handlerAction = handlerAction ?? throw new ArgumentNullException(nameof(handlerAction));
         }
 
         Type IEventHandler.EventType => typeof(TEvent);
@@ -22,11 +19,8 @@ namespace Valkyrie
         void IEventHandler.HandleEvent(
             object @event)
         {
-            var realEvent = @event as TEvent;
-            if (realEvent == null)
-                return;
-
-            _handlerAction(realEvent);
+            if (@event is TEvent realEvent)
+                _handlerAction(realEvent);
         }
     }
 }

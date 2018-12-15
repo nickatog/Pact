@@ -6,8 +6,7 @@ namespace Valkyrie
     internal sealed class InMemoryEventDispatcher
         : IEventDispatcher
     {
-        private readonly IDictionary<Type, HashSet<IEventHandler>> _handlersByType =
-            new Dictionary<Type, HashSet<IEventHandler>>();
+        private readonly IDictionary<Type, IList<IEventHandler>> _handlersByType = new Dictionary<Type, IList<IEventHandler>>();
 
         void IEventDispatcher.DispatchEvent(
             object @event)
@@ -15,7 +14,7 @@ namespace Valkyrie
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            if (!_handlersByType.TryGetValue(@event.GetType(), out HashSet<IEventHandler> handlersForType))
+            if (!_handlersByType.TryGetValue(@event.GetType(), out IList<IEventHandler> handlersForType))
                 return;
 
             var handlersToInvoke = new IEventHandler[handlersForType.Count];
@@ -33,9 +32,9 @@ namespace Valkyrie
 
             Type eventType = handler.EventType;
             
-            if (!_handlersByType.TryGetValue(eventType, out HashSet<IEventHandler> handlersForType))
+            if (!_handlersByType.TryGetValue(eventType, out IList<IEventHandler> handlersForType))
             {
-                handlersForType = new HashSet<IEventHandler>();
+                handlersForType = new List<IEventHandler>();
 
                 _handlersByType.Add(eventType, handlersForType);
             }
@@ -49,7 +48,7 @@ namespace Valkyrie
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            if (_handlersByType.TryGetValue(handler.EventType, out HashSet<IEventHandler> handlersForType))
+            if (_handlersByType.TryGetValue(handler.EventType, out IList<IEventHandler> handlersForType))
                 handlersForType.Remove(handler);
         }
     }

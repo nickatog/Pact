@@ -17,17 +17,13 @@ namespace Valkyrie
 
             var results = Enumerable.Empty<T>();
 
-            IList<IEventHandler<T>> handlersForType = null;
-            if (!_handlersByType.TryGetValue(@event.GetType(), out handlersForType))
+            if (!_handlersByType.TryGetValue(@event.GetType(), out IList<IEventHandler<T>> handlersForType))
                 return results;
 
             var handlersToInvoke = new IEventHandler<T>[handlersForType.Count];
             handlersForType.CopyTo(handlersToInvoke, 0);
 
-            foreach (IEventHandler<T> handler in handlersToInvoke)
-                results = results.Concat(handler.HandleEvent(@event));
-
-            return results;
+            return handlersToInvoke.SelectMany(__handler => __handler.HandleEvent(@event)).ToList();
         }
 
         void IEventDispatcher<T>.RegisterHandler(
@@ -38,8 +34,7 @@ namespace Valkyrie
 
             Type eventType = handler.EventType;
 
-            IList<IEventHandler<T>> handlersForType = null;
-            if (!_handlersByType.TryGetValue(eventType, out handlersForType))
+            if (!_handlersByType.TryGetValue(eventType, out IList<IEventHandler<T>> handlersForType))
             {
                 handlersForType = new List<IEventHandler<T>>();
 
@@ -55,8 +50,7 @@ namespace Valkyrie
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            IList<IEventHandler<T>> handlersForType = null;
-            if (_handlersByType.TryGetValue(handler.EventType, out handlersForType))
+            if (_handlersByType.TryGetValue(handler.EventType, out IList<IEventHandler<T>> handlersForType))
                 handlersForType.Remove(handler);
         }
     }

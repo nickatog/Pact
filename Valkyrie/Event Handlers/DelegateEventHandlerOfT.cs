@@ -8,15 +8,12 @@ namespace Valkyrie
         : IEventHandler<T>
         where TEvent : class
     {
-        private readonly Func<TEvent, IEnumerable<T>> _handlerFunc = null;
+        private readonly Func<TEvent, IEnumerable<T>> _handlerFunc;
 
         public DelegateEventHandler(
             Func<TEvent, IEnumerable<T>> handlerFunc)
         {
-            if (handlerFunc == null)
-                throw new ArgumentNullException(nameof(handlerFunc));
-
-            _handlerFunc = handlerFunc;
+            _handlerFunc = handlerFunc ?? throw new ArgumentNullException(nameof(handlerFunc));
         }
 
         Type IEventHandler<T>.EventType => typeof(TEvent);
@@ -24,11 +21,10 @@ namespace Valkyrie
         IEnumerable<T> IEventHandler<T>.HandleEvent(
             object @event)
         {
-            var realEvent = @event as TEvent;
-            if (realEvent == null)
-                return Enumerable.Empty<T>();
+            if (@event is TEvent realEvent)
+                return _handlerFunc(realEvent);
 
-            return _handlerFunc(realEvent);
+            return Enumerable.Empty<T>();
         }
     }
 }

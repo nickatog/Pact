@@ -403,10 +403,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Valkyrie.Interfaces\Valkyrie.Interfaces.csproj">
-      <Project>{5b8417f6-bf82-44de-932a-f7c0f013eb40}</Project>
-      <Name>Valkyrie.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Valkyrie\Valkyrie.csproj">
       <Project>{098257ee-1a1b-4792-a3b9-76e392f0075e}</Project>
       <Name>Valkyrie</Name>

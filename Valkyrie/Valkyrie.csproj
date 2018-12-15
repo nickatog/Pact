@@ -41,20 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateEventHandlerOfT.cs" />
-    <Compile Include="InMemoryEventDispatcher.cs" />
-    <Compile Include="DelegateEventHandler.cs" />
-    <Compile Include="InMemoryEventDispatcherFactory.cs" />
-    <Compile Include="InMemoryEventDispatcherOfT.cs" />
-    <Compile Include="InMemoryEventDispatcherFactoryOfT.cs" />
+    <Compile Include="Event Handlers\DelegateEventHandlerOfT.cs" />
+    <Compile Include="Event Dispatchers\IEventDispatcher.cs" />
+    <Compile Include="Event Dispatchers\IEventDispatcherFactory.cs" />
+    <Compile Include="Event Dispatchers\IEventDispatcherFactoryOfT.cs" />
+    <Compile Include="Event Dispatchers\IEventDispatcherOfT.cs" />
+    <Compile Include="Event Handlers\IEventHandler.cs" />
+    <Compile Include="Event Handlers\IEventHandlerOfT.cs" />
+    <Compile Include="Event Dispatchers\InMemoryEventDispatcher.cs" />
+    <Compile Include="Event Handlers\DelegateEventHandler.cs" />
+    <Compile Include="Event Dispatchers\InMemoryEventDispatcherFactory.cs" />
+    <Compile Include="Event Dispatchers\InMemoryEventDispatcherOfT.cs" />
+    <Compile Include="Event Dispatchers\InMemoryEventDispatcherFactoryOfT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Valkyrie.Interfaces\Valkyrie.Interfaces.csproj">
-      <Project>{5b8417f6-bf82-44de-932a-f7c0f013eb40}</Project>
-      <Name>Valkyrie.Interfaces</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

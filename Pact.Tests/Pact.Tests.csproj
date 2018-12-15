@@ -70,10 +70,6 @@
       <Project>{d891daf0-68dd-4b9e-9a2e-6d437735a9e4}</Project>
       <Name>Pact</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Valkyrie.Interfaces\Valkyrie.Interfaces.csproj">
-      <Project>{5b8417f6-bf82-44de-932a-f7c0f013eb40}</Project>
-      <Name>Valkyrie.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Valkyrie\Valkyrie.csproj">
       <Project>{098257ee-1a1b-4792-a3b9-76e392f0075e}</Project>
       <Name>Valkyrie</Name>
