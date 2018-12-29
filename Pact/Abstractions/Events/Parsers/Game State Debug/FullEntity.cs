@@ -71,8 +71,11 @@ namespace Pact.GameStateDebugEventParsers
                                 // Keep track of most recent card(s) added to deck and replay the events?
                                 // Track cards added during the current main block and clear on new main block start
                             }
+                            // Direhorn Hatchling
+                            else if (parentBlockEntityCardID.Eq("UNG_957"))
+                                events.Add(new GameEvents.CardAddedToDeck(playerID, "UNG_957t1"));
                             // Kingsbane
-                            if (parentBlockEntityCardID.Eq("LOOT_542"))
+                            else if (parentBlockEntityCardID.Eq("LOOT_542"))
                                 events.Add(new GameEvents.CardAddedToDeck(playerID, "LOOT_542"));
                         }
                     }

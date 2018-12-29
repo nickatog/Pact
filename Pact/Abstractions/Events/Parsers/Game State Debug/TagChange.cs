@@ -43,9 +43,16 @@ namespace Pact.GameStateDebugEventParsers
             else if (tag.Eq("ZONE") && entityZone.Eq("DECK") && value.Eq("PLAY") && parseContext.EntityMappings.TryGetValue(entityID, out string cardID))
                 events.Add(new GameEvents.CardEnteredPlayFromDeck(playerID, cardID));
             else if (tag.Eq("ZONE") && entityZone.Eq("PLAY") && value.Eq("DECK") && entityAttributes.TryGetValue("cardId", out string entityCardID))
+            {
+                if (entityID != null && parseContext.EntityControllers.TryGetValue(entityID, out string controller) && int.TryParse(controller, out int controllerID))
+                    playerID = controllerID;
+
                 events.Add(new GameEvents.CardAddedToDeck(playerID, entityCardID));
+            }
             else if (tag.Eq("ZONE") && value.Eq("GRAVEYARD") && parseContext.CoinEntityID != null && parseContext.CoinEntityID.Eq(entityID))
                 events.Add(new GameEvents.OpponentCoinLost());
+            else if (tag.Eq("CONTROLLER") && entityID != null)
+                parseContext.EntityControllers[entityID] = value;
             else if (tag.Eq("STATE") && value.Eq("COMPLETE"))
             {
                 if (parseContext.PlayerID != null && parseContext.PlayerNames.TryGetValue(parseContext.PlayerID, out string playerName))

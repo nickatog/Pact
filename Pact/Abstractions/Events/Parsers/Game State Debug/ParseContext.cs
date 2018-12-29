@@ -9,6 +9,7 @@ namespace Pact
         {
             Parsers = parsers;
 
+            EntityControllers = new Dictionary<string, string>();
             EntityMappings = new Dictionary<string, string>();
             GameLosers = new List<string>();
             GameWinners = new List<string>();
@@ -18,6 +19,7 @@ namespace Pact
 
         public string CoinEntityID { get; set; }
         public string CurrentGameStep { get; set; }
+        public IDictionary<string, string> EntityControllers { get; }
         public IDictionary<string, string> EntityMappings { get; }
         public IList<string> GameLosers { get; }
         public IList<string> GameWinners { get; }
@@ -31,6 +33,7 @@ namespace Pact
         {
             CoinEntityID = null;
             CurrentGameStep = null;
+            EntityControllers.Clear();
             EntityMappings.Clear();
             GameLosers.Clear();
             GameWinners.Clear();

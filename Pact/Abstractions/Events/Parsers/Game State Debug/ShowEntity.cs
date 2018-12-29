@@ -74,6 +74,11 @@ namespace Pact.GameStateDebugEventParsers
                             else if (zoneTag.Eq("SETASIDE"))
                                 events.Add(new GameEvents.CardRemovedFromDeck(playerID, cardID));
                         }
+                        else if (zone.Eq("HAND"))
+                        {
+                            if (zoneTag.Eq("HAND"))
+                                events.Add(new GameEvents.CardDrawnFromDeck(playerID, cardID));
+                        }
                     }
 
                     if (parseContext.ParentBlock != null)
